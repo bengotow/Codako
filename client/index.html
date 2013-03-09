@@ -20,8 +20,9 @@
     createjs = window;
 </script>
 
-<!-- Import EaselJS Framework -->
-<script src="http://code.createjs.com/easeljs-0.5.0.min.js"></script>
+<!- Import EaselJS Framework -->
+<script src="./src/easeljs.js"></script>
+<script src="./src/socket.io.js"></script>
 
 <script src="./src/easeljs/XNARectangle.js"></script>
 <script src="./src/easeljs/PlatformerHelper.js"></script>
@@ -45,6 +46,15 @@ var enableRAF = true;
 // Specific IE9 pinned site experience
 // Buttons displayed in the thumnbail preview in the taskbar
 var ieBtnLeft, ieBtnRight, ieBtnJump;
+
+window.Socket = io.connect(':4430', {secure: false});
+window.Socket.on('connect', function () {
+    console.log('Socket.io Connection Established.');
+});
+window.Socket.on('disconnect', function () {
+    console.log('Socket.io Connection Lost. Trying to reconnect...');
+});
+
 
 function restart() {
 	if (stage == null) {
@@ -91,7 +101,7 @@ function changeRAF() {
 // Callback function once everything has been downloaded
 function startGame() {
     platformerGame = new PlatformerGame(stage, contentManager, canvas.width, canvas.height);
-	platformerGame.StartGame();
+    platformerGame.StartGame();
 }
 
 //********************************************************

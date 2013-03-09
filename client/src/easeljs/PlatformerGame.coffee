@@ -102,10 +102,10 @@ class PlatformerGame
     status = null
     if @level.TimeRemaining is 0
       if @level.ReachedExit
-        status = @platformerGameContentManager.imageNamed('winOverlay')
+        status = @platformerGameContentManager.imageNamed('you_win')
       else
-        status = @platformerGameContentManager.imageNamed('loseOverlay')
-    else status = @platformerGameContentManager.imageNamed('diedOverlay')  unless @level.Hero.IsAlive
+        status = @platformerGameContentManager.imageNamed('you_lose')
+    else status = @platformerGameContentManager.imageNamed('you_died')  unless @level.Hero.IsAlive
     @ShowStatusCanvas(status) if status isnt null
 
 
@@ -114,7 +114,7 @@ class PlatformerGame
   # It is used to display to proper overlay contained in /overlays folder
   # with some opacity effect
   SetOverlayCanvas: ->
-    oneOfThisOverlay = @platformerGameContentManager.imageNamed('winOverlay')
+    oneOfThisOverlay = @platformerGameContentManager.imageNamed('you_win')
     statusCanvas = document.createElement("canvas")
     document.body.appendChild statusCanvas
     statusCanvasCtx = statusCanvas.getContext("2d")

@@ -32,7 +32,7 @@ class Level
     @InitialGameTime = Ticker.getTime()
 
     # Creating a random background based on the 3 layers available in 3 versions
-    @levelStage.addChild new Bitmap(@levelContentManager.imageNamed('background'))
+    @levelStage.addChild new Bitmap(@levelContentManager.imageNamed('Layer0_0'))
 
     # Building a matrix of characters that will be replaced by the level {x}.txt
     @textTiles = Array.matrix(15, 20, "|")
@@ -165,27 +165,27 @@ class Level
   LoadNamedTile: (name, collision, x, y) ->
     switch name
       when "Platform"
-        return new Tile(@levelContentManager.imageNamed('imgPlatform'), collision, x, y)
+        return new Tile(@levelContentManager.imageNamed('Platform'), collision, x, y)
       when "Exit"
-        return new Tile(@levelContentManager.imageNamed('imgExit'), collision, x, y)
+        return new Tile(@levelContentManager.imageNamed('Exit'), collision, x, y)
       when "BlockA0"
-        return new Tile(@levelContentManager.imageNamed('imgBlockA0'), collision, x, y)
+        return new Tile(@levelContentManager.imageNamed('BlockA0'), collision, x, y)
       when "BlockA1"
-        return new Tile(@levelContentManager.imageNamed('imgBlockA1'), collision, x, y)
+        return new Tile(@levelContentManager.imageNamed('BlockA1'), collision, x, y)
       when "BlockA2"
-        return new Tile(@levelContentManager.imageNamed('imgBlockA2'), collision, x, y)
+        return new Tile(@levelContentManager.imageNamed('BlockA2'), collision, x, y)
       when "BlockA3"
-        return new Tile(@levelContentManager.imageNamed('imgBlockA3'), collision, x, y)
+        return new Tile(@levelContentManager.imageNamed('BlockA3'), collision, x, y)
       when "BlockA4"
-        return new Tile(@levelContentManager.imageNamed('imgBlockA4'), collision, x, y)
+        return new Tile(@levelContentManager.imageNamed('BlockA4'), collision, x, y)
       when "BlockA5"
-        return new Tile(@levelContentManager.imageNamed('imgBlockA5'), collision, x, y)
+        return new Tile(@levelContentManager.imageNamed('BlockA5'), collision, x, y)
       when "BlockA6"
-        return new Tile(@levelContentManager.imageNamed('imgBlockA6'), collision, x, y)
+        return new Tile(@levelContentManager.imageNamed('BlockA6'), collision, x, y)
       when "BlockB0"
-        return new Tile(@levelContentManager.imageNamed('imgBlockB0'), collision, x, y)
+        return new Tile(@levelContentManager.imageNamed('BlockB0'), collision, x, y)
       when "BlockB1"
-        return new Tile(@levelContentManager.imageNamed('imgBlockB1'), collision, x, y)
+        return new Tile(@levelContentManager.imageNamed('BlockB1'), collision, x, y)
 
 
   #/ <summary>
@@ -209,7 +209,7 @@ class Level
   LoadStartTile: (x, y) ->
     throw "A level may only have one starting point."  if @Hero?
     @Start = @GetBounds(x, y).GetBottomCenter()
-    @Hero = new Player(@levelContentManager.imageNamed('imgPlayer'), this, @Start)
+    @Hero = new Player(@levelContentManager.imageNamed('Player'), this, @Start)
     new Tile(null, Enum.TileCollision.Passable, x, y)
 
 
@@ -228,7 +228,7 @@ class Level
   LoadGemTile: (x, y) ->
     position = @GetBounds(x, y).Center
     position = new Point(x, y)
-    @Gems.push new Gem(@levelContentManager.imageNamed('imgGem'), this, position)
+    @Gems.push new Gem(@levelContentManager.imageNamed('Gem'), this, position)
     new Tile(null, Enum.TileCollision.Passable, x, y)
 
 
@@ -239,13 +239,13 @@ class Level
     position = @GetBounds(x, y).GetBottomCenter()
     switch name
       when "MonsterA"
-        @Enemies.push new Enemy(this, position, @levelContentManager.imageNamed('imgMonsterA'))
+        @Enemies.push new Enemy(this, position, @levelContentManager.imageNamed('MonsterA'))
       when "MonsterB"
-        @Enemies.push new Enemy(this, position, @levelContentManager.imageNamed('imgMonsterB'))
+        @Enemies.push new Enemy(this, position, @levelContentManager.imageNamed('MonsterB'))
       when "MonsterC"
-        @Enemies.push new Enemy(this, position, @levelContentManager.imageNamed('imgMonsterC'))
+        @Enemies.push new Enemy(this, position, @levelContentManager.imageNamed('MonsterC'))
       when "MonsterD"
-        @Enemies.push new Enemy(this, position, @levelContentManager.imageNamed('imgMonsterD'))
+        @Enemies.push new Enemy(this, position, @levelContentManager.imageNamed('MonsterD'))
     new Tile(null, Enum.TileCollision.Passable, x, y)
 
 

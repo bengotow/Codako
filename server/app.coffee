@@ -1,5 +1,11 @@
-fs = require("fs")
-crypto = require("crypto")
+global.fs = require("fs")
+global.crypto = require("crypto")
+global.coffeescript = require('connect-coffee-script')
+global.pathUtils = require("path")
+global.fs = require("fs")
+global._ = require('underscore')
+
+AssetListing = require("./lib/asset_listing")
 
 # Read our configuration file
 try
@@ -27,6 +33,10 @@ io = require("socket.io").listen(app)
 io.sockets.on "connection", (socket) ->
   socket.emit "auth-state",
     authenticated: false
+
+  socket.on "join", (args) ->
+    a = new AssetListing()
+    socket.emit "assetlist", a.assets()
 
   socket.on "auth", (args) ->
     console.log "auth message received:"

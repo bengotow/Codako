@@ -1,5 +1,5 @@
-coffeescript = require('connect-coffee-script')
-fs = require("fs")
+
+webdir = "#{__dirname}/#{env.connect.web_path}"
 
 # --- Private Methods ---//
 setupLocals = (req, res, next) ->
@@ -17,7 +17,6 @@ posts = {}
 
 # --- Exported (Public) Methods ---//
 
-webdir = "#{__dirname}/#{env.connect.web_path}"
 module.exports = {}
 module.exports.start = ->
 	app = connect()
