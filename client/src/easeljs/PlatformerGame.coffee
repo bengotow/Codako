@@ -68,7 +68,7 @@ PlatformerGame::tick = ->
       # If the hero died or won, display the appropriate overlay
       @DrawOverlay()  if overlayEnabled
   catch e
-    console.log "Error", e
+    console.log "Error", e.message
 
 
 # Starting the game
