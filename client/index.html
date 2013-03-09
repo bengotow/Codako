@@ -57,8 +57,8 @@ function restart() {
 
 		// downloading all needed images ressources and preloading sounds & music 
 		contentManager = new ContentManager(stage, canvas.width, canvas.height);
-		contentManager.SetDownloadCompleted(startGame);
-		contentManager.StartDownload();
+		contentManager.setDownloadCompletionCallback(startGame);
+		contentManager.startDownload();
 	}
 	else {
 		platformerGame.ReloadCurrentLevel();

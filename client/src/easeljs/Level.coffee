@@ -1,13 +1,9 @@
 ﻿
 class Level
 
-  fpsLabel = undefined
-  backgroundSeqTile1 = undefined
-  backgroundSeqTile2 = undefined
-  backgroundSeqTile3 = undefined
   PointsPerSecond = 5
   globalTargetFPS = 17
-  audioGemIndex = 0
+
   StaticTile = new Tile(null, Enum.TileCollision.Passable, 0, 0)
 
   constructor: (stage, contentManager, textLevel, gameWidth, gameHeight) ->
@@ -15,6 +11,7 @@ class Level
     @levelStage = stage
     @gameWidth = gameWidth
     @gameHeight = gameHeight
+    @fpsLabel = undefined
 
     # Entities in the level.
     @Hero = null
@@ -35,7 +32,7 @@ class Level
     @InitialGameTime = Ticker.getTime()
 
     # Creating a random background based on the 3 layers available in 3 versions
-    @CreateAndAddRandomBackground()
+    @levelStage.addChild new Bitmap(@levelContentManager.imageNamed('background'))
 
     # Building a matrix of characters that will be replaced by the level {x}.txt
     @textTiles = Array.matrix(15, 20, "|")
@@ -53,7 +50,7 @@ class Level
     @levelStage.removeAllChildren()
     @levelStage.update()
     try
-      @levelContentManager.globalMusic.pause()
+      @levelContentManager.pauseSound('globalMusic')
 
 
   # Transforming the long single line of text into
@@ -168,27 +165,27 @@ class Level
   LoadNamedTile: (name, collision, x, y) ->
     switch name
       when "Platform"
-        return new Tile(@levelContentManager.imgPlatform, collision, x, y)
+        return new Tile(@levelContentManager.imageNamed('imgPlatform'), collision, x, y)
       when "Exit"
-        return new Tile(@levelContentManager.imgExit, collision, x, y)
+        return new Tile(@levelContentManager.imageNamed('imgExit'), collision, x, y)
       when "BlockA0"
-        return new Tile(@levelContentManager.imgBlockA0, collision, x, y)
+        return new Tile(@levelContentManager.imageNamed('imgBlockA0'), collision, x, y)
       when "BlockA1"
-        return new Tile(@levelContentManager.imgBlockA1, collision, x, y)
+        return new Tile(@levelContentManager.imageNamed('imgBlockA1'), collision, x, y)
       when "BlockA2"
-        return new Tile(@levelContentManager.imgBlockA2, collision, x, y)
+        return new Tile(@levelContentManager.imageNamed('imgBlockA2'), collision, x, y)
       when "BlockA3"
-        return new Tile(@levelContentManager.imgBlockA3, collision, x, y)
+        return new Tile(@levelContentManager.imageNamed('imgBlockA3'), collision, x, y)
       when "BlockA4"
-        return new Tile(@levelContentManager.imgBlockA4, collision, x, y)
+        return new Tile(@levelContentManager.imageNamed('imgBlockA4'), collision, x, y)
       when "BlockA5"
-        return new Tile(@levelContentManager.imgBlockA5, collision, x, y)
+        return new Tile(@levelContentManager.imageNamed('imgBlockA5'), collision, x, y)
       when "BlockA6"
-        return new Tile(@levelContentManager.imgBlockA6, collision, x, y)
+        return new Tile(@levelContentManager.imageNamed('imgBlockA6'), collision, x, y)
       when "BlockB0"
-        return new Tile(@levelContentManager.imgBlockB0, collision, x, y)
+        return new Tile(@levelContentManager.imageNamed('imgBlockB0'), collision, x, y)
       when "BlockB1"
-        return new Tile(@levelContentManager.imgBlockB1, collision, x, y)
+        return new Tile(@levelContentManager.imageNamed('imgBlockB1'), collision, x, y)
 
 
   #/ <summary>
@@ -212,7 +209,7 @@ class Level
   LoadStartTile: (x, y) ->
     throw "A level may only have one starting point."  if @Hero?
     @Start = @GetBounds(x, y).GetBottomCenter()
-    @Hero = new Player(@levelContentManager.imgPlayer, this, @Start)
+    @Hero = new Player(@levelContentManager.imageNamed('imgPlayer'), this, @Start)
     new Tile(null, Enum.TileCollision.Passable, x, y)
 
 
@@ -231,7 +228,7 @@ class Level
   LoadGemTile: (x, y) ->
     position = @GetBounds(x, y).Center
     position = new Point(x, y)
-    @Gems.push new Gem(@levelContentManager.imgGem, this, position)
+    @Gems.push new Gem(@levelContentManager.imageNamed('imgGem'), this, position)
     new Tile(null, Enum.TileCollision.Passable, x, y)
 
 
@@ -242,13 +239,13 @@ class Level
     position = @GetBounds(x, y).GetBottomCenter()
     switch name
       when "MonsterA"
-        @Enemies.push new Enemy(this, position, @levelContentManager.imgMonsterA)
+        @Enemies.push new Enemy(this, position, @levelContentManager.imageNamed('imgMonsterA'))
       when "MonsterB"
-        @Enemies.push new Enemy(this, position, @levelContentManager.imgMonsterB)
+        @Enemies.push new Enemy(this, position, @levelContentManager.imageNamed('imgMonsterB'))
       when "MonsterC"
-        @Enemies.push new Enemy(this, position, @levelContentManager.imgMonsterC)
+        @Enemies.push new Enemy(this, position, @levelContentManager.imageNamed('imgMonsterC'))
       when "MonsterD"
-        @Enemies.push new Enemy(this, position, @levelContentManager.imgMonsterD)
+        @Enemies.push new Enemy(this, position, @levelContentManager.imageNamed('imgMonsterD'))
     new Tile(null, Enum.TileCollision.Passable, x, y)
 
 
@@ -288,19 +285,6 @@ class Level
     @tiles[y][x].Collision
 
 
-  # Create a random background based on
-  # the 3 different layers available
-  CreateAndAddRandomBackground: ->
-
-    # random number between 0 & 2.
-    randomnumber = Math.floor(Math.random() * 3)
-    backgroundSeqTile1 = new Bitmap(@levelContentManager.imgBackgroundLayers[0][randomnumber])
-    backgroundSeqTile2 = new Bitmap(@levelContentManager.imgBackgroundLayers[1][randomnumber])
-    backgroundSeqTile3 = new Bitmap(@levelContentManager.imgBackgroundLayers[2][randomnumber])
-    @levelStage.addChild backgroundSeqTile1
-    @levelStage.addChild backgroundSeqTile2
-    @levelStage.addChild backgroundSeqTile3
-
 
   # Method to call once everything has been setup in the level
   # to simply start it
@@ -337,13 +321,13 @@ class Level
     @levelStage.addChild @Hero
 
     # Playing the background music
-    @levelContentManager.globalMusic.play()
+    @levelContentManager.playSound('globalMusic')
 
     # add a text object to output the current FPS:
-    fpsLabel = new Text("-- fps", "bold 14px Arial", "#000")
-    @levelStage.addChild fpsLabel
-    fpsLabel.x = @gameWidth - 50
-    fpsLabel.y = 20
+    @fpsLabel = new Text("-- fps", "bold 14px Arial", "#000")
+    @levelStage.addChild(@fpsLabel)
+    @fpsLabel.x = @gameWidth - 50
+    @fpsLabel.y = 20
 
 
   #/ <summary>
@@ -373,7 +357,7 @@ class Level
 
     # Clamp the time remaining at zero.
     @TimeRemaining = 0  if @TimeRemaining < 0
-    fpsLabel.text = Math.round(Ticker.getMeasuredFPS()) + " fps"
+    @fpsLabel.text = Math.round(Ticker.getMeasuredFPS()) + " fps" if @fpsLabel
 
     # update the stage:
     @levelStage.update()
@@ -397,8 +381,7 @@ class Level
         @Gems.splice i, 1
 
         # And we finally play the gem collected sound using a multichannels trick
-        @levelContentManager.gemCollected[audioGemIndex % 8].play()
-        audioGemIndex++
+        @levelContentManager.playSound('gemCollected')
       i++
 
 

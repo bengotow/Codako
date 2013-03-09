@@ -177,7 +177,7 @@ class Player extends BitmapAnimation
 
       # Begin or continue a jump
       if (not @wasJumping and @IsOnGround) or @jumpTime > 0.0
-        @level.levelContentManager.playerJump.play()  if @jumpTime is 0.0
+        @level.levelContentManager.playSound('playerJump') if @jumpTime is 0.0
         @jumpTime += @elapsed
 
         # Playing the proper animation based on
@@ -285,9 +285,9 @@ class Player extends BitmapAnimation
     else
       @gotoAndPlay "die"
     if killedBy isnt null and killedBy isnt `undefined`
-      @level.levelContentManager.playerKilled.play()
+      @level.levelContentManager.playSound('playerKilled')
     else
-      @level.levelContentManager.playerFall.play()
+      @level.levelContentManager.playSound('playerFall')
 
 
   #/ <summary>
@@ -295,7 +295,7 @@ class Player extends BitmapAnimation
   #/ </summary>
   OnReachedExit: ->
     @HasReachedExit = true
-    @level.levelContentManager.exitReached.play()
+    @level.levelContentManager.playSound('exitReached')
 
     # Playing the proper animation based on
     # the current direction of our hero
