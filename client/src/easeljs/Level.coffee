@@ -1,11 +1,16 @@
 ﻿
-  # To display to current FPS
+class Level
 
-  # Used to build the background with 3 different layers
+  fpsLabel = undefined
+  backgroundSeqTile1 = undefined
+  backgroundSeqTile2 = undefined
+  backgroundSeqTile3 = undefined
+  PointsPerSecond = 5
+  globalTargetFPS = 17
+  audioGemIndex = 0
+  StaticTile = new Tile(null, Enum.TileCollision.Passable, 0, 0)
 
-  # Index used to loop inside the 8 Audio elements stored into an array
-  # Used to simulate multi-channels audio
-  Level = (stage, contentManager, textLevel, gameWidth, gameHeight) ->
+  constructor: (stage, contentManager, textLevel, gameWidth, gameHeight) ->
     @levelContentManager = contentManager
     @levelStage = stage
     @gameWidth = gameWidth
@@ -40,19 +45,11 @@
     @LoadTiles textLevel
     @
 
-  fpsLabel = undefined
-  backgroundSeqTile1 = undefined
-  backgroundSeqTile2 = undefined
-  backgroundSeqTile3 = undefined
-  PointsPerSecond = 5
-  globalTargetFPS = 17
-  audioGemIndex = 0
-  StaticTile = new Tile(null, Enum.TileCollision.Passable, 0, 0)
 
   #/ <summary>
   #/ Unloads the level content.
   #/ </summary>
-  Level::Dispose = ->
+  Dispose: ->
     @levelStage.removeAllChildren()
     @levelStage.update()
     try
@@ -61,7 +58,7 @@
 
   # Transforming the long single line of text into
   # a 2D array of characters
-  Level::ParseLevelLines = (levelLine) ->
+  ParseLevelLines: (levelLine) ->
     i = 0
 
     while i < 15
@@ -81,7 +78,7 @@
   #/ <param name="fileStream">
   #/ A string containing the tile data.
   #/ </param>
-  Level::LoadTiles = (fileStream) ->
+  LoadTiles: (fileStream) ->
     @ParseLevelLines fileStream
 
     # Loop over every tile position,
@@ -114,7 +111,7 @@
   #/ The Y location of this tile in tile space.
   #/ </param>
   #/ <returns>The loaded tile.</returns>
-  Level::LoadTile = (tileType, x, y) ->
+  LoadTile: (tileType, x, y) ->
     switch tileType
 
       # Blank space
@@ -168,7 +165,7 @@
   #/ The tile collision type for the new tile.
   #/ </param>
   #/ <returns>The new tile.</returns>
-  Level::LoadNamedTile = (name, collision, x, y) ->
+  LoadNamedTile: (name, collision, x, y) ->
     switch name
       when "Platform"
         return new Tile(@levelContentManager.imgPlatform, collision, x, y)
@@ -204,7 +201,7 @@
   #/ <param name="variationCount">
   #/ The number of variations in this group.
   #/ </param>
-  Level::LoadVarietyTile = (baseName, variationCount, collision, x, y) ->
+  LoadVarietyTile: (baseName, variationCount, collision, x, y) ->
     index = Math.floor(Math.random() * (variationCount - 1))
     @LoadNamedTile baseName + index, collision, x, y
 
@@ -212,7 +209,7 @@
   #/ <summary>
   #/ Instantiates a player, puts him in the level, and remembers where to put him when he is resurrected.
   #/ </summary>
-  Level::LoadStartTile = (x, y) ->
+  LoadStartTile: (x, y) ->
     throw "A level may only have one starting point."  if @Hero?
     @Start = @GetBounds(x, y).GetBottomCenter()
     @Hero = new Player(@levelContentManager.imgPlayer, this, @Start)
@@ -222,7 +219,7 @@
   #/ <summary>
   #/ Remembers the location of the level's exit.
   #/ </summary>
-  Level::LoadExitTile = (x, y) ->
+  LoadExitTile: (x, y) ->
     throw "A level may only have one exit."  if @Exit.x isnt -1 & @Exit.y isnt y
     @Exit = @GetBounds(x, y).Center
     @LoadNamedTile "Exit", Enum.TileCollision.Passable, x, y
@@ -231,7 +228,7 @@
   #/ <summary>
   #/ Instantiates a gem and puts it in the level.
   #/ </summary>
-  Level::LoadGemTile = (x, y) ->
+  LoadGemTile: (x, y) ->
     position = @GetBounds(x, y).Center
     position = new Point(x, y)
     @Gems.push new Gem(@levelContentManager.imgGem, this, position)
@@ -241,7 +238,7 @@
   #/ <summary>
   #/ Instantiates an enemy and puts him in the level.
   #/ </summary>
-  Level::LoadEnemyTile = (x, y, name) ->
+  LoadEnemyTile: (x, y, name) ->
     position = @GetBounds(x, y).GetBottomCenter()
     switch name
       when "MonsterA"
@@ -258,20 +255,20 @@
   #/ <summary>
   #/ Gets the bounding rectangle of a tile in world space.
   #/ </summary>
-  Level::GetBounds = (x, y) ->
+  GetBounds: (x, y) ->
     new XNARectangle(x * StaticTile.Width, y * StaticTile.Height, StaticTile.Width, StaticTile.Height)
 
   #/ <summary>
   #/ Width of level measured in tiles.
   #/ </summary>
-  Level::Width = ->
+  Width: ->
     20
 
 
   #/ <summary>
   #/ Height of the level measured in tiles.
   #/ </summary>
-  Level::Height = ->
+  Height: ->
     15
 
 
@@ -281,7 +278,7 @@
   #/ impossible to escape past the left or right edges, but allowing things
   #/ to jump beyond the top of the level and fall off the bottom.
   #/ </summary>
-  Level::GetCollision = (x, y) ->
+  GetCollision: (x, y) ->
 
     # Prevent escaping past the level ends.
     return Enum.TileCollision.Impassable  if x < 0 or x >= @Width()
@@ -293,7 +290,7 @@
 
   # Create a random background based on
   # the 3 different layers available
-  Level::CreateAndAddRandomBackground = ->
+  CreateAndAddRandomBackground: ->
 
     # random number between 0 & 2.
     randomnumber = Math.floor(Math.random() * 3)
@@ -307,7 +304,7 @@
 
   # Method to call once everything has been setup in the level
   # to simply start it
-  Level::StartLevel = ->
+  StartLevel: ->
 
     # Adding all tiles to the EaselJS Stage object
     # This is the platform tile where the hero & enemies will
@@ -353,7 +350,7 @@
   #/ Updates all objects in the world, performs collision between them,
   #/ and handles the time limit with scoring.
   #/ </summary>
-  Level::Update = ->
+  Update: ->
     ElapsedGameTime = (Ticker.getTime() - @InitialGameTime) / 1000
     @Hero.tick()
     if not @Hero.IsAlive or @TimeRemaining is 0
@@ -385,7 +382,7 @@
   #/ <summary>
   #/ Animates each gem and checks to allows the player to collect them.
   #/ </summary>
-  Level::UpdateGems = ->
+  UpdateGems: ->
     i = 0
 
     while i < @Gems.length
@@ -408,7 +405,7 @@
   #/ <summary>
   #/ Animates each enemy and allow them to kill the player.
   #/ </summary>
-  Level::UpdateEnemies = ->
+  UpdateEnemies: ->
     i = 0
 
     while i < @Enemies.length
@@ -428,7 +425,7 @@
   #/ The enemy who killed the player. This is null if the player was not killed by an
   #/ enemy, such as when a player falls into a hole.
   #/ </param>
-  Level::OnPlayerKilled = (killedBy) ->
+  OnPlayerKilled: (killedBy) ->
     @IsHeroDied = true
     @Hero.OnKilled killedBy
 
@@ -436,11 +433,11 @@
   #/ <summary>
   #/ Called when the player reaches the level's exit.
   #/ </summary>
-  Level::OnExitReached = ->
+  OnExitReached: ->
     @Hero.OnReachedExit()
     @ReachedExit = true
 
-  Level::StartNewLife = ->
+  StartNewLife: ->
     @Hero.Reset @Start
 
   window.Level = Level

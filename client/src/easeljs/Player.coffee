@@ -1,13 +1,5 @@
+class Player extends BitmapAnimation
 
-  # Constants for controling horizontal movement
-
-  # Constants for controlling vertical movement
-
-  # imgPlayer should be the PNG containing the sprite sequence
-  # level must be of type Level
-  # position must be of type Point
-  Player = (imgPlayer, level, position) ->
-    @initialize imgPlayer, level, position
   MoveAcceleration = 13000.0
   MaxMoveSpeed = 1750.0
   GroundDragFactor = 0.48
@@ -20,31 +12,10 @@
   globalTargetFPS = 17
   StaticTile = new Tile(null, Enum.TileCollision.Passable, 0, 0)
 
-  # Using EaselJS BitmapSequence as the based prototype
-  Player:: = new BitmapAnimation()
-  Player::IsAlive = true
-  Player::HasReachedExit = false
 
-  #/ <summary>
-  #/ Gets whether or not the player's feet are on the ground.
-  #/ </summary>
-  Player::IsOnGround = true
 
-  # constructor:
-  #unique to avoid overiding base class
-  Player::BitmapAnimation_initialize = Player::initialize
-
-  #/ <summary>
-  #/ Constructors a new player.
-  #/ </summary>
-  Player::initialize = (imgPlayer, level, position) ->
-    width = undefined
-    left = undefined
-    height = undefined
-    top = undefined
-    frameWidth = undefined
-    frameHeight = undefined
-    localSpriteSheet = new SpriteSheet(
+  constructor: (imgPlayer, level, position) ->
+    @localSpriteSheet = new SpriteSheet(
       images: [imgPlayer] #image to use
       frames:
         width: 64
@@ -59,8 +30,9 @@
         celebrate: [33, 43, false, 4]
         idle: [44, 44]
     )
-    SpriteSheetUtils.addFlippedFrames localSpriteSheet, true, false, false
-    @BitmapAnimation_initialize localSpriteSheet
+    SpriteSheetUtils.addFlippedFrames(@localSpriteSheet, true, false, false)
+    Player.__super__.initialize(@localSpriteSheet)
+
     @level = level
     @position = position
     @velocity = new Point(0, 0)
@@ -69,19 +41,21 @@
     @isJumping = false
     @wasJumping = false
     @jumpTime = 0.0
-    frameWidth = @spriteSheet.getFrame(0).rect.width
-    frameHeight = @spriteSheet.getFrame(0).rect.height
+    @frameWidth = @spriteSheet.getFrame(0).rect.width
+    @frameHeight = @spriteSheet.getFrame(0).rect.height
+    @IsAlive = true
+    @HasReachedExit = false
+    @IsOnGround = true
 
     # Calculate bounds within texture size.
-    width = parseInt(frameWidth * 0.4)
-    left = parseInt((frameWidth - width) / 2)
-    height = parseInt(frameWidth * 0.8)
-    top = parseInt(frameHeight - height)
-    @localBounds = new XNARectangle(left, top, width, height)
+    @width = parseInt(@frameWidth * 0.4)
+    @left = parseInt((@frameWidth - @width) / 2)
+    @height = parseInt(@frameWidth * 0.8)
+    @top = parseInt(@frameHeight - @height)
+    @localBounds = new XNARectangle(@left, @top, @width, @height)
 
     # set up a shadow. Note that shadows are ridiculously expensive. You could display hundreds
     # of animated monster if you disabled the shadow.
-    @shadow = new Shadow("#000", 3, 2, 2)  if enableShadows
     @name = "Hero"
 
     # 1 = right & -1 = left & 0 = idle
@@ -89,15 +63,16 @@
 
     # starting directly at the first frame of the walk_right sequence
     @currentFrame = 66
-    @Reset position
+    @Reset(position)
     @
+
 
 
   #/ <summary>
   #/ Resets the player to life.
   #/ </summary>
   #/ <param name="position">The position to come to life at.</param>
-  Player::Reset = (position) ->
+  Reset: (position) ->
     @x = position.x
     @y = position.y
     @velocity = new Point(0, 0)
@@ -109,7 +84,7 @@
   #/ <summary>
   #/ Gets a rectangle which bounds this player in world space.
   #/ </summary>
-  Player::BoundingRectangle = ->
+  BoundingRectangle: ->
     left = parseInt(Math.round(@x - 32) + @localBounds.x)
     top = parseInt(Math.round(@y - 64) + @localBounds.y)
     new XNARectangle(left, top, @localBounds.width, @localBounds.height)
@@ -123,7 +98,7 @@
   #/ once per frame. We also pass the game's orientation because when using the accelerometer,
   #/ we need to reverse our motion when the orientation is in the LandscapeRight orientation.
   #/ </remarks>
-  Player::tick = ->
+  tick: ->
 
     # It not possible to have a predictable tick/update time
     # requestAnimationFrame could help but is currently not widely and properly supported by browsers
@@ -147,7 +122,7 @@
   #/ <summary>
   #/ Updates the player's velocity and position based on input, gravity, etc.
   #/ </summary>
-  Player::ApplyPhysics = ->
+  ApplyPhysics: ->
     if @IsAlive and not @HasReachedExit
       previousPosition = new Point(@x, @y)
 
@@ -195,7 +170,7 @@
   #/ A new Y velocity if beginning or continuing a jump.
   #/ Otherwise, the existing Y velocity.
   #/ </returns>
-  Player::DoJump = (velocityY) ->
+  DoJump: (velocityY) ->
 
     # If the player wants to jump
     if @isJumping
@@ -235,7 +210,7 @@
   #/ axis to prevent overlapping. There is some special logic for the Y axis to
   #/ handle platforms which behave differently depending on direction of movement.
   #/ </summary>
-  Player::HandleCollisions = ->
+  HandleCollisions: ->
     bounds = @BoundingRectangle()
     leftTile = Math.floor(bounds.Left() / StaticTile.Width)
     rightTile = Math.ceil((bounds.Right() / StaticTile.Width)) - 1
@@ -299,7 +274,7 @@
   #/ The enemy who killed the player. This parameter is null if the player was
   #/ not killed by an enemy (fell into a hole).
   #/ </param>
-  Player::OnKilled = (killedBy) ->
+  OnKilled: (killedBy) ->
     @IsAlive = false
     @velocity = new Point(0, 0)
 
@@ -318,7 +293,7 @@
   #/ <summary>
   #/ Called when this player reaches the level's exit.
   #/ </summary>
-  Player::OnReachedExit = ->
+  OnReachedExit: ->
     @HasReachedExit = true
     @level.levelContentManager.exitReached.play()
 
@@ -329,4 +304,4 @@
     else
       @gotoAndPlay "celebrate"
 
-  window.Player = Player
+window.Player = Player

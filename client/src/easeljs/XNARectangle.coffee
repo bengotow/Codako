@@ -1,33 +1,27 @@
 ﻿
-  #
-  XNARectangle = (x, y, width, height) ->
-    @initialize x, y, width, height
-  XNARectangle:: = new Rectangle()
+class XNARectangle extends Rectangle
 
-  # constructor:
-  XNARectangle::Rectangle_initialize = XNARectangle::initialize
-
-  XNARectangle::initialize = (x, y, width, height) ->
-    @Rectangle_initialize x, y, width, height
+  constructor: (x, y, width, height) ->
+    XNARectangle.__super__.initialize.call(@, x, y, width, height)
     @Location = new Point(@x, @y)
     @Center = new Point(parseInt(@x + @width / 2), parseInt(@y + @height / 2))
     @
 
-  XNARectangle::Left = ->
+  Left: ->
     parseInt @x
 
-  XNARectangle::Right = ->
+  Right: ->
     parseInt @x + @width
 
-  XNARectangle::Top = ->
+  Top: ->
     parseInt @y
 
-  XNARectangle::Bottom = ->
+  Bottom: ->
     parseInt @y + @height
 
 
   # Checking if the targetted rectangle is contained in this rectangle
-  XNARectangle::Contains = (targetRectangle) ->
+  Contains: (targetRectangle) ->
     if @x <= targetRectangle.x and targetRectangle.x + targetRectangle.width <= @x + @width and @y <= targetRectangle.y
       targetRectangle.y + targetRectangle.height <= @y + @height
     else
@@ -35,7 +29,7 @@
 
 
   # Checking if the targetted point is contained in this rectangle
-  XNARectangle::ContainsPoint = (targetPoint) ->
+  ContainsPoint: (targetPoint) ->
     if @x <= targetPoint.x and targetPoint.x < @x + @width and @y <= targetPoint.y
       targetPoint.y < @y + @height
     else
@@ -43,7 +37,7 @@
 
 
   # Checking if the targetted rectangle intersects with this rectangle
-  XNARectangle::Intersects = (targetRectangle) ->
+  Intersects: (targetRectangle) ->
     if targetRectangle.x < @x + @width and @x < targetRectangle.x + targetRectangle.width and targetRectangle.y < @y + @height
       @y < targetRectangle.y + targetRectangle.height
     else
@@ -53,7 +47,7 @@
   #/ <summary>
   #/ Gets the position of the center of the bottom edge of the rectangle.
   #/ </summary>
-  XNARectangle::GetBottomCenter = ->
+  GetBottomCenter: ->
     new Point(parseInt(@x + (@width / 2)), @Bottom())
 
 
@@ -67,7 +61,7 @@
   #/ to push objects in order to resolve collisions.
   #/ If the rectangles are not intersecting, Vector2.Zero is returned.
   #/ </returns>
-  XNARectangle::GetIntersectionDepth = (rectB) ->
+  GetIntersectionDepth: (rectB) ->
     rectA = this
 
     # Calculate half sizes.

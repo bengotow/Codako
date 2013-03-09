@@ -85,9 +85,9 @@ ContentManager = (stage, width, height) ->
                 SetAudioDownloadParameters(this.gemCollected[a], "sounds/GemCollected" + audioExtension)
 
         # download the 3 layers * 3 versions
-        for i in [0..3]
+        for i in [0..2]
             this.imgBackgroundLayers[i] = new Array()
-            for j in [0..3]
+            for j in [0..2]
                 this.imgBackgroundLayers[i][j] = new Image()
                 SetDownloadParameters(this.imgBackgroundLayers[i][j], "img/Backgrounds/Layer" + i + "_" + j + ".png")
 

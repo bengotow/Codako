@@ -8,7 +8,7 @@
   @PointValue = 30
 
   constructor: (texture, level, position) ->
-    Gem.__super__.initialize(texture)
+    Gem.__super__.initialize.call(@, texture)
 
     @level = level
     @x = position.x * 40
