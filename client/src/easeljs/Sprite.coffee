@@ -9,9 +9,6 @@ class Sprite extends BitmapAnimation
     @elapsed = 0
     @selected = false
 
-    @addEventListener 'click', (e) =>
-      @level.onActorClicked(@)
-
 
   createSpriteSheet: (name, animations) ->
     sheet = new SpriteSheet(
@@ -29,20 +26,25 @@ class Sprite extends BitmapAnimation
 
 
   tick: (elapsed) ->
-    @worldPos = @nextPos
-    @x = @worldPos.x * Tile.WIDTH
-    @y = @worldPos.y * Tile.HEIGHT
+    if @nextPos
+      @worldPos = @nextPos
+      @x = @worldPos.x * Tile.WIDTH
+      @y = @worldPos.y * Tile.HEIGHT
+
 
   setSelected: (sel) ->
     @selected = sel
     @shadow = null
     @shadow = new Shadow("#FFF", 2, 2, 9) if @selected
 
+
   getBounds: () ->
     super
 
+
   getWorldBounds: () ->
     new XNARectangle(@worldPos.x, @worldPos.y, @worldSize.width, @worldSize.height)
+
 
   intersects: (otherSprite) ->
     false

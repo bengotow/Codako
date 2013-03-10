@@ -73,7 +73,28 @@ class UserContentListing
                 }]
               }]
             }]
+          },
+          {
+            name: 'Move Right',
+            triggers: [{
+              type:"key",
+              code:39
+            }],
+            scenario: [{
+              coord:"1,0",
+              descriptors: false
+            },{
+              coord:"0,0",
+              descriptors: [{
+                identifier: 'dude'
+                actions: [{
+                  type:"move",
+                  delta:"1,0"
+                }]
+              }]
+            }]
           }
+
         ]
       }
     ]

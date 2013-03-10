@@ -8,9 +8,9 @@ class LibraryManager
 
     window.Socket.on 'actorlist', (actors) =>
       @definitions[actor.identifier] = actor for actor in actors
+      window.Game.Manager.libraryActorsLoaded()
 
-
-  instantiateActorFromDescriptor: (descriptor, level) ->
+  instantiateActorFromDescriptor: (descriptor, level = null) ->
     ident = descriptor.identifier
     def = @definitions[ident]
     return false unless def

@@ -10,6 +10,7 @@ class ProgrammableSprite extends Sprite
     @currentFrame = 66
 
     super(position, size, level)
+    @setupDragging()
     @
 
 
@@ -19,7 +20,9 @@ class ProgrammableSprite extends Sprite
 
 
   tick: (elapsed) ->
+    return if @dragging
     super
+
 
   tickRules: () ->
     return unless @rules
@@ -58,6 +61,30 @@ class ProgrammableSprite extends Sprite
       if action.type == 'move'
         @nextPos = Point.sum(@worldPos, Point.fromString(action.delta))
 
+
+  # -- drag and drop --- #
+
+  setupDragging: () ->
+    @dragging = false
+    @addEventListener 'mousedown', (e) =>
+      grabX = e.stageX - @x
+      grabY = e.stageY - @y
+      @alpha = 0.5
+      @dragging = true
+
+      e.addEventListener 'mousemove', (e) =>
+        @x = e.stageX - grabX
+        @y = e.stageY - grabY
+      e.addEventListener 'mouseup', (e) =>
+        p = new Point(Math.round(@x / Tile.WIDTH), Math.round(@y / Tile.HEIGHT))
+        @dropped(p)
+
+
+  dropped: (point) ->
+    # overridden to add other drop behavior
+    @worldPos = @nextPos = point
+    @dragging = false
+    @alpha = 1
 
 
 window.ProgrammableSprite = ProgrammableSprite

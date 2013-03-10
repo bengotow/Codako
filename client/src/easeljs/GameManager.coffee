@@ -13,8 +13,6 @@ class GameManager
     @level = null
     @wasContinuePressed = false
     @continuePressed = false
-    @hudScoreLabel = null
-    @hudFPSLabel = null
     @
 
 
@@ -22,26 +20,9 @@ class GameManager
     try
       if @level isnt null
         @level.update()
-        @updateScore()
+        @hud.update()
     catch e
       console.log "Error", e.message
-
-
-  updateScore: ->
-    if @hudScoreLabel is null
-      @hudScoreLabel = new Text("SCORE: 0", "bold 14px Arial", "yellow")
-      @hudScoreLabel.x = 10
-      @hudScoreLabel.y = 34
-      @stage.addChild(@hudScoreLabel)
-
-    if @hudFPSLabel is null
-      @hudFPSLabel = new Text("-- fps", "bold 14px Arial", "#000")
-      @hudFPSLabel.x = @gameWidth - 50
-      @hudFPSLabel.y = 20
-      @stage.addChild(@hudFPSLabel)
-
-    @hudScoreLabel.text = "SCORE: None"
-    @hudFPSLabel.text = Math.round(Ticker.getMeasuredFPS()) + " fps"
 
 
   # Creating a second canvas to display it over the main gaming canvas
@@ -104,10 +85,15 @@ class GameManager
     @level.load () =>
       @HideStatusCanvas()
 
+    @hud = new LibraryHUD(@stage)
 
     Ticker.addListener(@)
     Ticker.useRAF = false
     Ticker.setFPS(60)
+
+
+  libraryActorsLoaded: () ->
+    @hud.reload() if @hud
 
 
   renderRuleScenario: (scenario, applyActions = false) ->

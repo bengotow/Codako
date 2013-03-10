@@ -2,7 +2,7 @@
 class Level
   @defaultJSON:
     width: 20
-    height: 15
+    height: 12
     actor_descriptors: [
       {
         identifier: 'dude',
@@ -12,7 +12,6 @@ class Level
         identifier: 'rock',
         position: {x: 7, y: 10}
       }
-
     ]
 
 
@@ -22,7 +21,7 @@ class Level
     @actors = []
     @selectedActor = null
 
-    @ruleCheckInterval = 0.5
+    @ruleCheckInterval = 0.45
     @ruleCheckNextElapsed = 0
     @elapsed = 0
 
@@ -78,15 +77,18 @@ class Level
     @initialGameTime = Ticker.getTime()
 
     for descriptor in json['actor_descriptors']
-      actor = window.Game.Library.instantiateActorFromDescriptor(descriptor, @)
-      if !actor
-        console.log('Could not read descriptor:', descriptor)
-        continue
-      @actors.push(actor)
-      @stage.addChild(actor)
+      @addActor(descriptor)
 
     # Playing the background music
     window.Game.Content.playSound('Music')
+
+  addActor: (descriptor) ->
+    actor = window.Game.Library.instantiateActorFromDescriptor(descriptor, @)
+    return console.log('Could not read descriptor:', descriptor) if !actor
+    actor.addEventListener 'click', (e) =>
+      @onActorClicked(actor)
+    @actors.push(actor)
+    @stage.addChild(actor)
 
 
   isKeyDown: (code) ->

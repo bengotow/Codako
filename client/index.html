@@ -23,12 +23,15 @@
   <script src="./src/easeljs/Player.js"></script>
   <script src="./src/easeljs/Level.js"></script>
   <script src="./src/easeljs/LibraryManager.js"></script>
+  <script src="./src/easeljs/LibraryHUD.js"></script>
   <script src="./src/easeljs/GameManager.js"></script>
 
   <script src="./src/angular.js"></script>
   <script src="./src/angular/rules_controller.js"></script>
 
   <link href="/css/bootstrap.min.css" rel="stylesheet" media="screen">
+  <link href="/css/editor.css" rel="stylesheet" media="screen">
+
   <script>
   var canvas;
   var stage = null;
@@ -109,7 +112,7 @@
   <div class="row">
     <div class="span10">
       <div class="canvasHolder">
-        <canvas id="platformerCanvas" width="800" height="480" style="background-color:black">
+        <canvas id="platformerCanvas" width="800" height="530" style="background-color:black">
           Your browser doesn't support HTML5 Canvas!
         </canvas>
       </div>
@@ -118,7 +121,6 @@
     <div class="span4" ng-controller="RulesCtrl">
       <div class="well">
 
-      <span>{{remaining()}} of {{todos.length}} remaining</span>
       <ul class="unstyled">
         <li class="rule" ng-repeat="rule in rules()">
           <div class="name">{{rule.name}}</div>
@@ -126,13 +128,16 @@
           <ul>
             <li ng-repeat="trigger in rule.triggers">
               <span class="condition">Key Pressed</span>
-              <span class="condition">{{trigger.code}}</span>
+              <span class="condition-value">{{trigger.code}}</span>
             </li>
           </ul>
 
           <div class="divider">Then:</div>
-          <img ng-src="{{scenario_before_url(rule)}}"/>
-          <img ng-src="{{scenario_after_url(rule)}}"/>
+          <div class="scenario">
+            <img ng-src="{{scenario_before_url(rule)}}"/>
+            <div class="arrow">-></div>
+            <img ng-src="{{scenario_after_url(rule)}}"/>
+          </div>
 
         </li>
       </ul>
