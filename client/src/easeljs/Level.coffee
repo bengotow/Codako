@@ -1,346 +1,150 @@
 ﻿
 class Level
+  @defaultJSON:
+    width: 20
+    height: 15
+    actor_descriptors: [
+      {
+        identifier: 'dude',
+        position: {x: 10, y: 10}
+      },
+      {
+        identifier: 'rock',
+        position: {x: 7, y: 10}
+      }
 
-  PointsPerSecond = 5
+    ]
 
-  StaticTile = new Tile(null, Enum.TileCollision.Passable, 0, 0)
 
-  constructor: (stage, textLevel) ->
+  constructor: (stage, identifier = 'untitled') ->
+    @identifier = identifier
     @stage = stage
+    @actors = []
 
-    # Entities in the level.
-    @Hero = null
-    @Gems = []
-    @Enemies = []
+    @ruleCheckInterval = 0.5
+    @ruleCheckNextElapsed = 0
+    @elapsed = 0
 
-    # Key locations in the level.
-    @Start = null
-    @Exit = new Point(-1, -1)
-    @Score = 0
-
-    # Saving when at what time you've started the level
-    @InitialGameTime = Ticker.getTime()
+    @keysDown = {}
+    @keysUpSinceLast = {}
+    document.onkeydown = (e) =>
+      @keysDown[e.keyCode] = true
+    document.onkeyup = (e) =>
+      @keysUpSinceLast[e.keyCode] = true
 
     # Creating a random background based on the 3 layers available in 3 versions
     @stage.addChild(new Bitmap(window.Game.Content.imageNamed('Layer0_0')))
-
-    # Building a matrix of characters that will be replaced by the level {x}.txt
-    @textTiles = Array.matrix(15, 20, "|")
-
-    # Physical structure of the level.
-    @tiles = Array.matrix(15, 20, "|")
-    @LoadTiles(textLevel)
     @
 
-
   #/ <summary>
-  #/ Unloads the level content.
+  #/ Gets the bounding rectangle of a tile in world space.
   #/ </summary>
-  Dispose: ->
+  getBounds: (x, y) ->
+    new XNARectangle(x * Tile.WIDTH, y * Tile.HEIGHT, Tile.WIDTH, Tile.HEIGHT)
+
+
+  dispose: ->
     @stage.removeAllChildren()
     @stage.update()
     try
       window.Game.Content.pauseSound('globalMusic')
 
 
-  # Transforming the long single line of text into
-  # a 2D array of characters
-  ParseLevelLines: (levelLine) ->
+  load: (callback) ->
+    url = window.location.href.replace("index.html", "") + "levels/#{@identifier}.txt"
+    try
+      request = new XMLHttpRequest()
+      request.open("GET", url, true)
+      request.onreadystatechange = =>
+        if request.readyState is 4
+          if (request.status == 200)
+            @loadDataReady(JSON.parse(request.responseText))
+          else
+            console.log('Error', request.statusText)
+            @loadDataReady(Level.defaultJSON)
+          callback(null)
+      request.send(null)
 
-    i = 0
-
-    while i < 15
-      j = 0
-
-      while j < 20
-        @textTiles[i][j] = levelLine.charAt((i * 20) + j)
-        j++
-      i++
-
-
-  #/ <summary>
-  #/ Iterates over every tile in the structure file and loads its
-  #/ appearance and behavior. This method also validates that the
-  #/ file is well-formed with a player start point, exit, etc.
-  #/ </summary>
-  #/ <param name="fileStream">
-  #/ A string containing the tile data.
-  #/ </param>
-  LoadTiles: (fileStream) ->
-    @ParseLevelLines fileStream
-
-    # Loop over every tile position
-    for i in [0..14]
-      for j in [0..19]
-        @tiles[i][j] = @LoadTile(@textTiles[i][j], j, i)
-
-    # Verify that the level has a beginning and an end.
-    throw "A level must have a starting point."  unless @Hero?
-    throw "A level must have an exit."  if @Exit.x is -1 and @Exit.y is -1
+    catch e
+      console.log('Probably an access denied if you try to run from the file:// context')
 
 
-  #/ <summary>
-  #/ Loads an individual tile's appearance and behavior.
-  #/ </summary>
-  #/ <param name="tileType">
-  #/ The character loaded from the structure file which
-  #/ indicates what should be loaded.
-  #/ </param>
-  #/ <param name="x">
-  #/ The X location of this tile in tile space.
-  #/ </param>
-  #/ <param name="y">
-  #/ The Y location of this tile in tile space.
-  #/ </param>
-  #/ <returns>The loaded tile.</returns>
-  LoadTile: (tileType, x, y) ->
-    switch tileType
+  # Callback method for the onreadystatechange event of XMLHttpRequest
+  loadDataReady: (json) ->
+    @width = json['width']
+    @height = json['height']
+    @tiles = Array.matrix(@height, @width, "|")
+    @initialGameTime = Ticker.getTime()
 
-      # Blank space
-      when "."
-        return new Tile(null, Enum.TileCollision.Passable, x, y)
-
-      # Exit
-      when "X"
-        return @LoadExitTile(x, y)
-
-      # Gem
-      when "G"
-        return @LoadGemTile(x, y)
-
-      # Floating platform
-      when "-"
-        return @LoadNamedTile("Platform", Enum.TileCollision.Platform, x, y)
-
-      # Various enemies
-      when "A"
-        return @LoadEnemyTile(x, y, "MonsterA")
-      when "B"
-        return @LoadEnemyTile(x, y, "MonsterB")
-      when "C"
-        return @LoadEnemyTile(x, y, "MonsterC")
-      when "D"
-        return @LoadEnemyTile(x, y, "MonsterD")
-
-      # Platform block
-      when "~"
-        return @LoadVarietyTile("BlockB", 2, Enum.TileCollision.Platform, x, y)
-
-      # Passable block
-      when ":"
-        return @LoadVarietyTile("BlockB", 2, Enum.TileCollision.Passable, x, y)
-
-      # Player 1 start point
-      when "1"
-        return @LoadStartTile(x, y)
-
-      # Impassable block
-      when "#"
-        return @LoadVarietyTile("BlockA", 7, Enum.TileCollision.Impassable, x, y)
-
-
-  #/ <summary>
-  #/ Creates a new tile. The other tile loading methods typically chain to this
-  #/ method after performing their special logic.
-  #/ </summary>
-  #/ <param name="collision">
-  #/ The tile collision type for the new tile.
-  #/ </param>
-  #/ <returns>The new tile.</returns>
-  LoadNamedTile: (name, collision, x, y) ->
-    switch name
-      when "Platform"
-        return new Tile(window.Game.Content.imageNamed('Platform'), collision, x, y)
-      when "Exit"
-        return new Tile(window.Game.Content.imageNamed('Exit'), collision, x, y)
-      when "BlockA0"
-        return new Tile(window.Game.Content.imageNamed('BlockA0'), collision, x, y)
-      when "BlockA1"
-        return new Tile(window.Game.Content.imageNamed('BlockA1'), collision, x, y)
-      when "BlockA2"
-        return new Tile(window.Game.Content.imageNamed('BlockA2'), collision, x, y)
-      when "BlockA3"
-        return new Tile(window.Game.Content.imageNamed('BlockA3'), collision, x, y)
-      when "BlockA4"
-        return new Tile(window.Game.Content.imageNamed('BlockA4'), collision, x, y)
-      when "BlockA5"
-        return new Tile(window.Game.Content.imageNamed('BlockA5'), collision, x, y)
-      when "BlockA6"
-        return new Tile(window.Game.Content.imageNamed('BlockA6'), collision, x, y)
-      when "BlockB0"
-        return new Tile(window.Game.Content.imageNamed('BlockB0'), collision, x, y)
-      when "BlockB1"
-        return new Tile(window.Game.Content.imageNamed('BlockB1'), collision, x, y)
-
-
-  #/ <summary>
-  #/ Loads a tile with a random appearance.
-  #/ </summary>
-  #/ <param name="baseName">
-  #/ The content name prefix for this group of tile variations. Tile groups are
-  #/ name LikeThis0.png and LikeThis1.png and LikeThis2.png.
-  #/ </param>
-  #/ <param name="variationCount">
-  #/ The number of variations in this group.
-  #/ </param>
-  LoadVarietyTile: (baseName, variationCount, collision, x, y) ->
-    index = Math.floor(Math.random() * (variationCount - 1))
-    @LoadNamedTile baseName + index, collision, x, y
-
-
-  #/ <summary>
-  #/ Instantiates a player, puts him in the level, and remembers where to put him when he is resurrected.
-  #/ </summary>
-  LoadStartTile: (x, y) ->
-    throw "A level may only have one starting point."  if @Hero?
-    @Start = @GetBounds(x, y).getBottomCenter()
-    @Hero = new Player(window.Game.Content.imageNamed('Player'), this, @Start)
-    new Tile(null, Enum.TileCollision.Passable, x, y)
-
-
-  #/ <summary>
-  #/ Remembers the location of the level's exit.
-  #/ </summary>
-  LoadExitTile: (x, y) ->
-    throw "A level may only have one exit."  if @Exit.x isnt -1 & @Exit.y isnt y
-    @Exit = @GetBounds(x, y).Center
-    @LoadNamedTile "Exit", Enum.TileCollision.Passable, x, y
-
-
-  #/ <summary>
-  #/ Instantiates a gem and puts it in the level.
-  #/ </summary>
-  LoadGemTile: (x, y) ->
-    position = @GetBounds(x, y).Center
-    position = new Point(x, y)
-    @Gems.push new Gem(window.Game.Content.imageNamed('Gem'), this, position)
-    new Tile(null, Enum.TileCollision.Passable, x, y)
-
-
-  #/ <summary>
-  #/ Instantiates an enemy and puts him in the level.
-  #/ </summary>
-  LoadEnemyTile: (x, y, name) ->
-    position = @GetBounds(x, y).getBottomCenter()
-    switch name
-      when "MonsterA"
-        @Enemies.push new Enemy(this, position, window.Game.Content.imageNamed('MonsterA'))
-      when "MonsterB"
-        @Enemies.push new Enemy(this, position, window.Game.Content.imageNamed('MonsterB'))
-      when "MonsterC"
-        @Enemies.push new Enemy(this, position, window.Game.Content.imageNamed('MonsterC'))
-      when "MonsterD"
-        @Enemies.push new Enemy(this, position, window.Game.Content.imageNamed('MonsterD'))
-    new Tile(null, Enum.TileCollision.Passable, x, y)
-
-
-  #/ <summary>
-  #/ Gets the bounding rectangle of a tile in world space.
-  #/ </summary>
-  GetBounds: (x, y) ->
-    new XNARectangle(x * StaticTile.Width, y * StaticTile.Height, StaticTile.Width, StaticTile.Height)
-
-  #/ <summary>
-  #/ Width of level measured in tiles.
-  #/ </summary>
-  Width: ->
-    20
-
-
-  #/ <summary>
-  #/ Height of the level measured in tiles.
-  #/ </summary>
-  Height: ->
-    15
-
-
-  #/ <summary>
-  #/ Gets the collision mode of the tile at a particular location.
-  #/ This method handles tiles outside of the levels boundries by making it
-  #/ impossible to escape past the left or right edges, but allowing things
-  #/ to jump beyond the top of the level and fall off the bottom.
-  #/ </summary>
-  GetCollision: (x, y) ->
-
-    # Prevent escaping past the level ends.
-    return Enum.TileCollision.Impassable  if x < 0 or x >= @Width()
-
-    # Allow jumping past the level top and falling through the bottom.
-    return Enum.TileCollision.Passable  if y < 0 or y >= @Height()
-    @tiles[y][x].Collision
-
-
-  # Method to call once everything has been setup in the level
-  # to simply start it
-  StartLevel: ->
-    # Adding all tiles to the EaselJS Stage object
-    # This is the platform tile where the hero & enemies will
-    # be able to walk onto
-    for i in [0..14]
-      for j in [0..19]
-        @stage.addChild @tiles[i][j]  if !!@tiles[i][j] and not @tiles[i][j].empty
-
-    # Adding the gems to the stage
-    @stage.addChild(enemy) for enemy in @Enemies
-    @stage.addChild(gem) for gem in @Gems
-    @stage.addChild(@Hero)
+    for descriptor in json['actor_descriptors']
+      actor = window.Game.Library.instantiateActorFromDescriptor(descriptor, @)
+      if !actor
+        console.log('Could not read descriptor:', descriptor)
+        continue
+      @actors.push(actor)
+      @stage.addChild(actor)
 
     # Playing the background music
     window.Game.Content.playSound('Music')
 
 
+  isKeyDown: (code) ->
+    return @keysDown[code]
+
+  applyLiftedKeys: () ->
+    for code, value of @keysUpSinceLast
+        delete @keysDown[code]
+    @keysUpSinceLast = {}
+
+
+  isDescriptorValid: (descriptor) ->
+    actorMatchingDescriptor(descriptor)?
+
+
+  actorsAtPosition: (position) ->
+    results = []
+    for actor in @actors
+      if actor.worldPos.x == position.x && actor.worldPos.y == position.y
+        results.push(actor)
+    results
+
+
+  actorsAtPositionMatchDescriptors: (position, descriptors) ->
+    searchSet = @actorsAtPosition(position)
+
+    return searchSet.length == 0 if !descriptors
+
+    for actor in searchSet
+      matched = false
+      for descriptor in descriptors
+        matched = true if window.Game.Library.actorMatchesDescriptor(actor, descriptor)
+      return false unless matched
+
+    true
+
+  actorMatchingDescriptor: (position, descriptor) ->
+    for actor in @actors
+      return actor if window.Game.Library.actorMatchesDescriptor(actor, descriptor)
+    false
+
   #/ <summary>
   #/ Updates all objects in the world, performs collision between them,
   #/ and handles the time limit with scoring.
   #/ </summary>
-  Update: ->
-    ElapsedGameTime = (Ticker.getTime() - @InitialGameTime) / 1000
-    @Hero.tick()
-    @UpdateGems()
-    @UpdateEnemies()
+  update: ->
+    elapsed = (Ticker.getTime() - @initialGameTime) / 1000
+
+    for actor in @actors
+      actor.tick(elapsed)
+
+    if elapsed > @ruleCheckNextElapsed
+      console.log 'Testing Rules'
+      @ruleCheckNextElapsed += @ruleCheckInterval
+      for actor in @actors
+        actor.applyRules()
+      @applyLiftedKeys()
+
     @stage.update()
 
-
-  #/ <summary>
-  #/ Animates each gem and checks to allows the player to collect them.
-  #/ </summary>
-  UpdateGems: ->
-    i = 0
-    while i < @Gems.length
-      @Gems[i].tick()
-      if @Gems[i].BoundingRectangle().intersects(@Hero.BoundingRectangle())
-
-        # We remove it from the drawing surface
-        @stage.removeChild @Gems[i]
-        @Score += @Gems[i].PointValue
-
-        # We then remove it from the in memory array
-        @Gems.splice i, 1
-
-        # And we finally play the gem collected sound using a multichannels trick
-        window.Game.Content.playSound('GemCollected')
-      i++
-
-
-  #/ <summary>
-  #/ Animates each enemy and allow them to kill the player.
-  #/ </summary>
-  UpdateEnemies: ->
-    for enemy in @Enemies
-      if @Hero.IsAlive and enemy.BoundingRectangle().intersects(@Hero.BoundingRectangle())
-        @OnPlayerKilled(enemy)
-      enemy.tick()
-
-
-  #/ <summary>
-  #/ Called when the player is killed.
-  #/ </summary>
-  #/ <param name="killedBy">
-  #/ The enemy who killed the player. This is null if the player was not killed by an
-  #/ enemy, such as when a player falls into a hole.
-  #/ </param>
-
-  StartNewLife: ->
-    @Hero.Reset(@Start)
 
   window.Level = Level

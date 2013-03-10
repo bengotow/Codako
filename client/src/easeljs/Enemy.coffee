@@ -8,7 +8,6 @@
   localBounds = undefined
   monsterIndex = 0
   globalTargetFPS = 17
-  StaticTile = new Tile(null, Enum.TileCollision.Passable, 0, 0)
   Enemy:: = new BitmapAnimation()
 
   # constructor:
@@ -91,8 +90,8 @@
     # In the meantime, we're cheating... and living in a perfect 60 FPS world ;-)
     elapsed = globalTargetFPS / 1000
     posX = @x + (localBounds.width / 2) * @direction
-    tileX = Math.floor(posX / StaticTile.Width) - @direction
-    tileY = Math.floor(@y / StaticTile.Height)
+    tileX = Math.floor(posX / Tile.WIDTH) - @direction
+    tileY = Math.floor(@y / Tile.HEIGHT)
     if @waitTime > 0
 
       # Wait for some amount of time.

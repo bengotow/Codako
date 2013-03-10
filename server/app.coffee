@@ -5,7 +5,7 @@ global.pathUtils = require("path")
 global.fs = require("fs")
 global._ = require('underscore')
 
-AssetListing = require("./lib/asset_listing")
+UserContentListing = require("./lib/user_content_listing")
 
 # Read our configuration file
 try
@@ -30,12 +30,14 @@ else
 # Launch socket.io on the server
 app.listen(env.socket_io.port)
 io = require("socket.io").listen(app)
+
 io.sockets.on "connection", (socket) ->
   socket.emit "auth-state",
     authenticated: false
 
   socket.on "join", (args) ->
-    a = new AssetListing()
+    a = new UserContentListing()
+    socket.emit "actorlist", a.actors()
     socket.emit "assetlist", a.assets()
 
   socket.on "auth", (args) ->

@@ -80,12 +80,17 @@ class XNARectangle extends Rectangle
     minDistanceX = halfWidthA + halfWidthB
     minDistanceY = halfHeightA + halfHeightB
 
-    # If we are not intersecting at all, return (0, 0).
-    return new Point(0, 0)  if Math.abs(distanceX) >= minDistanceX or Math.abs(distanceY) >= minDistanceY
-
     # Calculate and return intersection depths.
     depthX = (if distanceX > 0 then minDistanceX - distanceX else -minDistanceX - distanceX)
     depthY = (if distanceY > 0 then minDistanceY - distanceY else -minDistanceY - distanceY)
+
+    if Math.abs(distanceX) >= minDistanceX
+      depthX = 0
+
+    if Math.abs(distanceY) >= minDistanceY
+      depthY = 0
+
+    console.log(depthX, depthY, minDistanceX)
     new Point(depthX, depthY)
 
   window.XNARectangle = XNARectangle

@@ -1,47 +1,30 @@
 ﻿
-KEYCODE_SPACE = 32
-KEYCODE_UP = 38
-KEYCODE_LEFT = 37
-KEYCODE_RIGHT = 39
-KEYCODE_W = 87
-KEYCODE_A = 65
-KEYCODE_D = 68
-
-
 class GameManager
+
   statusCanvas = null
   statusCanvasCtx = null
-  overlayEnabled = true
 
   constructor: (stage, gameWidth, gameHeight) ->
     @stage = stage
     @gameWidth = gameWidth
     @gameHeight = gameHeight
-    @levelIndex = -1
     @level = null
     @wasContinuePressed = false
     @continuePressed = false
     @hudScoreLabel = null
     @hudFPSLabel = null
-
-    document.onkeydown = (e) => @handleKeyDown(e)
-    document.onkeyup = (e) => @handleKeyUp(e)
     @
-
 
   tick: ->
     try
       if @level isnt null
-        @level.Update()
-        @UpdateScore()
-
-        # If the hero died or won, display the appropriate overlay
-        @DrawOverlay()  if overlayEnabled
+        @level.update()
+        @updateScore()
     catch e
       console.log "Error", e.message
 
 
-  UpdateScore: ->
+  updateScore: ->
     if @hudScoreLabel is null
       @hudScoreLabel = new Text("SCORE: 0", "bold 14px Arial", "yellow")
       @hudScoreLabel.x = 10
@@ -54,20 +37,8 @@ class GameManager
       @hudFPSLabel.y = 20
       @stage.addChild(@hudFPSLabel)
 
-    @hudScoreLabel.text = "SCORE: " + @level.Score
+    @hudScoreLabel.text = "SCORE: None"
     @hudFPSLabel.text = Math.round(Ticker.getMeasuredFPS()) + " fps"
-
-
-  DrawOverlay: ->
-    status = null
-    if @level.TimeRemaining is 0
-      if @level.ReachedExit
-        status = window.Game.Content.imageNamed('you_win')
-      else
-        status = window.Game.Content.imageNamed('you_lose')
-    else
-      status = window.Game.Content.imageNamed('you_died') unless @level.Hero.IsAlive
-    @ShowStatusCanvas(status) if status isnt null
 
 
   # Creating a second canvas to display it over the main gaming canvas
@@ -96,67 +67,16 @@ class GameManager
     statusCanvas.style.display = "block"
     statusCanvasCtx.clearRect 0, 0, status.width, status.height
     statusCanvasCtx.drawImage status, 0, 0
-    overlayEnabled = false
 
 
   # Hiding the overlay canvas while playing the game
   HideStatusCanvas: ->
-    overlayEnabled = true
     statusCanvas.style.display = "none"
-
-
-  # Loading the next level contained into /level/{x}.txt
-  LoadNextLevel: ->
-    @levelIndex = 1
-
-    # Searching where we are currently hosted
-    nextLevelUrl = window.location.href.replace("index.html", "") + "levels/" + @levelIndex + ".txt"
-    try
-      request = new XMLHttpRequest()
-      request.open("GET", nextLevelUrl, true)
-      request.onreadystatechange = => @OnLevelReady(request)
-      request.send(null)
-
-    catch e
-      console.log('Probably an access denied if you try to run from the file:// context')
-
-
-  # Callback method for the onreadystatechange event of XMLHttpRequest
-  OnLevelReady: (eventResult) ->
-    if eventResult.readyState is 4
-      if (eventResult.status == 200)
-        levelData = eventResult.responseText.replace(/[\n\r\t]/g, '')
-        @HideStatusCanvas()
-        @level.Dispose()  if @level?
-        @level = new Level(@stage, levelData)
-        @level.StartLevel()
-      else
-        console.log('Error', eventResult.statusText);
-
-
-  handleKeyDown: (e) ->
-    e = window.event  unless e
-    switch e.keyCode
-      when KEYCODE_A, KEYCODE_LEFT
-        @level.Hero.direction = -1
-      when KEYCODE_D, KEYCODE_RIGHT
-        @level.Hero.direction = 1
-      when KEYCODE_W
-        @level.Hero.isJumping = true
-        @continuePressed = true
-
-  handleKeyUp: (e) ->
-    e = window.event  unless e
-    switch e.keyCode
-      when KEYCODE_A, KEYCODE_LEFT, KEYCODE_D, KEYCODE_RIGHT
-        @level.Hero.direction = 0
-      when KEYCODE_W
-        @continuePressed = false
 
 
   contentStatusChanged: (state) =>
     if (state.progress < 100)
-        # add a text object to output the current donwload progression
+      # add a text object to output the current donwload progression
       if !@downloadProgress
         @downloadProgress = new Text("-- %", "bold 14px Arial", "#FFF")
         @downloadProgress.x = (@width / 2) - 50
@@ -175,7 +95,12 @@ class GameManager
   contentStatusReady: () ->
     # Preparing the overlay canvas for future usage
     @SetOverlayCanvas()
-    @LoadNextLevel()
+
+    @level.dispose()  if @level?
+    @level = new Level(@stage, 'untitled')
+    @level.load () =>
+      @HideStatusCanvas()
+
 
     Ticker.addListener(@)
     Ticker.useRAF = false

@@ -27,11 +27,14 @@
 <script src="./src/easeljs/XNARectangle.js"></script>
 <script src="./src/easeljs/PlatformerHelper.js"></script>
 <script src="./src/easeljs/ContentManager.js"></script>
+<script src="./src/easeljs/Sprite.js"></script>
+<script src="./src/easeljs/ProgrammableSprite.js"></script>
 <script src="./src/easeljs/Tile.js"></script>
 <script src="./src/easeljs/Gem.js"></script>
 <script src="./src/easeljs/Enemy.js"></script>
 <script src="./src/easeljs/Player.js"></script>
 <script src="./src/easeljs/Level.js"></script>
+<script src="./src/easeljs/LibraryManager.js"></script>
 <script src="./src/easeljs/GameManager.js"></script>
 
 <script>
@@ -39,30 +42,41 @@ var canvas;
 var stage = null;
 var globalCanvasContext;
 
+window.KEYCODE_SPACE = 32
+window.KEYCODE_UP = 38
+window.KEYCODE_LEFT = 37
+window.KEYCODE_RIGHT = 39
+window.KEYCODE_W = 87
+window.KEYCODE_A = 65
+window.KEYCODE_D = 68
+window.KEYCODE_S = 83
 
-window.Socket = io.connect(':4430', {secure: false});
-window.Socket.on('connect', function () {
-    console.log('Socket.io Connection Established.');
-});
-window.Socket.on('disconnect', function () {
-    console.log('Socket.io Connection Lost. Trying to reconnect...');
-});
 
 
-function restart() {
+function start() {
 	if (stage == null) {
 		//find canvas and load images, wait for last image to load
 		canvas = document.getElementById("platformerCanvas");
 		globalCanvasContext = canvas.getContext("2d");
 		stage = new Stage(canvas);
-    }
+  }
 
-    // downloading all needed images ressources and preloading sounds & music
-    window.Game = {}
-    window.Game.Content = new ContentManager(canvas.width, canvas.height);
-    window.Game.Manager = new GameManager(stage, canvas.width, canvas.height);
-    window.Game.Content.setContentStatusCallback(window.Game.Manager.contentStatusChanged);
-    window.Game.Content.startDownload();
+  // downloading all needed images ressources and preloading sounds & music
+  window.Socket = io.connect(':4430', {secure: false});
+  window.Socket.on('connect', function () {
+      console.log('Socket.io Connection Established.');
+      window.Socket.emit('join', { username: 'default' })
+  });
+  window.Socket.on('disconnect', function () {
+      console.log('Socket.io Connection Lost. Trying to reconnect...');
+  });
+
+  window.Game = {}
+  window.Game.Library = new LibraryManager('default');
+  window.Game.Content = new ContentManager(canvas.width, canvas.height);
+  window.Game.Manager = new GameManager(stage, canvas.width, canvas.height);
+
+  window.Game.Content.setContentStatusCallback(window.Game.Manager.contentStatusChanged);
 }
 
 
@@ -70,7 +84,7 @@ function restart() {
 </script>
 </head>
 
-<body>
+<body onload="start()">
 	<div class="canvasHolder">
 		<canvas id="platformerCanvas" width="800" height="480" style="background-color:black">
 			Your browser doesn't support canvas. Please download IE9+ on <a href="http://ie.microsoft.com/testdrive">IE Test Drive</a> 

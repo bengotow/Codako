@@ -11,10 +11,6 @@ class ContentManager
       images: {}
       sounds: {}
 
-
-  # public method to launch the download process
-  startDownload: () ->
-    window.Socket.emit('join', { my: 'data' })
     window.Socket.on 'assetlist', (resources) =>
       # If the browser supports either MP3 or OGG
       @soundFormat = @_soundFormatForBrowser()
