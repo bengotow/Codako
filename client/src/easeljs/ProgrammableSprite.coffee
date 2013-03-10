@@ -13,6 +13,12 @@ class ProgrammableSprite extends Sprite
     @setupDragging()
     @
 
+  descriptor: () ->
+    {
+      identifier: @identifier,
+      position: {x: @worldPos.x, y: @worldPos.y}
+    }
+
 
   reset: (position) ->
     super(position)
@@ -85,6 +91,7 @@ class ProgrammableSprite extends Sprite
     @worldPos = @nextPos = point
     @dragging = false
     @alpha = 1
+    @level.onActorDragged(@)
 
 
 window.ProgrammableSprite = ProgrammableSprite

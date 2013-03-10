@@ -1,0 +1,168 @@
+String::lastPathComponent = () ->
+  slash = @.lastIndexOf("/")
+  @[slash..-1]
+
+String::withoutExtension = () ->
+  ext = pathUtils.extname(@)
+  @[0..-(1+ext.length)]
+
+
+class UserConroller
+
+  @DEFAULT_LEVEL =
+    {
+      identifier: 'untitled'
+      width: 20
+      height: 12
+      actor_descriptors: [
+        {
+          identifier: 'dude',
+          position: {x: 10, y: 10}
+        },
+        {
+          identifier: 'rock',
+          position: {x: 7, y: 10}
+        }
+      ]
+    }
+
+  @DEFAULT_ACTORS =
+    [
+      {
+        identifier: 'rock',
+        size: {width: 1, height: 1}
+        spritesheet: {
+          name: "BlockA0",
+          animations: {
+            idle: [0,0]
+          }
+        }
+      },
+      {
+        identifier: 'dude',
+        size: {width: 1, height: 1}
+        spritesheet: {
+          name: "Player",
+          animations: {
+            walk: [0, 9, "walk", 4]
+            die: [10, 21, false, 4]
+            jump: [22, 32, false]
+            celebrate: [33, 43, false, 4]
+            idle: [44, 44]
+          }
+        }
+        rules: [
+          {
+            name: 'Move Left',
+            triggers: [{
+              type:"key",
+              code:37
+            }],
+            scenario: [{
+              coord:"-1,0",
+              descriptors: false
+            },{
+              coord:"0,0",
+              descriptors: [{
+                identifier: 'dude'
+                actions: [{
+                  type:"move",
+                  delta:"-1,0"
+                }]
+              }]
+            }]
+          },
+          {
+            name: 'Move Right',
+            triggers: [{
+              type:"key",
+              code:39
+            }],
+            scenario: [{
+              coord:"1,0",
+              descriptors: false
+            },{
+              coord:"0,0",
+              descriptors: [{
+                identifier: 'dude'
+                actions: [{
+                  type:"move",
+                  delta:"1,0"
+                }]
+              }]
+            }]
+          }
+
+        ]
+      }
+    ]
+
+
+  constructor: () ->
+    @username = null
+    @password = null
+
+  authenticate: (username, password, callback) ->
+    @username = username
+    @password = password
+    callback(null)
+
+  assetsInDirectory: (directory, options = {}, items = {}) ->
+    files = fs.readdirSync("#{global.process.env['OLDPWD']}/#{env.connect.web_path}#{directory}")
+    for filename in files
+      isDirectory = !pathUtils.extname(filename)
+      relativePath = "#{directory}/#{filename}"
+      relativePath = relativePath.withoutExtension() if options.removeExtensions
+
+      if isDirectory
+        @assetsInDirectory(relativePath, options, items)
+      else
+        items[filename.withoutExtension()] = {src: relativePath}
+
+    items
+
+  getAssets: (identifier, callback) ->
+    return callback(new Error('Permission Denied')) if !@username
+    resources = {}
+    resources['images'] = @assetsInDirectory "/game/img"
+    resources['sounds'] = @assetsInDirectory "/game/sounds", {removeExtensions: true}
+    callback(null, resources)
+
+
+  getLevel: (identifier, callback) ->
+    return callback(new Error('Permission Denied')) if !@username
+    rdb.get "u:#{@username}-l:#{identifier}", (err, result) =>
+      result = JSON.parse(result) if result
+      result = UserConroller.DEFAULT_LEVEL if result == null
+      callback(err, result)
+
+
+  saveLevel: (identifier, data, callback) ->
+    return callback(new Error('Permission Denied')) if !@username
+    try
+      data = JSON.stringify(data) unless data instanceof String
+    catch e
+      callback(new Error('Invalid JSON'))
+
+    rdb.set "u:#{@username}-l:#{identifier}", data, callback
+
+
+  getActors: (identifier, callback) ->
+    return callback(new Error('Permission Denied')) if !@username
+    rdb.get "u:#{@username}-a:#{identifier}", (err, result) =>
+      result = JSON.parse(result) if result
+      result = UserConroller.DEFAULT_ACTORS if result == null
+      callback(err, result)
+
+
+  saveActors: (identifier, data, callback) ->
+    return callback(new Error('Permission Denied')) if !@username
+    try
+      data = JSON.stringify(data) unless data instanceof String
+    catch e
+      callback(new Error('Invalid JSON'))
+
+    rdb.set "u:#{@username}-a:#{identifier}", data, callback
+
+
+module.exports = UserConroller

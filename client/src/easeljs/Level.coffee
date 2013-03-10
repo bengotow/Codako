@@ -1,19 +1,5 @@
 ﻿
 class Level
-  @defaultJSON:
-    width: 20
-    height: 12
-    actor_descriptors: [
-      {
-        identifier: 'dude',
-        position: {x: 10, y: 10}
-      },
-      {
-        identifier: 'rock',
-        position: {x: 7, y: 10}
-      }
-    ]
-
 
   constructor: (stage, identifier = 'untitled') ->
     @identifier = identifier
@@ -51,22 +37,14 @@ class Level
 
 
   load: (callback) ->
-    url = window.location.href.replace("index.html", "") + "levels/#{@identifier}.txt"
-    try
-      request = new XMLHttpRequest()
-      request.open("GET", url, true)
-      request.onreadystatechange = =>
-        if request.readyState is 4
-          if (request.status == 200)
-            @loadDataReady(JSON.parse(request.responseText))
-          else
-            console.log('Error', request.statusText)
-            @loadDataReady(Level.defaultJSON)
-          callback(null)
-      request.send(null)
-
-    catch e
-      console.log('Probably an access denied if you try to run from the file:// context')
+    console.log('Requesting Level Data')
+    window.Socket.emit 'level', {identifier: @identifier}
+    window.Socket.on 'levelData', (data) =>
+      debugger
+      console.log('Got Level Data', data)
+      return unless data.identifier == @identifier
+      @loadDataReady(data)
+      callback(null)
 
 
   # Callback method for the onreadystatechange event of XMLHttpRequest
@@ -82,6 +60,16 @@ class Level
     # Playing the background music
     window.Game.Content.playSound('Music')
 
+  save: () ->
+    data = 
+      identifier: @identifier
+      width: @width,
+      height: @height,
+      actor_descriptors: []
+    data.actor_descriptors.push(actor.descriptor()) for actor in @actors
+    window.Socket.emit 'levelData', data
+    
+
   addActor: (descriptor) ->
     actor = window.Game.Library.instantiateActorFromDescriptor(descriptor, @)
     return console.log('Could not read descriptor:', descriptor) if !actor
@@ -93,6 +81,7 @@ class Level
 
   isKeyDown: (code) ->
     return @keysDown[code]
+
 
   applyLiftedKeys: () ->
     for code, value of @keysUpSinceLast
@@ -154,6 +143,15 @@ class Level
     @selectedActor = actor
     @selectedActor.setSelected(true)
     window.rootScope.$digest()
+
+
+  onActorDragged: (actor) ->
+    @save()
+
+
+  onActorPlaced: (actor_descriptor) ->
+    @addActor(actor_descriptor)
+    @save()
 
 
   window.Level = Level

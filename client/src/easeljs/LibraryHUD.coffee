@@ -31,7 +31,7 @@ class LibraryHUD
     sprite.x = x
     sprite.y = y
     sprite.dropped = (point) ->
-      window.Game.Manager.level.addActor({identifier: identifier, position: point})
+      window.Game.Manager.level.onActorPlaced({identifier: identifier, position: point})
       @dragging = false
       @alpha = 1
       @x = x

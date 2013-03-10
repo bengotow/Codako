@@ -2,10 +2,12 @@ global.fs = require("fs")
 global.crypto = require("crypto")
 global.coffeescript = require('connect-coffee-script')
 global.pathUtils = require("path")
+global.redis = require("redis")
 global.fs = require("fs")
 global._ = require('underscore')
 
-UserContentListing = require("./lib/user_content_listing")
+UserController = require("./lib/user_controller")
+
 
 # Read our configuration file
 try
@@ -27,37 +29,44 @@ if env.socket_io.secure
 else
   app = require("http").createServer()
 
+
+# Open a redis connection
+global.rdb = redis.createClient(env.redis.port, env.redis.host)
+global.rdb.on "error", (err) ->
+  console.log("REDIS error: " + err.toString())
+
+if env.redis.password
+  dbAuth = () ->
+    rdb.auth env.redis.password, () ->
+     console.log("Redis auth successful.")
+
+  rdb.addListener('connected', dbAuth)
+  rdb.addListener('reconnected', dbAuth)
+  dbAuth()
+
+
 # Launch socket.io on the server
 app.listen(env.socket_io.port)
 io = require("socket.io").listen(app)
 
 io.sockets.on "connection", (socket) ->
-  socket.emit "auth-state",
-    authenticated: false
 
-  socket.on "join", (args) ->
-    a = new UserContentListing()
-    socket.emit "actorlist", a.actors()
-    socket.emit "assetlist", a.assets()
+  socket.on "level", (args = {identifier: 'untitled'}) ->
+    socket.user.getLevel args.identifier, (err, data) ->
+      socket.emit "levelData", data
+
+  socket.on "levelData", (data) ->
+    socket.user.saveLevel(data.identifier, data)
 
   socket.on "auth", (args) ->
-    console.log "auth message received:"
-    console.log args
-    User.findOne
-      where:
-        username: args.username
-        password: args.password
-    , (err, user) ->
-      console.log err
-      console.log user
-      if user
-        socket.emit "auth-state",
-          authenticated: true
-
-      else
-        socket.emit "auth-state",
-          authenticated: false
-          error: "User not found."
+    socket.user = new UserController()
+    socket.user.authenticate args.username, args.password, (err) ->
+      socket.emit "auth-state", {err: err}
+      if !err
+        socket.user.getActors 'default', (err, data) ->
+          socket.emit "actorlist", data
+        socket.user.getAssets 'default', (err, data) ->
+          socket.emit "assetlist", data
 
 
 
