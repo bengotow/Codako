@@ -20,6 +20,7 @@ class Level
     @identifier = identifier
     @stage = stage
     @actors = []
+    @selectedActor = null
 
     @ruleCheckInterval = 0.5
     @ruleCheckNextElapsed = 0
@@ -104,7 +105,7 @@ class Level
   actorsAtPosition: (position) ->
     results = []
     for actor in @actors
-      if actor.worldPos.x == position.x && actor.worldPos.y == position.y
+      if actor.worldPos.isEqual(position)
         results.push(actor)
     results
 
@@ -122,15 +123,14 @@ class Level
 
     true
 
+
   actorMatchingDescriptor: (position, descriptor) ->
-    for actor in @actors
+    searchSet = @actorsAtPosition(position)
+    for actor in searchSet
       return actor if window.Game.Library.actorMatchesDescriptor(actor, descriptor)
     false
 
-  #/ <summary>
-  #/ Updates all objects in the world, performs collision between them,
-  #/ and handles the time limit with scoring.
-  #/ </summary>
+
   update: ->
     elapsed = (Ticker.getTime() - @initialGameTime) / 1000
 
@@ -141,10 +141,17 @@ class Level
       console.log 'Testing Rules'
       @ruleCheckNextElapsed += @ruleCheckInterval
       for actor in @actors
-        actor.applyRules()
+        actor.tickRules()
       @applyLiftedKeys()
 
     @stage.update()
+
+
+  onActorClicked: (actor) ->
+    @selectedActor.setSelected(false) if @selectedActor
+    @selectedActor = actor
+    @selectedActor.setSelected(true)
+    window.rootScope.$digest()
 
 
   window.Level = Level

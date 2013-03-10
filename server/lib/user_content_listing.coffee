@@ -24,8 +24,8 @@ class UserContentListing
 
   assets: () ->
     resources = {}
-    resources['images'] = @assetsInDirectory "/img"
-    resources['sounds'] = @assetsInDirectory "/sounds", {removeExtensions: true}
+    resources['images'] = @assetsInDirectory "/game/img"
+    resources['sounds'] = @assetsInDirectory "/game/sounds", {removeExtensions: true}
     resources
 
   actors: () ->
@@ -60,15 +60,18 @@ class UserContentListing
               type:"key",
               code:37
             }],
-            conditions: [{
-              type:"surroundings"
+            scenario: [{
               coord:"-1,0",
               descriptors: false
-            }],
-            actions: [{
-              type:"move",
-              start:"0,0",
-              end:"-1,0"
+            },{
+              coord:"0,0",
+              descriptors: [{
+                identifier: 'dude'
+                actions: [{
+                  type:"move",
+                  delta:"-1,0"
+                }]
+              }]
             }]
           }
         ]

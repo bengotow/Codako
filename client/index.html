@@ -1,95 +1,162 @@
 ﻿<!DOCTYPE html>
-<!-------------------------------------------------------------------------------
-// HTML5 Platformer game
-//
-// Inspired by the Microsoft XNA Community Game Platformer Sample
-// Copyright (C) Microsoft Corporation. All rights reserved.
-// Ported to HTML5 Canvas with EaselJS by David Rousset - http://blogs.msdn.com/davrous
-// Checkout EaselJS: an open-source JavaScript gaming framework : http://easeljs.com  
-//------------------------------------------------------------------------------->
 <html>
 <head>
-<title>HTML5 Platformer Game</title>
-<link rel="shortcut icon" href="./icons/favicon.ico"/>
-<META name="msapplication-task" content="name=XNA 4.0 Platformer Sample;action-uri=http://create.msdn.com/en-US/education/catalog/sample/platformer;icon-uri=./icons/XNA.ico"/>
-<META name="msapplication-task" content="name=Tutorial: Animating sprites in Canvas with EaselJS;action-uri=http://blogs.msdn.com/b/davrous/archive/2011/07/21/html5-gaming-animating-sprites-in-canvas-with-easeljs.aspx;icon-uri=./icons/blogicon.ico"/>
-<META name="msapplication-task" content="name=Tutorial: Building the core objects & handling collisions with EaselJS;action-uri=http://blogs.msdn.com/b/davrous/archive/2011/07/29/html5-gaming-building-the-core-objects-amp-handling-collisions-with-easeljs.aspx;icon-uri=./icons/blogicon.ico"/>
-<META name="msapplication-task" content="name=Build my pinned site;action-uri=http://buildmypinnedsite.com;icon-uri=./icons/mypinnedsites.ico"/>
+  <title>HTML5 Platformer Game</title>
+  <link rel="shortcut icon" href="./icons/favicon.ico"/>
+  <script>
+      createjs = window;
+  </script>
 
-<script>
-    createjs = window;
-</script>
+  <script src="./src/jquery.js"></script>
+  <script src="./src/easeljs.js"></script>
+  <script src="./src/socket.io.js"></script>
+  <script src="./src/bootstrap.js"></script>
 
-<!- Import EaselJS Framework -->
-<script src="./src/easeljs.js"></script>
-<script src="./src/socket.io.js"></script>
+  <script src="./src/easeljs/XNARectangle.js"></script>
+  <script src="./src/easeljs/PlatformerHelper.js"></script>
+  <script src="./src/easeljs/ContentManager.js"></script>
+  <script src="./src/easeljs/Sprite.js"></script>
+  <script src="./src/easeljs/ProgrammableSprite.js"></script>
+  <script src="./src/easeljs/Tile.js"></script>
+  <script src="./src/easeljs/Gem.js"></script>
+  <script src="./src/easeljs/Enemy.js"></script>
+  <script src="./src/easeljs/Player.js"></script>
+  <script src="./src/easeljs/Level.js"></script>
+  <script src="./src/easeljs/LibraryManager.js"></script>
+  <script src="./src/easeljs/GameManager.js"></script>
 
-<script src="./src/easeljs/XNARectangle.js"></script>
-<script src="./src/easeljs/PlatformerHelper.js"></script>
-<script src="./src/easeljs/ContentManager.js"></script>
-<script src="./src/easeljs/Sprite.js"></script>
-<script src="./src/easeljs/ProgrammableSprite.js"></script>
-<script src="./src/easeljs/Tile.js"></script>
-<script src="./src/easeljs/Gem.js"></script>
-<script src="./src/easeljs/Enemy.js"></script>
-<script src="./src/easeljs/Player.js"></script>
-<script src="./src/easeljs/Level.js"></script>
-<script src="./src/easeljs/LibraryManager.js"></script>
-<script src="./src/easeljs/GameManager.js"></script>
+  <script src="./src/angular.js"></script>
+  <script src="./src/angular/rules_controller.js"></script>
 
-<script>
-var canvas;
-var stage = null;
-var globalCanvasContext;
+  <link href="/css/bootstrap.min.css" rel="stylesheet" media="screen">
+  <script>
+  var canvas;
+  var stage = null;
+  var globalCanvasContext;
 
-window.KEYCODE_SPACE = 32
-window.KEYCODE_UP = 38
-window.KEYCODE_LEFT = 37
-window.KEYCODE_RIGHT = 39
-window.KEYCODE_W = 87
-window.KEYCODE_A = 65
-window.KEYCODE_D = 68
-window.KEYCODE_S = 83
+  window.KEYCODE_SPACE = 32
+  window.KEYCODE_UP = 38
+  window.KEYCODE_LEFT = 37
+  window.KEYCODE_RIGHT = 39
+  window.KEYCODE_W = 87
+  window.KEYCODE_A = 65
+  window.KEYCODE_D = 68
+  window.KEYCODE_S = 83
 
 
 
-function start() {
-	if (stage == null) {
-		//find canvas and load images, wait for last image to load
-		canvas = document.getElementById("platformerCanvas");
-		globalCanvasContext = canvas.getContext("2d");
-		stage = new Stage(canvas);
+  function start() {
+  	if (stage == null) {
+  		//find canvas and load images, wait for last image to load
+  		canvas = document.getElementById("platformerCanvas");
+  		globalCanvasContext = canvas.getContext("2d");
+  		stage = new Stage(canvas);
+
+      //find canvas and load images, wait for last image to load
+      renderingCanvas = document.getElementById("renderingCanvas");
+      renderingStage = new Stage(renderingCanvas);
+    }
+
+    // downloading all needed images ressources and preloading sounds & music
+    window.Socket = io.connect(':4430', {secure: false});
+    window.Socket.on('connect', function () {
+        console.log('Socket.io Connection Established.');
+        window.Socket.emit('join', { username: 'default' })
+    });
+    window.Socket.on('disconnect', function () {
+        console.log('Socket.io Connection Lost. Trying to reconnect...');
+    });
+
+    window.Game = {}
+    window.Game.Library = new LibraryManager('default');
+    window.Game.Content = new ContentManager(canvas.width, canvas.height);
+    window.Game.Manager = new GameManager(stage, renderingStage, canvas.width, canvas.height);
+    window.Game.Content.setContentStatusCallback(window.Game.Manager.contentStatusChanged);
+
+    window.rootScope = angular.element('body').scope()
+    window.rootScope.Library = window.Game.Library
+    window.rootScope.Content = window.Game.Content
+    window.rootScope.Manager = window.Game.Manager
   }
-
-  // downloading all needed images ressources and preloading sounds & music
-  window.Socket = io.connect(':4430', {secure: false});
-  window.Socket.on('connect', function () {
-      console.log('Socket.io Connection Established.');
-      window.Socket.emit('join', { username: 'default' })
-  });
-  window.Socket.on('disconnect', function () {
-      console.log('Socket.io Connection Lost. Trying to reconnect...');
-  });
-
-  window.Game = {}
-  window.Game.Library = new LibraryManager('default');
-  window.Game.Content = new ContentManager(canvas.width, canvas.height);
-  window.Game.Manager = new GameManager(stage, canvas.width, canvas.height);
-
-  window.Game.Content.setContentStatusCallback(window.Game.Manager.contentStatusChanged);
-}
-
-
-//********************************************************
-</script>
+  </script>
 </head>
 
-<body onload="start()">
-	<div class="canvasHolder">
-		<canvas id="platformerCanvas" width="800" height="480" style="background-color:black">
-			Your browser doesn't support canvas. Please download IE9+ on <a href="http://ie.microsoft.com/testdrive">IE Test Drive</a> 
-		</canvas>
-	</div>
-	<button id="Start" onclick=restart();>(Re)Start</button>
+<body onload="start()" ng-app>
+
+
+<div class="navbar navbar-inverse navbar-static-top">
+  <div class="navbar-inner">
+    <div class="container" style="width:1120px;margin:auto;">
+      <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="brand" href="#">Cocoa</a>
+<!--       <div class="nav-collapse collapse">
+        <ul class="nav">
+          <li class="active"><a href="#">Home</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+ -->    </div>
+  </div>
+</div>
+
+
+<div class="container" style="width:1120px;margin:auto;">
+  <div class="row">
+    <div class="span10">
+      <div class="canvasHolder">
+        <canvas id="platformerCanvas" width="800" height="480" style="background-color:black">
+          Your browser doesn't support HTML5 Canvas!
+        </canvas>
+      </div>
+    </div>
+
+    <div class="span4" ng-controller="RulesCtrl">
+      <div class="well">
+
+      <span>{{remaining()}} of {{todos.length}} remaining</span>
+      <ul class="unstyled">
+        <li class="rule" ng-repeat="rule in rules()">
+          <div class="name">{{rule.name}}</div>
+          <div class="divider">When:</div>
+          <ul>
+            <li ng-repeat="trigger in rule.triggers">
+              <span class="condition">Key Pressed</span>
+              <span class="condition">{{trigger.code}}</span>
+            </li>
+          </ul>
+
+          <div class="divider">Then:</div>
+          <img ng-src="{{scenario_before_url(rule)}}"/>
+          <img ng-src="{{scenario_after_url(rule)}}"/>
+
+        </li>
+      </ul>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="span12" ng-controller="LibraryCtrl">
+      <div class="well">
+      Well
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<canvas id="renderingCanvas" width="300" height="300" style="background-color:black">
+  Your browser doesn't support HTML5 Canvas!
+</canvas>
+
+
+
+
 </body>
 </html>

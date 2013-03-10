@@ -4,8 +4,10 @@ class GameManager
   statusCanvas = null
   statusCanvasCtx = null
 
-  constructor: (stage, gameWidth, gameHeight) ->
+  constructor: (stage, renderingStage, gameWidth, gameHeight) ->
     @stage = stage
+    @renderingStage = renderingStage
+
     @gameWidth = gameWidth
     @gameHeight = gameHeight
     @level = null
@@ -14,6 +16,7 @@ class GameManager
     @hudScoreLabel = null
     @hudFPSLabel = null
     @
+
 
   tick: ->
     try
@@ -106,5 +109,36 @@ class GameManager
     Ticker.useRAF = false
     Ticker.setFPS(60)
 
+
+  renderRuleScenario: (scenario, applyActions = false) ->
+    # Creating a random background based on the 3 layers available in 3 versions
+    @renderingStage.addChild(new Bitmap(window.Game.Content.imageNamed('Layer0_0')))
+
+    xmin = xmax = ymin = ymax = 0
+    for block in scenario
+      coord = Point.fromString(block.coord)
+      xmin = Math.min(xmin, coord.x)
+      xmax = Math.max(xmax, coord.x)
+      ymin = Math.min(ymin, coord.y)
+      ymax = Math.max(ymax, coord.y)
+
+    @renderingStage.canvas.width = (xmax - xmin + 1) * Tile.WIDTH
+    @renderingStage.canvas.height = (ymax - ymin + 1) * Tile.HEIGHT
+
+    for block in scenario
+      for descriptor in block.descriptors
+        coord = Point.fromString(block.coord)
+        actor = window.Game.Library.instantiateActorFromDescriptor(descriptor)
+        actor.nextPos = new Point(-xmin + coord.x, -ymin + coord.y)
+        actor.tick()
+        actor.applyActions(descriptor.actions) if applyActions
+        actor.tick()
+        @renderingStage.addChild(actor)
+
+
+    @renderingStage.update()
+    data = @renderingStage.canvas.toDataURL()
+    @renderingStage.removeAllChildren()
+    data
 
 window.GameManager = GameManager

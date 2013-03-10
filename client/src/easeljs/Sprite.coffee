@@ -7,7 +7,10 @@ class Sprite extends BitmapAnimation
     @worldSize = size
     @level = level
     @elapsed = 0
-    @
+    @selected = false
+
+    @addEventListener 'click', (e) =>
+      @level.onActorClicked(@)
 
 
   createSpriteSheet: (name, animations) ->
@@ -30,6 +33,10 @@ class Sprite extends BitmapAnimation
     @x = @worldPos.x * Tile.WIDTH
     @y = @worldPos.y * Tile.HEIGHT
 
+  setSelected: (sel) ->
+    @selected = sel
+    @shadow = null
+    @shadow = new Shadow("#FFF", 2, 2, 9) if @selected
 
   getBounds: () ->
     super
@@ -37,8 +44,8 @@ class Sprite extends BitmapAnimation
   getWorldBounds: () ->
     new XNARectangle(@worldPos.x, @worldPos.y, @worldSize.width, @worldSize.height)
 
-
   intersects: (otherSprite) ->
     false
+
 
 window.Sprite = Sprite

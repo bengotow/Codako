@@ -4,8 +4,8 @@ class ProgrammableSprite extends Sprite
   GroundDragFactor = 0.48
   MaxMoveSpeed = 1750.0
 
-  constructor: (position, size, level) ->
-    @name = "Hero"
+  constructor: (identifier, position, size, level) ->
+    @identifier = identifier
     @rules = []
     @currentFrame = 66
 
@@ -21,22 +21,20 @@ class ProgrammableSprite extends Sprite
   tick: (elapsed) ->
     super
 
-  applyRules: () ->
+  tickRules: () ->
     return unless @rules
     for rule in @rules
-      if @checkTriggers(rule.triggers) && @checkConditions(rule.conditions)
-        @applyRuleActions(rule.actions)
-        console.log("Executed Rule #{rule.name}")
+      if @checkTriggers(rule.triggers) && @checkScenario(rule.scenario)
+        @applyScenario(rule.scenario)
 
-  checkConditions: (conditions) ->
-    for condition in conditions
-      if condition.type == 'surroundings'
-        pos = @positionForRelativeCoordinates(condition.coord)
-        descriptors = condition.descriptors
-        return false unless @level.actorsAtPositionMatchDescriptors(pos, descriptors)
-      else
-        return false
+
+  checkScenario: (scenario) ->
+    for block in scenario
+      pos = Point.sum(@worldPos, Point.fromString(block.coord))
+      descriptors = block.descriptors
+      return false unless @level.actorsAtPositionMatchDescriptors(pos, descriptors)
     true
+
 
   checkTriggers: (triggers) ->
     for trigger in triggers
@@ -44,22 +42,22 @@ class ProgrammableSprite extends Sprite
         return false unless @level.isKeyDown(trigger.code)
     true
 
+  applyScenario: (scenario) ->
+    for block in scenario
+      pos = Point.sum(@worldPos, Point.fromString(block.coord))
+      continue unless block.descriptors
+      for descriptor in block.descriptors
+        continue unless descriptor.actions
+        actor = @level.actorMatchingDescriptor(pos, descriptor)
+        actor.applyActions(descriptor.actions) if actor
 
-  applyRuleActions: (actions) ->
+
+  applyActions: (actions) ->
+    return unless actions
     for action in actions
       if action.type == 'move'
-        start = @positionForRelativeCoordinates(action.start)
-        end = @positionForRelativeCoordinates(action.end)
+        @nextPos = Point.sum(@worldPos, Point.fromString(action.delta))
 
-        actors = @level.actorsAtPosition(start)
-        actor.nextPos = end for actor in actors
-        console.log('MOVE: ', start, end, actors)
-
-
-  positionForRelativeCoordinates: (str) ->
-    coords = str.split(',')
-    debugger
-    new Point(coords[0] / 1 + @worldPos.x, coords[1] / 1 + @worldPos.y)
 
 
 window.ProgrammableSprite = ProgrammableSprite

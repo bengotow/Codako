@@ -57,7 +57,6 @@ class ContentManager
   tick: () ->
     percent = Math.round((@numElementsLoaded / @numElementsQueued) * 100)
     @contentStatusCallback({progress: percent})
-    console.log(percent)
 
 
   # -- Accessing Images and Sounds -- #
