@@ -2,16 +2,11 @@
 class Level
 
   PointsPerSecond = 5
-  globalTargetFPS = 17
 
   StaticTile = new Tile(null, Enum.TileCollision.Passable, 0, 0)
 
-  constructor: (stage, contentManager, textLevel, gameWidth, gameHeight) ->
-    @levelContentManager = contentManager
-    @levelStage = stage
-    @gameWidth = gameWidth
-    @gameHeight = gameHeight
-    @fpsLabel = undefined
+  constructor: (stage, textLevel) ->
+    @stage = stage
 
     # Entities in the level.
     @Hero = null
@@ -22,24 +17,19 @@ class Level
     @Start = null
     @Exit = new Point(-1, -1)
     @Score = 0
-    @ReachedExit = false
-    @IsHeroDied = false
-
-    # You've got 120s to finish the level
-    @TimeRemaining = 120
 
     # Saving when at what time you've started the level
     @InitialGameTime = Ticker.getTime()
 
     # Creating a random background based on the 3 layers available in 3 versions
-    @levelStage.addChild new Bitmap(@levelContentManager.imageNamed('Layer0_0'))
+    @stage.addChild(new Bitmap(window.Game.Content.imageNamed('Layer0_0')))
 
     # Building a matrix of characters that will be replaced by the level {x}.txt
     @textTiles = Array.matrix(15, 20, "|")
 
     # Physical structure of the level.
     @tiles = Array.matrix(15, 20, "|")
-    @LoadTiles textLevel
+    @LoadTiles(textLevel)
     @
 
 
@@ -47,15 +37,16 @@ class Level
   #/ Unloads the level content.
   #/ </summary>
   Dispose: ->
-    @levelStage.removeAllChildren()
-    @levelStage.update()
+    @stage.removeAllChildren()
+    @stage.update()
     try
-      @levelContentManager.pauseSound('globalMusic')
+      window.Game.Content.pauseSound('globalMusic')
 
 
   # Transforming the long single line of text into
   # a 2D array of characters
   ParseLevelLines: (levelLine) ->
+
     i = 0
 
     while i < 15
@@ -78,16 +69,10 @@ class Level
   LoadTiles: (fileStream) ->
     @ParseLevelLines fileStream
 
-    # Loop over every tile position,
-    i = 0
-
-    while i < 15
-      j = 0
-
-      while j < 20
+    # Loop over every tile position
+    for i in [0..14]
+      for j in [0..19]
         @tiles[i][j] = @LoadTile(@textTiles[i][j], j, i)
-        j++
-      i++
 
     # Verify that the level has a beginning and an end.
     throw "A level must have a starting point."  unless @Hero?
@@ -165,27 +150,27 @@ class Level
   LoadNamedTile: (name, collision, x, y) ->
     switch name
       when "Platform"
-        return new Tile(@levelContentManager.imageNamed('Platform'), collision, x, y)
+        return new Tile(window.Game.Content.imageNamed('Platform'), collision, x, y)
       when "Exit"
-        return new Tile(@levelContentManager.imageNamed('Exit'), collision, x, y)
+        return new Tile(window.Game.Content.imageNamed('Exit'), collision, x, y)
       when "BlockA0"
-        return new Tile(@levelContentManager.imageNamed('BlockA0'), collision, x, y)
+        return new Tile(window.Game.Content.imageNamed('BlockA0'), collision, x, y)
       when "BlockA1"
-        return new Tile(@levelContentManager.imageNamed('BlockA1'), collision, x, y)
+        return new Tile(window.Game.Content.imageNamed('BlockA1'), collision, x, y)
       when "BlockA2"
-        return new Tile(@levelContentManager.imageNamed('BlockA2'), collision, x, y)
+        return new Tile(window.Game.Content.imageNamed('BlockA2'), collision, x, y)
       when "BlockA3"
-        return new Tile(@levelContentManager.imageNamed('BlockA3'), collision, x, y)
+        return new Tile(window.Game.Content.imageNamed('BlockA3'), collision, x, y)
       when "BlockA4"
-        return new Tile(@levelContentManager.imageNamed('BlockA4'), collision, x, y)
+        return new Tile(window.Game.Content.imageNamed('BlockA4'), collision, x, y)
       when "BlockA5"
-        return new Tile(@levelContentManager.imageNamed('BlockA5'), collision, x, y)
+        return new Tile(window.Game.Content.imageNamed('BlockA5'), collision, x, y)
       when "BlockA6"
-        return new Tile(@levelContentManager.imageNamed('BlockA6'), collision, x, y)
+        return new Tile(window.Game.Content.imageNamed('BlockA6'), collision, x, y)
       when "BlockB0"
-        return new Tile(@levelContentManager.imageNamed('BlockB0'), collision, x, y)
+        return new Tile(window.Game.Content.imageNamed('BlockB0'), collision, x, y)
       when "BlockB1"
-        return new Tile(@levelContentManager.imageNamed('BlockB1'), collision, x, y)
+        return new Tile(window.Game.Content.imageNamed('BlockB1'), collision, x, y)
 
 
   #/ <summary>
@@ -209,7 +194,7 @@ class Level
   LoadStartTile: (x, y) ->
     throw "A level may only have one starting point."  if @Hero?
     @Start = @GetBounds(x, y).GetBottomCenter()
-    @Hero = new Player(@levelContentManager.imageNamed('Player'), this, @Start)
+    @Hero = new Player(window.Game.Content.imageNamed('Player'), this, @Start)
     new Tile(null, Enum.TileCollision.Passable, x, y)
 
 
@@ -228,7 +213,7 @@ class Level
   LoadGemTile: (x, y) ->
     position = @GetBounds(x, y).Center
     position = new Point(x, y)
-    @Gems.push new Gem(@levelContentManager.imageNamed('Gem'), this, position)
+    @Gems.push new Gem(window.Game.Content.imageNamed('Gem'), this, position)
     new Tile(null, Enum.TileCollision.Passable, x, y)
 
 
@@ -239,13 +224,13 @@ class Level
     position = @GetBounds(x, y).GetBottomCenter()
     switch name
       when "MonsterA"
-        @Enemies.push new Enemy(this, position, @levelContentManager.imageNamed('MonsterA'))
+        @Enemies.push new Enemy(this, position, window.Game.Content.imageNamed('MonsterA'))
       when "MonsterB"
-        @Enemies.push new Enemy(this, position, @levelContentManager.imageNamed('MonsterB'))
+        @Enemies.push new Enemy(this, position, window.Game.Content.imageNamed('MonsterB'))
       when "MonsterC"
-        @Enemies.push new Enemy(this, position, @levelContentManager.imageNamed('MonsterC'))
+        @Enemies.push new Enemy(this, position, window.Game.Content.imageNamed('MonsterC'))
       when "MonsterD"
-        @Enemies.push new Enemy(this, position, @levelContentManager.imageNamed('MonsterD'))
+        @Enemies.push new Enemy(this, position, window.Game.Content.imageNamed('MonsterD'))
     new Tile(null, Enum.TileCollision.Passable, x, y)
 
 
@@ -285,49 +270,23 @@ class Level
     @tiles[y][x].Collision
 
 
-
   # Method to call once everything has been setup in the level
   # to simply start it
   StartLevel: ->
-
     # Adding all tiles to the EaselJS Stage object
     # This is the platform tile where the hero & enemies will
     # be able to walk onto
-    i = 0
-
-    while i < 15
-      j = 0
-
-      while j < 20
-        @levelStage.addChild @tiles[i][j]  if !!@tiles[i][j] and not @tiles[i][j].empty
-        j++
-      i++
+    for i in [0..14]
+      for j in [0..19]
+        @stage.addChild @tiles[i][j]  if !!@tiles[i][j] and not @tiles[i][j].empty
 
     # Adding the gems to the stage
-    i = 0
-
-    while i < @Gems.length
-      @levelStage.addChild @Gems[i]
-      i++
-
-    # Adding all the enemies to the stage
-    i = 0
-
-    while i < @Enemies.length
-      @levelStage.addChild @Enemies[i]
-      i++
-
-    # Adding our brillant hero
-    @levelStage.addChild @Hero
+    @stage.addChild(enemy) for enemy in @Enemies
+    @stage.addChild(gem) for gem in @Gems
+    @stage.addChild(@Hero)
 
     # Playing the background music
-    @levelContentManager.playSound('globalMusic')
-
-    # add a text object to output the current FPS:
-    @fpsLabel = new Text("-- fps", "bold 14px Arial", "#000")
-    @levelStage.addChild(@fpsLabel)
-    @fpsLabel.x = @gameWidth - 50
-    @fpsLabel.y = 20
+    window.Game.Content.playSound('globalMusic')
 
 
   #/ <summary>
@@ -337,30 +296,9 @@ class Level
   Update: ->
     ElapsedGameTime = (Ticker.getTime() - @InitialGameTime) / 1000
     @Hero.tick()
-    if not @Hero.IsAlive or @TimeRemaining is 0
-      @Hero.ApplyPhysics()
-    else if @ReachedExit
-      seconds = parseInt((globalTargetFPS / 1000) * 200)
-      seconds = Math.min(seconds, parseInt(Math.ceil(@TimeRemaining)))
-      @TimeRemaining -= seconds
-      @Score += seconds * PointsPerSecond
-    else
-      @TimeRemaining = 120 - ElapsedGameTime
-      @UpdateGems()  unless @IsHeroDied
-      @OnPlayerKilled()  if @Hero.BoundingRectangle().Top() >= @Height() * StaticTile.Height
-      @UpdateEnemies()
-
-      # The player has reached the exit if they are standing on the ground and
-      # his bounding rectangle contains the center of the exit tile. They can only
-      # exit when they have collected all of the gems.
-      @OnExitReached()  if @Hero.IsAlive and @Hero.IsOnGround and @Hero.BoundingRectangle().ContainsPoint(@Exit)
-
-    # Clamp the time remaining at zero.
-    @TimeRemaining = 0  if @TimeRemaining < 0
-    @fpsLabel.text = Math.round(Ticker.getMeasuredFPS()) + " fps" if @fpsLabel
-
-    # update the stage:
-    @levelStage.update()
+    @UpdateGems()
+    @UpdateEnemies()
+    @stage.update()
 
 
   #/ <summary>
@@ -368,20 +306,19 @@ class Level
   #/ </summary>
   UpdateGems: ->
     i = 0
-
     while i < @Gems.length
       @Gems[i].tick()
       if @Gems[i].BoundingRectangle().Intersects(@Hero.BoundingRectangle())
 
         # We remove it from the drawing surface
-        @levelStage.removeChild @Gems[i]
+        @stage.removeChild @Gems[i]
         @Score += @Gems[i].PointValue
 
         # We then remove it from the in memory array
         @Gems.splice i, 1
 
         # And we finally play the gem collected sound using a multichannels trick
-        @levelContentManager.playSound('gemCollected')
+        window.Game.Content.playSound('gemCollected')
       i++
 
 
@@ -389,16 +326,10 @@ class Level
   #/ Animates each enemy and allow them to kill the player.
   #/ </summary>
   UpdateEnemies: ->
-    i = 0
-
-    while i < @Enemies.length
-      if @Hero.IsAlive and @Enemies[i].BoundingRectangle().Intersects(@Hero.BoundingRectangle())
-        @OnPlayerKilled @Enemies[i]
-
-        # Forcing a complete rescan of the Enemies Array to update them that the hero is dead
-        i = 0
-      @Enemies[i].tick()
-      i++
+    for enemy in @Enemies
+      if @Hero.IsAlive and enemy.BoundingRectangle().Intersects(@Hero.BoundingRectangle())
+        @OnPlayerKilled(enemy)
+      enemy.tick()
 
 
   #/ <summary>
@@ -408,19 +339,8 @@ class Level
   #/ The enemy who killed the player. This is null if the player was not killed by an
   #/ enemy, such as when a player falls into a hole.
   #/ </param>
-  OnPlayerKilled: (killedBy) ->
-    @IsHeroDied = true
-    @Hero.OnKilled killedBy
-
-
-  #/ <summary>
-  #/ Called when the player reaches the level's exit.
-  #/ </summary>
-  OnExitReached: ->
-    @Hero.OnReachedExit()
-    @ReachedExit = true
 
   StartNewLife: ->
-    @Hero.Reset @Start
+    @Hero.Reset(@Start)
 
   window.Level = Level

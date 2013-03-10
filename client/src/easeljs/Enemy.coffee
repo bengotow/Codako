@@ -57,7 +57,6 @@
 
     # set up a shadow. Note that shadows are ridiculously expensive. You could display hundreds
     # of animated monster if you disabled the shadow.
-    @shadow = new Shadow("#000", 3, 2, 2)  if enableShadows
     @name = "Monster" + monsterIndex
     monsterIndex++
 

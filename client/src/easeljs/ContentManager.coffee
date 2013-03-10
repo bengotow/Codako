@@ -2,10 +2,9 @@
 class ContentManager
 
 
-  constructor: (stage, width, height) ->
+  constructor: (width, height) ->
     @numElementsQueued = 0
     @numElementsLoaded = 0
-    @stage = stage
     @width = width
     @height = height
     @elements =
@@ -17,14 +16,9 @@ class ContentManager
   startDownload: () ->
     window.Socket.emit('join', { my: 'data' })
     window.Socket.on 'assetlist', (resources) =>
-      # add a text object to output the current donwload progression
-      @downloadProgress = new Text("-- %", "bold 14px Arial", "#FFF")
-      @downloadProgress.x = (@width / 2) - 50
-      @downloadProgress.y = @height / 2
-      @stage.addChild(@downloadProgress)
-
       # If the browser supports either MP3 or OGG
-      @soundFormat = @soundFormatForBrowser()
+      @soundFormat = @_soundFormatForBrowser()
+      @contentStatusCallback({progress: 0})
 
       if @soundFormat != '.none'
         @downloadSound(key, info, @soundFormat) for key, info of resources.sounds
@@ -34,8 +28,8 @@ class ContentManager
       Ticker.setInterval(50)
 
 
-  setDownloadCompletionCallback: (callbackMethod) ->
-    @ondownloadcompleted = callbackMethod
+  setContentStatusCallback: (callbackMethod) ->
+    @contentStatusCallback = callbackMethod
 
 
   downloadImage: (key, info) ->
@@ -49,6 +43,7 @@ class ContentManager
       console.log("Error Loading Asset : " + e.target.src)
     @elements.images[key] = @asset
 
+
   downloadSound: (key, info, extension) ->
     for i in [0..(info.channels || 1)]
       asset = new Audio()
@@ -57,16 +52,40 @@ class ContentManager
       @elements.sounds[key] ||= {channels: [], next: 0}
       @elements.sounds[key].channels.push(asset)
 
+
   downloadsComplete: () ->
-    Ticker.removeAllListeners()
-    @stage.removeChild(@downloadProgress)
-    @ondownloadcompleted()
+    Ticker.removeListener(@)
+    @contentStatusCallback({progress: 100})
+
+
+  tick: () ->
+    percent = Math.round((@numElementsLoaded / @numElementsQueued) * 100)
+    @contentStatusCallback({progress: percent})
+    console.log(percent)
+
+
+  # -- Accessing Images and Sounds -- #
 
   imageNamed: (name) ->
     @elements.images[name]
 
 
-  soundFormatForBrowser: () ->
+  playSound: (name) ->
+    sound = @elements.sounds[name]
+    return unless sound
+
+    sound.channels[sound.next].play()
+    sound.next = (sound.next + 1) % sound.channels.length
+
+
+  pauseSound: (name) ->
+    sound = @elements.sounds[name]
+    return unless sound
+    sound.channels[i].pause() for i in sound.channels.length
+
+
+
+  _soundFormatForBrowser: () ->
     # Need to check the canPlayType first or an exception
     # will be thrown for those browsers that don't support it
     myAudio = document.createElement('audio')
@@ -81,24 +100,5 @@ class ContentManager
       return ".ogg"
     return ".none"
 
-
-  tick: () ->
-    return unless @downloadProgress
-    @downloadProgress.text = "Downloading " + Math.round((@numElementsLoaded / @numElementsQueued) * 100) + " %"
-    @stage.update()
-
-
-  playSound: (name) ->
-    sound = @elements.sounds[name]
-    return unless sound
-    
-    sound.channels[sound.next].play()
-    sound.next = (sound.next + 1) % sound.channels.length
-    
-  pauseSound: (name) ->
-    sound = @elements.sounds[name]
-    return unless sound
-    sound.channels[i].pause() for i in sound.channels.length
-    
 
 window.ContentManager = ContentManager
