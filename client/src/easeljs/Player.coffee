@@ -177,7 +177,7 @@ class Player extends BitmapAnimation
 
       # Begin or continue a jump
       if (not @wasJumping and @IsOnGround) or @jumpTime > 0.0
-        window.Game.Content.playSound('playerJump') if @jumpTime is 0.0
+        window.Game.Content.playSound('PlayerJump') if @jumpTime is 0.0
         @jumpTime += @elapsed
 
         # Playing the proper animation based on
@@ -212,10 +212,10 @@ class Player extends BitmapAnimation
   #/ </summary>
   HandleCollisions: ->
     bounds = @BoundingRectangle()
-    leftTile = Math.floor(bounds.Left() / StaticTile.Width)
-    rightTile = Math.ceil((bounds.Right() / StaticTile.Width)) - 1
-    topTile = Math.floor(bounds.Top() / StaticTile.Height)
-    bottomTile = Math.ceil((bounds.Bottom() / StaticTile.Height)) - 1
+    leftTile = Math.floor(bounds.left() / StaticTile.Width)
+    rightTile = Math.ceil((bounds.right() / StaticTile.Width)) - 1
+    topTile = Math.floor(bounds.top() / StaticTile.Height)
+    bottomTile = Math.ceil((bounds.bottom() / StaticTile.Height)) - 1
 
     # Reset flag to search for ground collision.
     @IsOnGround = false
@@ -234,7 +234,7 @@ class Player extends BitmapAnimation
 
           # Determine collision depth (with direction) and magnitude.
           tileBounds = @level.GetBounds(x, y)
-          depth = bounds.GetIntersectionDepth(tileBounds)
+          depth = bounds.getIntersectionDepth(tileBounds)
           if depth.x isnt 0 and depth.y isnt 0
             absDepthX = Math.abs(depth.x)
             absDepthY = Math.abs(depth.y)
@@ -243,7 +243,7 @@ class Player extends BitmapAnimation
             if absDepthY < absDepthX or collision is Enum.TileCollision.Platform
 
               # If we crossed the top of a tile, we are on the ground.
-              @IsOnGround = true  if @previousBottom <= tileBounds.Top()
+              @IsOnGround = true  if @previousBottom <= tileBounds.top()
 
               # Ignore platforms, unless we are on the ground.
               if collision is Enum.TileCollision.Impassable or @IsOnGround
@@ -264,7 +264,7 @@ class Player extends BitmapAnimation
       ++y
 
     # Save the new bounds bottom.
-    @previousBottom = bounds.Bottom()
+    @previousBottom = bounds.bottom()
 
 
   #/ <summary>
@@ -285,9 +285,9 @@ class Player extends BitmapAnimation
     else
       @gotoAndPlay "die"
     if killedBy isnt null and killedBy isnt `undefined`
-      window.Game.Content.playSound('playerKilled')
+      window.Game.Content.playSound('PlayerKilled')
     else
-      window.Game.Content.playSound('playerFall')
+      window.Game.Content.playSound('PlayerFall')
 
 
   #/ <summary>
@@ -295,7 +295,7 @@ class Player extends BitmapAnimation
   #/ </summary>
   OnReachedExit: ->
     @HasReachedExit = true
-    window.Game.Content.playSound('exitReached')
+    window.Game.Content.playSound('ExitReached')
 
     # Playing the proper animation based on
     # the current direction of our hero

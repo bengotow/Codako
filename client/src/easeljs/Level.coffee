@@ -193,7 +193,7 @@ class Level
   #/ </summary>
   LoadStartTile: (x, y) ->
     throw "A level may only have one starting point."  if @Hero?
-    @Start = @GetBounds(x, y).GetBottomCenter()
+    @Start = @GetBounds(x, y).getBottomCenter()
     @Hero = new Player(window.Game.Content.imageNamed('Player'), this, @Start)
     new Tile(null, Enum.TileCollision.Passable, x, y)
 
@@ -221,7 +221,7 @@ class Level
   #/ Instantiates an enemy and puts him in the level.
   #/ </summary>
   LoadEnemyTile: (x, y, name) ->
-    position = @GetBounds(x, y).GetBottomCenter()
+    position = @GetBounds(x, y).getBottomCenter()
     switch name
       when "MonsterA"
         @Enemies.push new Enemy(this, position, window.Game.Content.imageNamed('MonsterA'))
@@ -286,7 +286,7 @@ class Level
     @stage.addChild(@Hero)
 
     # Playing the background music
-    window.Game.Content.playSound('globalMusic')
+    window.Game.Content.playSound('Music')
 
 
   #/ <summary>
@@ -308,7 +308,7 @@ class Level
     i = 0
     while i < @Gems.length
       @Gems[i].tick()
-      if @Gems[i].BoundingRectangle().Intersects(@Hero.BoundingRectangle())
+      if @Gems[i].BoundingRectangle().intersects(@Hero.BoundingRectangle())
 
         # We remove it from the drawing surface
         @stage.removeChild @Gems[i]
@@ -318,7 +318,7 @@ class Level
         @Gems.splice i, 1
 
         # And we finally play the gem collected sound using a multichannels trick
-        window.Game.Content.playSound('gemCollected')
+        window.Game.Content.playSound('GemCollected')
       i++
 
 
@@ -327,7 +327,7 @@ class Level
   #/ </summary>
   UpdateEnemies: ->
     for enemy in @Enemies
-      if @Hero.IsAlive and enemy.BoundingRectangle().Intersects(@Hero.BoundingRectangle())
+      if @Hero.IsAlive and enemy.BoundingRectangle().intersects(@Hero.BoundingRectangle())
         @OnPlayerKilled(enemy)
       enemy.tick()
 

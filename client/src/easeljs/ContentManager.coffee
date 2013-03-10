@@ -67,12 +67,13 @@ class ContentManager
   # -- Accessing Images and Sounds -- #
 
   imageNamed: (name) ->
-    @elements.images[name]
-
+    img = @elements.images[name]
+    console.log("image #{name} not found.") unless img
+    img
 
   playSound: (name) ->
     sound = @elements.sounds[name]
-    return unless sound
+    return console.log("Sound #{name} not found.") unless sound
 
     sound.channels[sound.next].play()
     sound.next = (sound.next + 1) % sound.channels.length

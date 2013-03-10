@@ -7,21 +7,21 @@ class XNARectangle extends Rectangle
     @Center = new Point(parseInt(@x + @width / 2), parseInt(@y + @height / 2))
     @
 
-  Left: ->
+  left: ->
     parseInt @x
 
-  Right: ->
+  right: ->
     parseInt @x + @width
 
-  Top: ->
+  top: ->
     parseInt @y
 
-  Bottom: ->
+  bottom: ->
     parseInt @y + @height
 
 
   # Checking if the targetted rectangle is contained in this rectangle
-  Contains: (targetRectangle) ->
+  contains: (targetRectangle) ->
     if @x <= targetRectangle.x and targetRectangle.x + targetRectangle.width <= @x + @width and @y <= targetRectangle.y
       targetRectangle.y + targetRectangle.height <= @y + @height
     else
@@ -29,7 +29,7 @@ class XNARectangle extends Rectangle
 
 
   # Checking if the targetted point is contained in this rectangle
-  ContainsPoint: (targetPoint) ->
+  containsPoint: (targetPoint) ->
     if @x <= targetPoint.x and targetPoint.x < @x + @width and @y <= targetPoint.y
       targetPoint.y < @y + @height
     else
@@ -37,7 +37,7 @@ class XNARectangle extends Rectangle
 
 
   # Checking if the targetted rectangle intersects with this rectangle
-  Intersects: (targetRectangle) ->
+  intersects: (targetRectangle) ->
     if targetRectangle.x < @x + @width and @x < targetRectangle.x + targetRectangle.width and targetRectangle.y < @y + @height
       @y < targetRectangle.y + targetRectangle.height
     else
@@ -47,8 +47,8 @@ class XNARectangle extends Rectangle
   #/ <summary>
   #/ Gets the position of the center of the bottom edge of the rectangle.
   #/ </summary>
-  GetBottomCenter: ->
-    new Point(parseInt(@x + (@width / 2)), @Bottom())
+  getBottomCenter: ->
+    new Point(parseInt(@x + (@width / 2)), @bottom())
 
 
   #/ <summary>
@@ -61,7 +61,7 @@ class XNARectangle extends Rectangle
   #/ to push objects in order to resolve collisions.
   #/ If the rectangles are not intersecting, Vector2.Zero is returned.
   #/ </returns>
-  GetIntersectionDepth: (rectB) ->
+  getIntersectionDepth: (rectB) ->
     rectA = this
 
     # Calculate half sizes.
@@ -71,8 +71,8 @@ class XNARectangle extends Rectangle
     halfHeightB = rectB.height / 2.0
 
     # Calculate centers.
-    centerA = new Point(rectA.Left() + halfWidthA, rectA.Top() + halfHeightA)
-    centerB = new Point(rectB.Left() + halfWidthB, rectB.Top() + halfHeightB)
+    centerA = new Point(rectA.left() + halfWidthA, rectA.top() + halfHeightA)
+    centerB = new Point(rectB.left() + halfWidthB, rectB.top() + halfHeightB)
 
     # Calculate current and minimum-non-intersecting distances between centers.
     distanceX = centerA.x - centerB.x
