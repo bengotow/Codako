@@ -1,7 +1,7 @@
 RulesCtrl = ($scope) ->
 
   $scope.rules = () ->
-    return [] unless $scope.Manager
+    return [] unless $scope.Manager && $scope.Manager.level.selectedActor
     $scope.Manager.level.selectedActor.rules
 
   $scope.scenario_before_url = (rule) ->

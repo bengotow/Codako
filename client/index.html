@@ -11,6 +11,7 @@
   <script src="./src/easeljs.js"></script>
   <script src="./src/socket.io.js"></script>
   <script src="./src/bootstrap.js"></script>
+  <script src="./src/bootstrap-colorpicker.js"></script>
 
   <script src="./src/easeljs/XNARectangle.js"></script>
   <script src="./src/easeljs/PlatformerHelper.js"></script>
@@ -25,12 +26,15 @@
   <script src="./src/easeljs/LibraryManager.js"></script>
   <script src="./src/easeljs/LibraryHUD.js"></script>
   <script src="./src/easeljs/GameManager.js"></script>
+  <script src="./src/easeljs/PixelArtCanvas.js"></script>
 
   <script src="./src/angular.js"></script>
   <script src="./src/angular/rules_controller.js"></script>
+  <script src="./src/angular/pixel_art_controller.js"></script>
 
   <link href="/css/bootstrap.min.css" rel="stylesheet" media="screen">
   <link href="/css/editor.css" rel="stylesheet" media="screen">
+  <link href="/css/colorpicker.css" rel="stylesheet" media="screen">
 
   <script>
   var canvas;
@@ -146,13 +150,6 @@
     </div>
   </div>
 
-  <div class="row">
-    <div class="span12" ng-controller="LibraryCtrl">
-      <div class="well">
-      Well
-      </div>
-    </div>
-  </div>
 </div>
 
 
@@ -160,8 +157,75 @@
   Your browser doesn't support HTML5 Canvas!
 </canvas>
 
+<div ng-controller="PixelArtCtrl">
 
+  <!-- Button to trigger modal -->
+  <a href="#myModal" role="button" class="btn" data-toggle="modal" data-ng-click="open_editor()">Launch demo modal</a>
+   
+  <!-- Modal -->
+  <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width:671px;">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+      <h3 id="myModalLabel">Modal header</h3>
+    </div>
+    <div class="modal-body" style="max-height:550px;">
 
+      <ul class="nav nav-tabs">
+        <li class="dropdown">
+          <a class="dropdown-toggle"
+             data-toggle="dropdown"
+             href="#">
+              Dropdown
+              <b class="caret"></b>
+            </a>
+          <ul class="dropdown-menu">
+            <!-- links -->
+          </ul>
+        </li>
+      </ul>
+
+      <div style="float:left; width:120px;">
+
+        <!-- Colors -->
+        <div class="color-preview" style="background-color: {{canvas.toolColor}}"></div>
+        <div ng-repeat="color in colors" class="btn color" data-color="{{color}}" data-ng-click="set_tool_color(color)">
+          <i style="background-color: {{color}}"></i>
+        </div>
+
+        <div class="btn color" data-color="rgb(255, 146, 180)" data-color-format="rgb" id="cp1">
+            <span class="add-on"><i></i></span>
+        </div>
+
+        <!-- Tools -->
+
+        <div ng-repeat="tool in canvas.tools" class="btn" data-ng-click="set_tool(tool)">{{tool.name}}
+        </div>
+
+        <!-- Undo / Redo -->
+
+        <div class="btn" data-ng-disabled="!canvas.canUndo()" data-ng-click="canvas.undo()">Undo</div>
+        <div class="btn" data-ng-disabled="!canvas.canRedo()" data-ng-click="canvas.redo()">Redo</div>
+
+      </div>
+      <div style="float:left; width:521px;">
+        <canvas id="pixelArtCanvas" width="521" height="521">
+        </canvas>
+      </div>
+
+      <div style="clear:both;" class="pagination pagination-centered">
+        <ul>
+          <li class="disabled"><a href="#">&laquo;</a></li>
+          <li class="active"><a href="#">1</a></li>
+        </ul>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+      <button class="btn btn-primary">Save changes</button>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>

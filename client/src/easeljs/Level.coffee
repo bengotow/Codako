@@ -40,7 +40,6 @@ class Level
     console.log('Requesting Level Data')
     window.Socket.emit 'level', {identifier: @identifier}
     window.Socket.on 'levelData', (data) =>
-      debugger
       console.log('Got Level Data', data)
       return unless data.identifier == @identifier
       @loadDataReady(data)
@@ -68,7 +67,7 @@ class Level
       actor_descriptors: []
     data.actor_descriptors.push(actor.descriptor()) for actor in @actors
     window.Socket.emit 'levelData', data
-    
+
 
   addActor: (descriptor) ->
     actor = window.Game.Library.instantiateActorFromDescriptor(descriptor, @)
