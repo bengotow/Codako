@@ -1,7 +1,7 @@
 ﻿
 class Level
 
-  constructor: (stage, identifier = 'untitled') ->
+  constructor: (stage, identifier) ->
     @identifier = identifier
     @stage = stage
     @actors = []
@@ -18,8 +18,19 @@ class Level
     document.onkeyup = (e) =>
       @keysUpSinceLast[e.keyCode] = true
 
+    # Make the canvas droppable - a bit of a hack
+    @stage.canvas.ondrop = (e, dragEl) =>
+      identifier = $(dragEl.draggable).data('identifier')
+      parentOffset = $(@stage.canvas).parent().offset()
+      point = new Point(Math.round((e.pageX - e.offsetX - parentOffset.left) / Tile.WIDTH), Math.round((e.pageY - e.offsetY - parentOffset.top) / Tile.HEIGHT))
+      @onActorPlaced({identifier: identifier, position: point})
+
+
     # Creating a random background based on the 3 layers available in 3 versions
-    @stage.addChild(new Bitmap(window.Game.Content.imageNamed('Layer0_0')))
+    background = new Bitmap(window.Game.Content.imageNamed('Layer0_0'))
+    background.addEventListener 'click', (e) =>
+      @onActorClicked(null)
+    @stage.addChild(background)
     @
 
   #/ <summary>
@@ -38,35 +49,45 @@ class Level
 
   load: (callback) ->
     console.log('Requesting Level Data')
-    window.Socket.emit 'level', {identifier: @identifier}
-    window.Socket.on 'levelData', (data) =>
+    window.Socket.emit 'get-level', {identifier: @identifier}
+    window.Socket.on 'level', (data) =>
       console.log('Got Level Data', data)
       return unless data.identifier == @identifier
       @loadDataReady(data)
       callback(null)
 
 
-  # Callback method for the onreadystatechange event of XMLHttpRequest
   loadDataReady: (json) ->
     @width = json['width']
     @height = json['height']
     @tiles = Array.matrix(@height, @width, "|")
-    @initialGameTime = Ticker.getTime()
 
-    for descriptor in json['actor_descriptors']
-      @addActor(descriptor)
+    # make sure all of the actors on the stage are in the library
+    for actor in json.actor_descriptors
+      json.actor_library.push(actor.identifier) if json.actor_library.indexOf(actor.identifier) == -1
 
-    # Playing the background music
-    window.Game.Content.playSound('Music')
+    # fetch the actor definitions (which include base64 image data, etc...)
+    window.Game.Library.loadActorDefinitions json.actor_library, (err) =>
+      console.log('Got Actor Data')
+      @initialGameTime = Ticker.getTime()
+      @addActor(descriptor) for descriptor in json['actor_descriptors']
+
+
+  updatedDataReady: () ->
+    debugger
+    for actor in @actors
+      actor.createSpriteSheet(actor.definition.img, actor.definition.spritesheet.animations)
+
 
   save: () ->
-    data = 
+    data =
       identifier: @identifier
       width: @width,
       height: @height,
+      actor_library: @actorIdentifiers(),
       actor_descriptors: []
     data.actor_descriptors.push(actor.descriptor()) for actor in @actors
-    window.Socket.emit 'levelData', data
+    window.Socket.emit 'put-level', data
 
 
   addActor: (descriptor) ->
@@ -98,6 +119,13 @@ class Level
       if actor.worldPos.isEqual(position)
         results.push(actor)
     results
+
+
+  actorIdentifiers: () ->
+    ids = []
+    for actor in @actors
+      ids.push(actor.identifier) if ids.indexOf(actor.identifier) == -1
+    ids
 
 
   actorsAtPositionMatchDescriptors: (position, descriptors) ->
@@ -139,8 +167,11 @@ class Level
 
   onActorClicked: (actor) ->
     @selectedActor.setSelected(false) if @selectedActor
+    @selectedDefinition = null
+
     @selectedActor = actor
-    @selectedActor.setSelected(true)
+    @selectedDefinition = @selectedActor.definition if @selectedActor
+    @selectedActor.setSelected(true) if @selectedActor
     window.rootScope.$digest()
 
 
@@ -150,6 +181,7 @@ class Level
 
   onActorPlaced: (actor_descriptor) ->
     @addActor(actor_descriptor)
+    @update()
     @save()
 
 

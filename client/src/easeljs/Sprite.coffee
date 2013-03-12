@@ -10,9 +10,9 @@ class Sprite extends BitmapAnimation
     @selected = false
 
 
-  createSpriteSheet: (name, animations) ->
+  createSpriteSheet: (image, animations) ->
     sheet = new SpriteSheet(
-      images: [window.Game.Content.imageNamed(name)] #image to use
+      images: [image] #image to use
       animations: animations
       frames:
         width: Tile.WIDTH * @worldSize.width

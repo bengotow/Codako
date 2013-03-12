@@ -7,13 +7,14 @@ String::withoutExtension = () ->
   @[0..-(1+ext.length)]
 
 
-class UserConroller
+class UserController
 
   @DEFAULT_LEVEL =
     {
       identifier: 'untitled'
       width: 20
       height: 12
+      actor_library: ['rock', 'dude']
       actor_descriptors: [
         {
           identifier: 'dude',
@@ -26,29 +27,30 @@ class UserConroller
       ]
     }
 
-  @DEFAULT_ACTORS =
-    [
+  @DEFAULT_ACTORS = {
+    'rock':
       {
+        name:'Rock'
         identifier: 'rock',
         size: {width: 1, height: 1}
         spritesheet: {
-          name: "BlockA0",
           animations: {
             idle: [0,0]
           }
         }
-      },
+      }
+    'dude':
       {
+        name: 'Dude'
         identifier: 'dude',
         size: {width: 1, height: 1}
         spritesheet: {
-          name: "Player",
           animations: {
             walk: [0, 9, "walk", 4]
             die: [10, 21, false, 4]
             jump: [22, 32, false]
             celebrate: [33, 43, false, 4]
-            idle: [44, 44]
+            idle: [0,0]
           }
         }
         rules: [
@@ -92,10 +94,9 @@ class UserConroller
               }]
             }]
           }
-
         ]
       }
-    ]
+    }
 
 
   constructor: () ->
@@ -133,7 +134,9 @@ class UserConroller
     return callback(new Error('Permission Denied')) if !@username
     rdb.get "u:#{@username}-l:#{identifier}", (err, result) =>
       result = JSON.parse(result) if result
-      result = UserConroller.DEFAULT_LEVEL if result == null
+      if result == null
+        result = JSON.parse(JSON.stringify(UserController.DEFAULT_LEVEL))
+        result.identifier = identifier
       callback(err, result)
 
 
@@ -147,15 +150,15 @@ class UserConroller
     rdb.set "u:#{@username}-l:#{identifier}", data, callback
 
 
-  getActors: (identifier, callback) ->
+  getActor: (identifier, callback) ->
     return callback(new Error('Permission Denied')) if !@username
     rdb.get "u:#{@username}-a:#{identifier}", (err, result) =>
       result = JSON.parse(result) if result
-      result = UserConroller.DEFAULT_ACTORS if result == null
+      result = UserController.DEFAULT_ACTORS[identifier] if result == null
       callback(err, result)
 
 
-  saveActors: (identifier, data, callback) ->
+  saveActor: (identifier, data, callback) ->
     return callback(new Error('Permission Denied')) if !@username
     try
       data = JSON.stringify(data) unless data instanceof String
@@ -165,4 +168,4 @@ class UserConroller
     rdb.set "u:#{@username}-a:#{identifier}", data, callback
 
 
-module.exports = UserConroller
+module.exports = UserController

@@ -6,7 +6,7 @@ class ProgrammableSprite extends Sprite
 
   constructor: (identifier, position, size, level) ->
     @identifier = identifier
-    @rules = []
+    @definition = undefined
     @currentFrame = 66
 
     super(position, size, level)
@@ -22,7 +22,7 @@ class ProgrammableSprite extends Sprite
 
   reset: (position) ->
     super(position)
-    @gotoAndPlay "idle"
+    @gotoAndPlay("idle")
 
 
   tick: (elapsed) ->
@@ -31,8 +31,8 @@ class ProgrammableSprite extends Sprite
 
 
   tickRules: () ->
-    return unless @rules
-    for rule in @rules
+    return unless @definition
+    for rule in @definition.rules
       if @checkTriggers(rule.triggers) && @checkScenario(rule.scenario)
         @applyScenario(rule.scenario)
 

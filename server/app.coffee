@@ -3,6 +3,7 @@ global.crypto = require("crypto")
 global.coffeescript = require('connect-coffee-script')
 global.pathUtils = require("path")
 global.redis = require("redis")
+global.knox = require("knox")
 global.fs = require("fs")
 global._ = require('underscore')
 
@@ -45,26 +46,40 @@ if env.redis.password
   dbAuth()
 
 
+# Open an S3 connection
+global.s3 = knox.createClient
+  key: env.aws.accesskey
+  secret: env.aws.secretkey
+  bucket: env.aws.bucket
+
+
 # Launch socket.io on the server
 app.listen(env.socket_io.port)
 io = require("socket.io").listen(app)
 
 io.sockets.on "connection", (socket) ->
 
-  socket.on "level", (args = {identifier: 'untitled'}) ->
-    socket.user.getLevel args.identifier, (err, data) ->
-      socket.emit "levelData", data
+  socket.on 'get-actor', (args = {identifier: 'untitled'}) ->
+    socket.user.getActor args.identifier, (err, data) ->
+      socket.emit 'actor', data
 
-  socket.on "levelData", (data) ->
+  socket.on 'put-actor', (args = {identifier: 'untitled', definition: {}}) ->
+    socket.user.saveActor(args.identifier, args.definition)
+
+
+  socket.on 'get-level', (args = {identifier: 'untitled'}) ->
+    socket.user.getLevel args.identifier, (err, data) ->
+      socket.emit 'level', data
+
+  socket.on 'put-level', (data) ->
     socket.user.saveLevel(data.identifier, data)
 
-  socket.on "auth", (args) ->
+
+  socket.on 'auth', (args) ->
     socket.user = new UserController()
     socket.user.authenticate args.username, args.password, (err) ->
-      socket.emit "auth-state", {err: err}
+      socket.emit 'auth-state', {err: err}
       if !err
-        socket.user.getActors 'default', (err, data) ->
-          socket.emit "actorlist", data
         socket.user.getAssets 'default', (err, data) ->
           socket.emit "assetlist", data
 

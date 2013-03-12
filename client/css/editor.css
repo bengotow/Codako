@@ -75,3 +75,20 @@
   height:30px;
   border-radius: 5px;
 }
+
+#library #definitions i,
+#library #animations i {
+  display:inline-block;
+  font-size:0.8em;
+  font-weight:bold;
+  color:#444;
+}
+
+#library #definitions > div,
+#library #animations > div {
+  display:inline-block;
+  text-align: center;
+  width:50px;
+  height:60px;
+  line-height:14px;
+}

@@ -1,8 +1,8 @@
 RulesCtrl = ($scope) ->
 
   $scope.rules = () ->
-    return [] unless $scope.Manager && $scope.Manager.level.selectedActor
-    $scope.Manager.level.selectedActor.rules
+    return [] unless $scope.Manager && $scope.Manager.level.selectedDefinition
+    $scope.Manager.level.selectedDefinition.rules
 
   $scope.scenario_before_url = (rule) ->
     window.Game.Manager.renderRuleScenario(rule.scenario)

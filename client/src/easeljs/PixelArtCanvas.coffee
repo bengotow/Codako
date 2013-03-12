@@ -109,16 +109,11 @@ class PixelArtCanvas
     @controller = controller_scope
     @width = canvas.width
     @height = canvas.height
+    @image = image
     @tools = [new PixelFreehandTool(), new PixelLineTool(), new PixelFillTool()]
     @tool = @tools[0]
     @toolColor = "rgba(0,0,0,255)"
     @pixelSize = Math.floor(@width / Tile.WIDTH)
-    @undoStack = []
-    @redoStack = []
-
-    # generate initial image of the workspace
-    @imageData = @_rgbaDataForImage(image, canvas)
-
     canvas.width = @width
     canvas.height = @height
     canvas.addEventListener('mousedown', @handleCanvasEvent, false)
@@ -132,13 +127,25 @@ class PixelArtCanvas
       @context.fillStyle = color
       @context.fillRect(x * @pixelSize, y * @pixelSize, @pixelSize, @pixelSize)
 
-    @imageData.fillPixel = (x, y, color = @toolColor) =>
-      components = color[5..-2].split(',')
-      for i in [0..components.length-1]
-        @imageData.data[(y * Tile.WIDTH + x) * 4 + i] = components[i]/1
+    # generate initial image of the workspace
+    @setDisplayedTile(0,0)
 
+  setImage: (img) ->
+    @image = img
+    @setDisplayedTile(0,0)
     @render()
 
+  setDisplayedTile: (x, y, saveChanges = false) ->
+    @undoStack = []
+    @redoStack = []
+
+    @image.onload = () =>
+      @prepareDataForDisplayedTile()
+      @render()
+    @image.src = @dataURLRepresentation() if saveChanges
+    @imageDisplayedTile = new Point(x,y)
+    @prepareDataForDisplayedTile()
+    @render()
 
 
   stagePointToPixel: (x, y) ->
@@ -165,6 +172,7 @@ class PixelArtCanvas
     @applyPixelsFromData(@imageData.data, @context)
     @tool.render(@context) if @tool
 
+    @context.strokeStyle = "rgba(70,70,70,.30)"
     @context.beginPath()
     for x in [0..Tile.WIDTH+1]
       @context.moveTo(x * @pixelSize + 0.5, 0)
@@ -216,15 +224,41 @@ class PixelArtCanvas
     @render()
 
 
-  _rgbaDataForImage: (image, canvas) ->
-    canvas.width = Tile.WIDTH
-    canvas.height = Tile.HEIGHT
-    context = canvas.getContext("2d")
-    context.imageSmoothingEnabled = false
-    context.fillStyle = "rgb(255,255,255)"
-    context.fillRect(0,0,canvas.width, canvas.height)
-    context.drawImage(image, 0, 0) if image
-    context.getImageData(0,0,canvas.width,canvas.height)
+  dataURLRepresentation: () ->
+    totalWidth = Math.max(@image.width, @imageDisplayedTile.x * Tile.WIDTH + Tile.WIDTH)
+    totalHeight = Math.max(@image.height, @imageDisplayedTile.x * Tile.WIDTH + Tile.WIDTH)
+
+    url = false
+    @_withTempCanvas totalWidth, totalHeight, (canvas) =>
+      context = canvas.getContext("2d")
+      context.drawImage(@image, 0, 0) if @image
+      context.putImageData(@imageData, @imageDisplayedTile.x * Tile.WIDTH, @imageDisplayedTile.y * Tile.HEIGHT)
+      url = canvas.toDataURL()
+
+    url
+
+  prepareDataForDisplayedTile: () ->
+    @_withTempCanvas Tile.WIDTH, Tile.HEIGHT, (canvas) =>
+      context = canvas.getContext("2d")
+      context.imageSmoothingEnabled = false
+      context.fillStyle = "rgb(255,255,255)"
+      context.fillRect(0,0, canvas.width, canvas.height)
+      context.drawImage(@image, -@imageDisplayedTile.x * Tile.WIDTH, -@imageDisplayedTile.y * Tile.HEIGHT) if @image
+      @imageData = context.getImageData(0, 0, canvas.width, canvas.height)
+      @imageData.fillPixel = (x, y, color = @toolColor) =>
+        components = color[5..-2].split(',')
+        for i in [0..components.length-1]
+          @imageData.data[(y * Tile.WIDTH + x) * 4 + i] = components[i]/1
+    @imageData
+
+
+  _withTempCanvas: (w, h, func) ->
+    canvas = document.createElement("canvas")
+    canvas.width = w
+    canvas.height = h
+    document.body.appendChild(canvas)
+    func(canvas)
+    document.body.removeChild(canvas)
 
 
 

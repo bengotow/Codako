@@ -4,18 +4,24 @@ class LibraryHUD
     @stage = stage
     @stamps = []
 
-    g = new Graphics()
-    g.beginFill(Graphics.getRGB(200,200,200))
-    g.drawRect(0,0,@stage.canvas.width, 50)
+    s = new DisplayObject()
+    s.draw = (ctx, ignoreCache) =>
+      ctx.fillStyle = 'rgba(200,200,200,255)'
+      ctx.fillRect(0,0, @stage.canvas.width, 70)
+      ctx.font = "14px Arial"
+      ctx.fillStyle = 'rgba(0,0,0,1)'
+      ctx.fillText("Hello World", 10, 15)
+      true
 
-    s = new Shape(g)
     s.x = 0
-    s.y = @stage.canvas.height - 50
+    s.y = @stage.canvas.height - 70
     @stage.addChild(s)
     @reload()
 
   reload: () ->
     return unless window.Game.Library.definitions
+    @stage.removeChild(stamp) for stamp in @stamps
+
     x = 5
     y = @stage.canvas.height - 45
     for identifier, def of window.Game.Library.definitions
@@ -31,7 +37,9 @@ class LibraryHUD
     sprite.x = x
     sprite.y = y
     sprite.dropped = (point) ->
-      window.Game.Manager.level.onActorPlaced({identifier: identifier, position: point})
+      level = window.Game.Manager.level
+      if point.x < level.width || point.y < level.height
+        window.Game.Manager.level.onActorPlaced({identifier: identifier, position: point})
       @dragging = false
       @alpha = 1
       @x = x

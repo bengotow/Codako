@@ -20,7 +20,6 @@ class GameManager
     try
       if @level isnt null
         @level.update()
-        @hud.update()
     catch e
       console.log "Error", e.message
 
@@ -81,11 +80,9 @@ class GameManager
     @SetOverlayCanvas()
 
     @level.dispose()  if @level?
-    @level = new Level(@stage, 'untitled')
+    @level = new Level(@stage, 'untitled4')
     @level.load () =>
       @HideStatusCanvas()
-
-    @hud = new LibraryHUD(@stage)
 
     Ticker.addListener(@)
     Ticker.useRAF = false
@@ -93,8 +90,7 @@ class GameManager
 
 
   libraryActorsLoaded: () ->
-    @hud.reload() if @hud
-
+    window.rootScope.$apply()
 
   renderRuleScenario: (scenario, applyActions = false) ->
     # Creating a random background based on the 3 layers available in 3 versions
