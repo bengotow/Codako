@@ -21,14 +21,17 @@ PixelArtCtrl = ($scope) ->
     $scope.set_active_color(ev.color.toRGB())
 
 
-  $scope.$root.$on 'edit_animation', (msg, args) ->
+  $scope.$root.$on 'edit_appearance', (msg, args) ->
     $scope.actor_definition = args.actor_definition
     img = $scope.actor_definition.img
     if $scope.canvas
       $scope.canvas.setImage(img)
     else
       $scope.canvas = new PixelArtCanvas(img, $('#pixelArtCanvas')[0], $scope)
-    $scope.canvas.setDisplayedTile(args.coords[0], args.coords[1])
+
+
+    frame = $scope.actor_definition.frameForAppearance(args.name)
+    $scope.canvas.setDisplayedFrame(frame)
     $('#pixelArtModal').modal({show:true})
 
 

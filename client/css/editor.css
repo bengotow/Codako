@@ -76,8 +76,23 @@
   border-radius: 5px;
 }
 
+#library .name {
+  width:54px;
+  border:0;
+  height:1.4em;
+  text-align: center;
+  background-color:transparent;
+  font-size: 0.85em;
+}
+
+#library .name:focus {
+  border: 1px solid #ccc;
+  outline: none;
+  background-color:rgba(255,255,255,0.6);
+}
+
 #library #definitions i,
-#library #animations i {
+#library #appearances i {
   display:inline-block;
   font-size:0.8em;
   font-weight:bold;
@@ -85,10 +100,15 @@
 }
 
 #library #definitions > div,
-#library #animations > div {
+#library #appearances > div {
   display:inline-block;
   text-align: center;
-  width:50px;
-  height:60px;
+  padding-top:5px;
+  width:65px;
+  height:65px;
   line-height:14px;
+}
+
+#library .active {
+  background-color: rgba(100,100,255,0.4);
 }

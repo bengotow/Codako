@@ -8,18 +8,8 @@ class LibraryManager
     @definitionReadyCallbacks = {}
 
     window.Socket.on 'actor', (actor_json) =>
-      img = new Image()
       actor = new ActorDefinition(actor_json)
-
-      img.onload = () =>
-        actor.img = img
-        @outstanding -= 1
-        @addActorDefinition(actor)
-        callback = @definitionReadyCallbacks[actor.identifier]
-        callback(null) if callback
-
-      actor.spritesheet.data ||= '/game/img/Tiles/BlockA0.png'
-      img.src = actor.spritesheet.data
+      @addActorDefinition(actor)
 
 
   # -- Actor Definitions -- #
@@ -36,10 +26,19 @@ class LibraryManager
     window.Socket.emit 'get-actor', {identifier: identifier}
 
 
-  addActorDefinition: (def) =>
-    @definitions[def.identifier] = def
-    window.Game.Manager.libraryActorsLoaded()
-    console.log('Added Actor Definition', def)
+  addActorDefinition: (actor) =>
+    img = new Image()
+    img.onload = () =>
+      actor.img = img
+      @outstanding -= 1
+      @definitions[actor.identifier] = actor
+      window.Game.Manager.libraryActorsLoaded()
+      console.log('Added Actor Definition', actor)
+      callback = @definitionReadyCallbacks[actor.identifier]
+      callback(null) if callback
+
+    actor.spritesheet.data ||= '/game/img/Tiles/BlockA0.png'
+    img.src = actor.spritesheet.data
 
 
   # -- Using Actor Descriptors to Reference Actors ---#
@@ -53,9 +52,8 @@ class LibraryManager
     pos = Point.fromHash(descriptor.position) if descriptor.position
 
     model = new ProgrammableSprite(ident, pos, def.size, level)
-    model.createSpriteSheet(def.img, def.spritesheet.animations)
+    model.setSpriteSheet(def.spritesheetInstance())
     model.definition = def
-    console.log('Instantiated', model)
     model
 
 

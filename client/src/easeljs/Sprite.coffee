@@ -10,6 +10,11 @@ class Sprite extends BitmapAnimation
     @selected = false
 
 
+  setSpriteSheet: (sheet) ->
+    Sprite.__super__.initialize.call(@, sheet)
+    @gotoAndStop('idle')
+
+
   createSpriteSheet: (image, animations) ->
     sheet = new SpriteSheet(
       images: [image] #image to use
@@ -21,9 +26,7 @@ class Sprite extends BitmapAnimation
         regY: 0
     )
     SpriteSheetUtils.addFlippedFrames(sheet, true, false, false)
-    Sprite.__super__.initialize.call(@, sheet)
-    @gotoAndStop('idle')
-
+    @setSpriteSheet(sheet)
 
   tick: (elapsed) ->
     if @nextPos

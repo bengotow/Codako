@@ -34,6 +34,7 @@ class UserController
         identifier: 'rock',
         size: {width: 1, height: 1}
         spritesheet: {
+          width: 40
           animations: {
             idle: [0,0]
           }
@@ -45,12 +46,10 @@ class UserController
         identifier: 'dude',
         size: {width: 1, height: 1}
         spritesheet: {
+          width: 40
           animations: {
-            walk: [0, 9, "walk", 4]
-            die: [10, 21, false, 4]
-            jump: [22, 32, false]
-            celebrate: [33, 43, false, 4]
             idle: [0,0]
+            walk: [1,1]
           }
         }
         rules: [
@@ -109,7 +108,7 @@ class UserController
     callback(null)
 
   assetsInDirectory: (directory, options = {}, items = {}) ->
-    files = fs.readdirSync("#{global.process.env['OLDPWD']}/#{env.connect.web_path}#{directory}")
+    files = fs.readdirSync("#{env.connect.web_path}#{directory}")
     for filename in files
       isDirectory = !pathUtils.extname(filename)
       relativePath = "#{directory}/#{filename}"

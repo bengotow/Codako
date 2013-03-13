@@ -104,7 +104,7 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="brand" href="#">Cocoa</a>
+      <a class="brand" href="#">Kodako</a>
 <!--       <div class="nav-collapse collapse">
         <ul class="nav">
           <li class="active"><a href="#">Home</a></li>
@@ -116,7 +116,6 @@
   </div>
 </div>
 
-
 <div class="container" style="width:1120px;margin:auto;">
   <div class="row">
     <div class="span10">
@@ -127,6 +126,7 @@
       </div>
     </div>
 
+    <!-- Begin Rules Controller -->
     <div class="span4" ng-controller="RulesCtrl">
       <ul class="nav nav-tabs">
         <li><a href="#rules" data-toggle="tab">Rules</a></li>
@@ -164,61 +164,44 @@
         </div>
       </div>
     </div>
+    <!-- End Rules Controller -->
   </div>
 
+  <!-- Begin Library Controller -->
+  <div id="library" ng-controller="LibraryCtrl">
+    <div id="definitions" style="width:500px; float:left;">
+      <h4>{{library_name}}</h4>
+      <div ng-repeat="def in definitions()" data-ng-click="select_definition(def)" class="{{class_for_definition(def)}}">
+        <i draggable data-identifier="{{def.identifier}}" style="{{css_for_sprite_frame(def)}}"></i>
+        <input class="name" data-ng-model="def.name" data-ng-blur="save_definition(def)" />
+      </div>
+
+      <div class="btn" data-ng-click="add_definition()">Add</div>
+
+    </div>
+
+    <div id="appearances" style="width:300px; float:left;">
+      <h4>Appearances</h4>
+      <div ng-repeat="(name,frames) in selected_appearances()" ng-dblclick="edit_appearance(name, frames[0])">
+        <i draggable style="{{css_for_sprite_frame(selected_definition(), frames[0])}}"></i>
+        <input class="name" data-ng-model="name" data-ng-blur="save_definition()" />
+      </div>
+    </div>
+
+    <div class="btn" data-ng-click="add_appearance()">Add</div>
+
+    <div style="clear:both;"></div>
+  </div>
+  <!-- End Library Controller -->
 </div>
 
 
-<div id="library" ng-controller="LibraryCtrl">
-  <div id="definitions" style="width:500px; float:left;">
-    <h4>{{library_name}}</h4>
-    <div draggable ng-repeat="def in definitions()" data-identifier="{{def.identifier}}">
-      <i style="{{cssForSprite(def)}}"></i>
-      <div>{{def.identifier}}</div>
-    </div>
-  </div>
-
-  <div id="animations" style="width:300px; float:left;">
-    <h4>Appearances</h4>
-    <div draggable ng-repeat="(name,coords) in selected_animations()" ng-dblclick="edit_animation(name,coords)">
-      <i style="{{cssForSprite(selected_definition(), coords[0], coords[1])}}"></i>
-      <div>{{name}}</div>
-    </div>
-  </div>
-
-  <div style="clear:both;"></div>
-
-</div>
-
-
-<canvas id="renderingCanvas" width="300" height="300" style="background-color:black">
-  Your browser doesn't support HTML5 Canvas!
-</canvas>
-
-
-<div ng-controller="PixelArtCtrl">
-
-  <!-- Modal -->
-  <div id="pixelArtModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width:671px;" data-backdrop="static">
+<!-- Begin Pixel Art Controller -->
+  <div ng-controller="PixelArtCtrl" id="pixelArtModal" class="modal hide fade" tabindex="-1" role="dialog" aria-hidden="true" style="width:671px;" data-backdrop="static">
     <div class="modal-header">
-      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-      <h3 id="myModalLabel">Modal header</h3>
+      <h3>Edit Appearance</h3>
     </div>
-    <div class="modal-body" style="max-height:550px;">
-
-      <ul class="nav nav-tabs">
-        <li class="dropdown">
-          <a class="dropdown-toggle"
-             data-toggle="dropdown"
-             href="#">
-              Dropdown
-              <b class="caret"></b>
-            </a>
-          <ul class="dropdown-menu">
-            <!-- links -->
-          </ul>
-        </li>
-      </ul>
+    <div class="modal-body" style="max-height:585px;">
 
       <div style="float:left; width:120px;">
 
@@ -234,8 +217,7 @@
 
         <!-- Tools -->
 
-        <div ng-repeat="tool in canvas.tools" class="btn" data-ng-click="set_tool(tool)">{{tool.name}}
-        </div>
+        <div ng-repeat="tool in canvas.tools" class="btn" data-ng-click="set_tool(tool)">{{tool.name}}</div>
 
         <!-- Undo / Redo -->
 
@@ -263,6 +245,16 @@
     </div>
   </div>
 </div>
+<!-- End Pixel Art Controller -->
+
+
+<!-- Offscreen Resources for Rendering / Debugging -->
+<div style="display:none;">
+  <canvas id="renderingCanvas" width="300" height="300" style="background-color:black">
+    Your browser doesn't support HTML5 Canvas!
+  </canvas>
+</div>
+
 
 </body>
 </html>

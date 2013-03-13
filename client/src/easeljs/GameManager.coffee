@@ -80,7 +80,7 @@ class GameManager
     @SetOverlayCanvas()
 
     @level.dispose()  if @level?
-    @level = new Level(@stage, 'untitled4')
+    @level = new Level(@stage, 'untitled7')
     @level.load () =>
       @HideStatusCanvas()
 

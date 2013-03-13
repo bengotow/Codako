@@ -116,6 +116,7 @@ class PixelArtCanvas
     @pixelSize = Math.floor(@width / Tile.WIDTH)
     canvas.width = @width
     canvas.height = @height
+    $(canvas).css('cursor', 'crosshair')
     canvas.addEventListener('mousedown', @handleCanvasEvent, false)
     canvas.addEventListener('mousemove', @handleCanvasEvent, false)
     canvas.addEventListener('mouseup',   @handleCanvasEvent, false)
@@ -128,39 +129,34 @@ class PixelArtCanvas
       @context.fillRect(x * @pixelSize, y * @pixelSize, @pixelSize, @pixelSize)
 
     # generate initial image of the workspace
-    @setDisplayedTile(0,0)
+    @setDisplayedFrame(0)
 
   setImage: (img) ->
     @image = img
-    @setDisplayedTile(0,0)
+    @setDisplayedFrame(0)
     @render()
 
-  setDisplayedTile: (x, y, saveChanges = false) ->
+  setDisplayedFrame: (index, saveChanges = false) ->
     @undoStack = []
     @redoStack = []
 
     @image.onload = () =>
-      @prepareDataForDisplayedTile()
+      @prepareDataForDisplayedFrame()
       @render()
     @image.src = @dataURLRepresentation() if saveChanges
-    @imageDisplayedTile = new Point(x,y)
-    @prepareDataForDisplayedTile()
+    @imageDisplayedFrame = index
+    @prepareDataForDisplayedFrame()
     @render()
 
 
   stagePointToPixel: (x, y) ->
-    new Point(Math.round(x / @pixelSize), Math.round(y / @pixelSize))
+    new Point(Math.floor(x / @pixelSize), Math.floor(y / @pixelSize))
 
 
   handleCanvasEvent: (ev) =>
     return unless @tool
-    if (ev.layerX || ev.layerX == 0)
-      ev._x = ev.layerX
-      ev._y = ev.layerY
-    else if (ev.offsetX || ev.offsetX == 0)
-      ev._x = ev.offsetX
-      ev._y = ev.offsetY
-
+    ev._x = ev.offsetX
+    ev._y = ev.offsetY
     @tool[ev.type](@stagePointToPixel(ev._x, ev._y))
     @applyTool() if ev.type == 'mouseup'
     @render()
@@ -224,31 +220,40 @@ class PixelArtCanvas
     @render()
 
 
+  coordsForFrame: (frame) ->
+    x = frame % (@image.width / Tile.WIDTH)
+    y = Math.floor(frame / (@image.width / Tile.WIDTH))
+    [x  * Tile.WIDTH, y * Tile.HEIGHT]
+
+
   dataURLRepresentation: () ->
-    totalWidth = Math.max(@image.width, @imageDisplayedTile.x * Tile.WIDTH + Tile.WIDTH)
-    totalHeight = Math.max(@image.height, @imageDisplayedTile.x * Tile.WIDTH + Tile.WIDTH)
+    [x,y] = @coordsForFrame(@imageDisplayedFrame)
+
+    totalWidth = Math.max(@image.width, x + Tile.WIDTH)
+    totalHeight = Math.max(@image.height, y + Tile.HEIGHT)
 
     url = false
     @_withTempCanvas totalWidth, totalHeight, (canvas) =>
       context = canvas.getContext("2d")
       context.drawImage(@image, 0, 0) if @image
-      context.putImageData(@imageData, @imageDisplayedTile.x * Tile.WIDTH, @imageDisplayedTile.y * Tile.HEIGHT)
+      context.putImageData(@imageData, x, y)
       url = canvas.toDataURL()
 
-    url
+    {data: url, width: totalWidth}
 
-  prepareDataForDisplayedTile: () ->
+  prepareDataForDisplayedFrame: () ->
     @_withTempCanvas Tile.WIDTH, Tile.HEIGHT, (canvas) =>
+      [x, y] = @coordsForFrame(@imageDisplayedFrame)
       context = canvas.getContext("2d")
       context.imageSmoothingEnabled = false
       context.fillStyle = "rgb(255,255,255)"
       context.fillRect(0,0, canvas.width, canvas.height)
-      context.drawImage(@image, -@imageDisplayedTile.x * Tile.WIDTH, -@imageDisplayedTile.y * Tile.HEIGHT) if @image
+      context.drawImage(@image, -x, -y) if @image
       @imageData = context.getImageData(0, 0, canvas.width, canvas.height)
-      @imageData.fillPixel = (x, y, color = @toolColor) =>
+      @imageData.fillPixel = (xx, yy, color = @toolColor) =>
         components = color[5..-2].split(',')
         for i in [0..components.length-1]
-          @imageData.data[(y * Tile.WIDTH + x) * 4 + i] = components[i]/1
+          @imageData.data[(yy * Tile.WIDTH + xx) * 4 + i] = components[i]/1
     @imageData
 
 
