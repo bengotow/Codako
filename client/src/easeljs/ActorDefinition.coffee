@@ -59,7 +59,7 @@ class ActorDefinition
     @spritesheet.data = args.data
     @spritesheet.width = args.width
     @img.src = args.data
-    setTimeout ()=>
+    setTimeout () =>
       @rebuildSpritesheetInstance()
       @ruleRenderCache = {}
       window.rootScope.$apply()
@@ -86,13 +86,16 @@ class ActorDefinition
     @spritesheet.animation_names[identifier] = newname
 
   addAppearance: (name = 'Untitled') ->
-    identifier = Math.floor((1 + Math.random()) * 0x10000).toString(6)
+    identifier = 'a' + Math.floor((1 + Math.random()) * 0x10000).toString(6)
     animationCount = Object.keys(@spritesheet.animations).length
     framesWide = @img.width / (Tile.WIDTH * @size.width)
     index = framesWide * animationCount
     @spritesheet.animations[identifier] = [index]
     @spritesheet.animation_names[identifier] = name
     identifier
+
+  deleteAppearance: (identifier) ->
+    delete @spritesheet.animations[identifier]
 
 
 

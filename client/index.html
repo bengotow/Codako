@@ -182,15 +182,18 @@
 
     <div id="appearances" style="width:300px; float:left;">
       <h4>Appearances</h4>
-      <div ng-repeat="(identifier,frames) in selected_appearances()">
-        <i draggable data-identifier="appearance:{{identifier}}" style="{{css_for_sprite_frame(selected_definition(), frames[0])}}" ng-dblclick="edit_appearance(identifier, frames[0])"></i>
-        <input class="name" data-ng-blur="save_appearance_name($event)" data-identifier="{{identifier}}" value="{{name_for_appearance(identifier)}}" />
+      <div ng-repeat="(id,frames) in appearances()">
+        <i draggable data-identifier="appearance:{{id}}" style="{{css_for_sprite_frame(selected_definition(), frames[0])}}" ng-dblclick="edit_appearance(id, frames[0])"></i>
+        <input class="name" data-ng-blur="save_appearance_name($event)" data-identifier="{{id}}" value="{{name_for_appearance(id)}}" />
       </div>
     </div>
 
     <div class="btn" data-ng-click="add_appearance()">Add</div>
 
     <div style="clear:both;"></div>
+
+    <div id="trashcan" droppable class="btn">Trash</div>
+
   </div>
   <!-- End Library Controller -->
 </div>

@@ -62,6 +62,26 @@ class PixelFillTool extends PixelTool
         context.fillPixel(x,y)
 
 
+class PixelFillCircleTool extends PixelTool
+
+  constructor: () ->
+    super
+    @name = 'Fill Circle'
+
+  render: (context) ->
+    return unless @s && @e
+
+    rx = (@e.x - @s.x) / 2
+    ry = (@e.y - @s.y) / 2
+    cx = Math.round(@s.x + rx)
+    cy = Math.round(@s.y + ry)
+
+    for x in [@s.x..@e.x]
+      for y in [@s.y..@e.y]
+        if Math.pow((x-cx) / rx, 2) + Math.pow((y-cy) / ry, 2) < 1
+          context.fillPixel(x,y)
+
+
 class PixelFreehandTool extends PixelTool
 
   constructor: () ->
@@ -110,7 +130,7 @@ class PixelArtCanvas
     @width = canvas.width
     @height = canvas.height
     @image = image
-    @tools = [new PixelFreehandTool(), new PixelLineTool(), new PixelFillTool()]
+    @tools = [new PixelFreehandTool(), new PixelLineTool(), new PixelFillCircleTool(), new PixelFillTool()]
     @tool = @tools[0]
     @toolColor = "rgba(0,0,0,255)"
     @pixelSize = Math.floor(@width / Tile.WIDTH)
@@ -221,7 +241,6 @@ class PixelArtCanvas
 
 
   coordsForFrame: (frame) ->
-    debugger
     x = frame % (@image.width / Tile.WIDTH)
     y = Math.floor(frame / (@image.width / Tile.WIDTH))
     [x  * Tile.WIDTH, y * Tile.HEIGHT]

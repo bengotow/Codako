@@ -23,7 +23,6 @@ class Level
       identifier = $(dragEl.draggable).data('identifier')
       parentOffset = $(@stage.canvas).parent().offset()
       point = new Point(Math.round((e.pageX - e.offsetX - parentOffset.left) / Tile.WIDTH), Math.round((e.pageY - e.offsetY - parentOffset.top) / Tile.HEIGHT))
-
       if identifier[0..4] == 'actor'
         @onActorPlaced({identifier: identifier[6..-1], position: point})
       else if identifier[0..9] == 'appearance'
@@ -152,6 +151,15 @@ class Level
       return actor if actor.matchesDescriptor(descriptor)
     false
 
+  removeActor: (index) ->
+    @stage.removeChild(@actors[index])
+    @actors.splice(index,1)
+
+
+  removeActorsMatchingDescriptor: (descriptor) ->
+    for x in [@actors.length - 1..0] by -1
+      @removeActor(x) if @actors[x].matchesDescriptor(descriptor)
+
 
   update: ->
     elapsed = (Ticker.getTime() - @initialGameTime) / 1000
@@ -182,9 +190,10 @@ class Level
   onActorDragged: (actor) ->
     @save()
 
-  onAppearancePlaced: (name, point) ->
+
+  onAppearancePlaced: (identifier, point) ->
     for actor in @actorsAtPosition(point)
-      actor.setAppearance(name)
+      actor.setAppearance(identifier)
     @update()
     @save()
 

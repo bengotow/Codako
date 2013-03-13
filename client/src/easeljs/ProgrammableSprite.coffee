@@ -26,11 +26,11 @@ class ProgrammableSprite extends Sprite
     return id_match && (appearance_match || !descriptor.appearance)
 
 
-  setAppearance: (name) ->
-    return unless @definition.hasAppearance(name)
-    @
-    @appearance = name
-    @gotoAndStop(name)
+  setAppearance: (identifier) ->
+    console.log 'Set appearance', identifier
+    return unless @definition.hasAppearance(identifier)
+    @appearance = identifier
+    @gotoAndStop(@appearance)
 
 
   reset: (position) ->
