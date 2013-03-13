@@ -221,6 +221,7 @@ class PixelArtCanvas
 
 
   coordsForFrame: (frame) ->
+    debugger
     x = frame % (@image.width / Tile.WIDTH)
     y = Math.floor(frame / (@image.width / Tile.WIDTH))
     [x  * Tile.WIDTH, y * Tile.HEIGHT]

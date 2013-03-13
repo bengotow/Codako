@@ -29,8 +29,7 @@ PixelArtCtrl = ($scope) ->
     else
       $scope.canvas = new PixelArtCanvas(img, $('#pixelArtCanvas')[0], $scope)
 
-
-    frame = $scope.actor_definition.frameForAppearance(args.name)
+    frame = $scope.actor_definition.frameForAppearance(args.identifier)
     $scope.canvas.setDisplayedFrame(frame)
     $('#pixelArtModal').modal({show:true})
 

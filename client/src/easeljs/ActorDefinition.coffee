@@ -7,6 +7,7 @@ class ActorDefinition
     @spritesheet =
       data: undefined,
       animations: { idle: [0,0] }
+      animation_names: { idle: 'Idle' }
     @spritesheetObj = null
     @img = null
 
@@ -15,6 +16,7 @@ class ActorDefinition
 
     @[key] = value for key, value of json
     @spritesheet.width ||= Tile.WIDTH
+    @spritesheet.animation_names ||= {}
     @
 
 
@@ -33,6 +35,15 @@ class ActorDefinition
     @spritesheetObj
 
 
+  rebuildSpritesheetInstance: () ->
+    old = @spritesheetObj
+    @spritesheetObj = null
+    @spritesheetInstance()
+    for key, value of @spritesheetObj
+      old[key] = value
+    @spritesheetObj = old
+
+
   save: () =>
     json =
       identifier: @identifier
@@ -48,8 +59,8 @@ class ActorDefinition
     @spritesheet.data = args.data
     @spritesheet.width = args.width
     @img.src = args.data
-    @spritesheetObj = null
     setTimeout ()=>
+      @rebuildSpritesheetInstance()
       @ruleRenderCache = {}
       window.rootScope.$apply()
     ,250
@@ -62,26 +73,26 @@ class ActorDefinition
     [x * Tile.WIDTH, y * Tile.HEIGHT, @size.width * Tile.WIDTH, @size.height * Tile.HEIGHT]
 
 
-  frameForAppearance: (name, index = 0) ->
-    @spritesheet.animations[name][index]
+  frameForAppearance: (identifier, index = 0) ->
+    @spritesheet.animations[identifier][index]
 
-  hasAppearance: (name) ->
-    @spritesheet.animations[name] != null
+  hasAppearance: (identifier) ->
+    @spritesheet.animations[identifier] != null
+
+  nameForAppearance: (identifier) ->
+    @spritesheet.animation_names[identifier] || 'Untitled'
+
+  renameAppearance: (identifier, newname) ->
+    @spritesheet.animation_names[identifier] = newname
 
   addAppearance: (name = 'Untitled') ->
-    rootNameIndex = 0
-    rootName = name
-    # find an untaken name
-    while (@spritesheet.animations[name])
-      rootNameIndex += 1
-      name = "#{rootName} #{rootNameIndex}"
-
-    animationCount = Object.keys(@spritesheet.animations)
+    identifier = Math.floor((1 + Math.random()) * 0x10000).toString(6)
+    animationCount = Object.keys(@spritesheet.animations).length
     framesWide = @img.width / (Tile.WIDTH * @size.width)
     index = framesWide * animationCount
-
-    @spritesheet.animations[name] = [index,index]
-    name
+    @spritesheet.animations[identifier] = [index]
+    @spritesheet.animation_names[identifier] = name
+    identifier
 
 
 

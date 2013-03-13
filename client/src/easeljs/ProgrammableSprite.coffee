@@ -28,6 +28,7 @@ class ProgrammableSprite extends Sprite
 
   setAppearance: (name) ->
     return unless @definition.hasAppearance(name)
+    @
     @appearance = name
     @gotoAndStop(name)
 

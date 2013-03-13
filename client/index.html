@@ -182,9 +182,9 @@
 
     <div id="appearances" style="width:300px; float:left;">
       <h4>Appearances</h4>
-      <div ng-repeat="(name,frames) in selected_appearances()" ng-dblclick="edit_appearance(name, frames[0])">
-        <i draggable data-identifier="appearance:{{name}}" style="{{css_for_sprite_frame(selected_definition(), frames[0])}}"></i>
-        <input class="name" data-ng-model="name" data-ng-blur="save_definition()" />
+      <div ng-repeat="(identifier,frames) in selected_appearances()">
+        <i draggable data-identifier="appearance:{{identifier}}" style="{{css_for_sprite_frame(selected_definition(), frames[0])}}" ng-dblclick="edit_appearance(identifier, frames[0])"></i>
+        <input class="name" data-ng-blur="save_appearance_name($event)" data-identifier="{{identifier}}" value="{{name_for_appearance(identifier)}}" />
       </div>
     </div>
 

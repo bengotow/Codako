@@ -2,6 +2,8 @@ LibraryCtrl = ($scope) ->
 
   $scope.library_name = 'Library'
 
+  # -- Definitions -- #
+
   $scope.definitions = () ->
     return [] unless window.Game?.Library?
     window.Game.Library.definitions
@@ -21,20 +23,32 @@ LibraryCtrl = ($scope) ->
     definition.save()
 
 
+  # -- Appearances -- #
 
   $scope.selected_appearances = () ->
     return [] unless $scope.Manager && $scope.Manager.level.selectedDefinition
     $scope.Manager.level.selectedDefinition.spritesheet.animations
 
-  $scope.edit_appearance = (key) ->
-    $scope.$root.$broadcast('edit_appearance', {actor_definition: $scope.selected_definition(), name: key})
+  $scope.edit_appearance = (identifier) ->
+    $scope.$root.$broadcast('edit_appearance', {actor_definition: $scope.selected_definition(), identifier: identifier})
 
   $scope.add_appearance = () ->
     definition = $scope.selected_definition()
-    name = definition.addAppearance()
-    $scope.$root.$broadcast('edit_appearance', {actor_definition: definition, name: name})
+    identifier = definition.addAppearance()
+    $scope.$root.$broadcast('edit_appearance', {actor_definition: definition, identifier: identifier})
+
+  $scope.save_appearance_name = (event) ->
+    definition = $scope.selected_definition()
+    identifier = $(event.target).data('identifier')
+    name = $(event.target).val()
+    definition.renameAppearance(identifier, name)
+    definition.save()
 
 
+  # -- Convenience Helpers -- #
+
+  $scope.name_for_appearance = (name) ->
+    $scope.selected_definition().nameForAppearance(name)
 
   $scope.class_for_definition = (definition) ->
     return 'active' if definition == $scope.Manager.level.selectedDefinition
