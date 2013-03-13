@@ -16,13 +16,25 @@ class ProgrammableSprite extends Sprite
   descriptor: () ->
     {
       identifier: @identifier,
-      position: {x: @worldPos.x, y: @worldPos.y}
+      position: {x: @worldPos.x, y: @worldPos.y},
+      appearance: @appearance
     }
+
+  matchesDescriptor: (descriptor) ->
+    id_match = @identifier == descriptor.identifier
+    appearance_match = @appearance == descriptor.appearance
+    return id_match && (appearance_match || !descriptor.appearance)
+
+
+  setAppearance: (name) ->
+    return unless @definition.hasAppearance(name)
+    @appearance = name
+    @gotoAndStop(name)
 
 
   reset: (position) ->
     super(position)
-    @gotoAndPlay("idle")
+    @gotoAndStop(@appearance)
 
 
   tick: (elapsed) ->

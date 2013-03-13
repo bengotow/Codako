@@ -12,7 +12,7 @@ class Sprite extends BitmapAnimation
 
   setSpriteSheet: (sheet) ->
     Sprite.__super__.initialize.call(@, sheet)
-    @gotoAndStop('idle')
+    @gotoAndStop(0)
 
 
   createSpriteSheet: (image, animations) ->

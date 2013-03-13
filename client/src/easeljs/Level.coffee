@@ -23,8 +23,11 @@ class Level
       identifier = $(dragEl.draggable).data('identifier')
       parentOffset = $(@stage.canvas).parent().offset()
       point = new Point(Math.round((e.pageX - e.offsetX - parentOffset.left) / Tile.WIDTH), Math.round((e.pageY - e.offsetY - parentOffset.top) / Tile.HEIGHT))
-      @onActorPlaced({identifier: identifier, position: point})
 
+      if identifier[0..4] == 'actor'
+        @onActorPlaced({identifier: identifier[6..-1], position: point})
+      else if identifier[0..9] == 'appearance'
+        @onAppearancePlaced(identifier[11..-1], point)
 
     # Creating a random background based on the 3 layers available in 3 versions
     background = new Bitmap(window.Game.Content.imageNamed('Layer0_0'))
@@ -87,6 +90,7 @@ class Level
       actor_library: @actorIdentifiers(),
       actor_descriptors: []
     data.actor_descriptors.push(actor.descriptor()) for actor in @actors
+    console.log 'Saving', data
     window.Socket.emit 'put-level', data
 
 
@@ -136,7 +140,7 @@ class Level
     for actor in searchSet
       matched = false
       for descriptor in descriptors
-        matched = true if window.Game.Library.actorMatchesDescriptor(actor, descriptor)
+        matched = true if actor.matchesDescriptor(descriptor)
       return false unless matched
 
     true
@@ -145,7 +149,7 @@ class Level
   actorMatchingDescriptor: (position, descriptor) ->
     searchSet = @actorsAtPosition(position)
     for actor in searchSet
-      return actor if window.Game.Library.actorMatchesDescriptor(actor, descriptor)
+      return actor if actor.matchesDescriptor(descriptor)
     false
 
 
@@ -178,6 +182,11 @@ class Level
   onActorDragged: (actor) ->
     @save()
 
+  onAppearancePlaced: (name, point) ->
+    for actor in @actorsAtPosition(point)
+      actor.setAppearance(name)
+    @update()
+    @save()
 
   onActorPlaced: (actor_descriptor) ->
     @addActor(actor_descriptor)

@@ -3,12 +3,12 @@ class ActorDefinition
   constructor: (json = {}) ->
     @name = 'Untitled'
     @identifier = 'untitled'
-    @img = null
     @size = {width: 1, height: 1}
     @spritesheet =
       data: undefined,
       animations: { idle: [0,0] }
     @spritesheetObj = null
+    @img = null
 
     @rules = []
     @ruleRenderCache = {}
@@ -54,6 +54,7 @@ class ActorDefinition
       window.rootScope.$apply()
     ,250
 
+
   xywhForSpritesheetFrame: (frame) ->
     perLine = @spritesheet.width / (@size.width * Tile.WIDTH)
     x = frame % perLine
@@ -63,6 +64,9 @@ class ActorDefinition
 
   frameForAppearance: (name, index = 0) ->
     @spritesheet.animations[name][index]
+
+  hasAppearance: (name) ->
+    @spritesheet.animations[name] != null
 
   addAppearance: (name = 'Untitled') ->
     rootNameIndex = 0
