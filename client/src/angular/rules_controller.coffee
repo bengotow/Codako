@@ -14,4 +14,19 @@ RulesCtrl = ($scope) ->
     cache["#{rule.name}-after"] ||= window.Game.Manager.renderRuleScenario(rule.scenario, true)
     cache["#{rule.name}-after"]
 
+  $scope.toggle_disclosed = (struct) ->
+    if struct.disclosed
+      delete struct.disclosed
+    else
+      struct.disclosed = 'disclosed'
+
+  $scope.actions_for_rule = (rule) ->
+    actions = []
+    for block in rule.scenario
+      for descriptor in block.descriptors
+        for action in descriptor.actions
+          actions.push({identifier: descriptor.identifier, action})
+    actions
+
+
 window.RulesCtrl = RulesCtrl

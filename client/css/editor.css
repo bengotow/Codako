@@ -9,10 +9,9 @@ body {
 }
 
 h4 {
-  margin:2px;
+  margin:3px;
   margin-right:4px;
   margin-left:4px;
-  border-bottom:1px dotted #ccc;
 }
 
 .modal-body {
@@ -26,51 +25,96 @@ h4 {
   box-shadow: 0px 1px 5px #888;
 }
 
-.rule {
-  display:block;
-  border:4px solid #ccffff;
-}
-
 .dropdown-menu {
   z-index:2000;
 }
 
-.rule .name {
-  display:block;
+.rules-list {
+
+}
+
+.rules-list .name {
+  display:inline-block;
   font-size:1.2em;
   font-weight: bold;
-  background-color: #ccffff;
+  padding:0;
+  padding-left:4px;
+  padding-right:4px;
+  margin-bottom:4px;
+  color: #222;
+  text-shadow: 0px 1px rgba(255,255,255,0.4);
+  background-color: transparent;
+  border:1px solid transparent;
+  width:180px;
 }
 
-.rule .divider {
-  display:block;
-  padding:3px;
-  font-weight:bold;
-  background-color:#ccc;
+.rules-list .name:hover,
+.rules-list .name:focus {
+  background-color: rgba(255,255,255,0.3);
+  border:1px solid rgba(255,255,255,0.5);
+  outline: none;
 }
 
-.rule .condition {
+.rules-list .rule-container {
+  padding:5px;
+  padding-top:2px;
+  margin-bottom:5px;
+  border: 1px solid rgba(0,0,0,0.2);
+  border-top: 2px solid rgba(255,255,255,0.4);
+  -moz-box-shadow: inset 0 0 2px 1px rgba(255,255,255,0.4);
+  -webkit-box-shadow: inset 0 0 2px 1px rgba(255,255,255,0.4);
+  box-shadow: inset 0 0 2px 1px rgba(255,255,255,0.4);
+}
+.rules-list .rule-container ul {
+  background-color: rgba(0,0,0,0.3);
+  padding-top:7px;
+  padding-bottom:2px;
+  -moz-box-shadow: inset 0 1px 1px 1px rgba(0,0,0,0.4);
+  -webkit-box-shadow: inset 0 1px 1px 1px rgba(0,0,0,0.4);
+  box-shadow: inset 0 1px 1px 1px rgba(0,0,0,0.4);
+}
+
+.rules-list .rule-container .triangle.disclosed {
   display:inline-block;
-  color:#666;
-  padding:3px;
-  margin:4px;
+  margin-left:3px;
+  width: 0px;
+  height: 0px;
+  border-style: solid;
+  border-width: 7px 0 7px 12.1px;
+  border-color: transparent transparent transparent rgba(0,0,0,0.4);
 }
 
-.rule .condition-value {
+.rules-list .rule-container .triangle {
   display:inline-block;
-  float:right;
-  border:1px dashed #ddd;
-  background-color:white;
-  font-size:1.1em;
-  padding:3px;
-  padding-left:6px;
-  padding-right:6px;
-  margin:3px;
+  margin-left:3px;
+  width: 0px;
+  height: 0px;
+  border-style: solid;
+  border-width: 12.1px 7px 0 7px;
+  border-color: rgba(0,0,0,0.4) transparent transparent transparent;
+}
+
+.rules-list .rule-container.event {
+  background-color:#5BC15C;
+}
+.rules-list .rule-container.group {
+  background-color:#E63B34;
+}
+
+.rules-list .rule {
+  background-color:#ddd;
+  margin-bottom:3px;
+  border: 1px solid rgba(0,0,0,0.2);
+  border-top: 2px solid rgba(255,255,255,0.6);
+  -moz-box-shadow: inset 0 0 2px 0px rgba(255,255,255,0.4);
+  -webkit-box-shadow: inset 0 0 2px 0px rgba(255,255,255,0.4);
+  box-shadow: inset 0 0 2px 0px rgba(255,255,255,0.4);
 }
 
 .rule .scenario {
   display: block;
   text-align: center;
+  margin-bottom:3px;
 }
 
 .rule .scenario .arrow {
@@ -82,6 +126,12 @@ h4 {
 .rule .scenario img {
   max-width:45%;
   padding:4px;
+}
+
+.rule .action {
+  margin-left:3px;
+  margin-right:3px;
+  background-color: #E8B432;
 }
 
 .empty-message {
