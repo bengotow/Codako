@@ -1,3 +1,30 @@
+body {
+  background:url(/img/background.png) top left;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+h4 {
+  margin:2px;
+  margin-right:4px;
+  margin-left:4px;
+  border-bottom:1px dotted #ccc;
+}
+
+.modal-body {
+  padding:10px;
+}
+.white-box {
+  background-color:white;
+  margin:5px;
+  padding:5px;
+  display:inline-block;
+  box-shadow: 0px 1px 5px #888;
+}
 
 .rule {
   display:block;
@@ -57,23 +84,56 @@
   padding:4px;
 }
 
+.empty-message {
+  text-align:center;
+  display:block;
+  font-size:0.9em;
+  margin-top:17px;
+  color: #aaa;
+}
 
 .btn.color {
-  width:30px;
-  height:30px;
-  padding:2px;
+  width:24px;
+  height:24px;
+  padding:1px;
   border-radius: 5px;
-  margin:2px;
+  margin:1px;
+}
+
+.btn.icon {
+  padding:6px;
+  margin-right:6px;
+  margin-top:6px;
+}
+.btn.icon img {
+  width:40px;
+  height:40px;
 }
 
 .btn.color i {
   border-radius: 3px;
 }
 
+#pixelArtModal .sidebar {
+  float:left;
+  width:120px;
+  padding-right:8px;
+}
+
+.divider {
+  clear:both;
+  height:1px;
+  border:1px solid #ccc;
+  margin-top:10px;
+  margin-bottom:10px;
+}
+
 .color-preview {
-  width: 120px;
-  height:30px;
+  width: 114px;
+  height: 40px;
+  border: 2px solid #ccc;
   border-radius: 5px;
+  margin-bottom: 5px;
 }
 
 #library .name {
@@ -91,6 +151,11 @@
   background-color:rgba(255,255,255,0.6);
 }
 
+#library #definitions,
+#library #appearances {
+  min-height:100px;
+}
+
 #library #definitions i,
 #library #appearances i {
   display:inline-block;
@@ -99,8 +164,8 @@
   color:#444;
 }
 
-#library #definitions > div,
-#library #appearances > div {
+#library #definitions .item,
+#library #appearances .item {
   display:inline-block;
   text-align: center;
   padding-top:5px;

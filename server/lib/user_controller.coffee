@@ -54,31 +54,37 @@ class UserController
         }
         rules: [
           {
-            name: 'Move Left',
-            triggers: [{
-              type:"key",
-              code:37
-            }],
-            scenario: [{
-              coord:"-1,0",
-              descriptors: false
-            },{
-              coord:"0,0",
-              descriptors: [{
-                identifier: 'dude'
-                actions: [{
-                  type:"move",
-                  delta:"-1,0"
-                }]
-              }]
-            }]
-          },
+            type: 'group-event'
+            event:"key",
+            code:39,
+            rules: [
+              {
+                type: 'group-flow',
+                behavior: 'all',
+                rules: [
+                  {
+                    name: 'Move Left',
+                    scenario: [{
+                      coord:"-1,0",
+                      descriptors: false
+                    },{
+                      coord:"0,0",
+                      descriptors: [{
+                        identifier: 'dude'
+                        actions: [{
+                          type:"move",
+                          delta:"-1,0"
+                        }]
+                      }]
+                    }]
+                  }
+                ]
+              }
+            ]
+          }
+          ,
           {
             name: 'Move Right',
-            triggers: [{
-              type:"key",
-              code:39
-            }],
             scenario: [{
               coord:"1,0",
               descriptors: false

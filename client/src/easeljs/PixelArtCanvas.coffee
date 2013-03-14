@@ -49,11 +49,11 @@ class PixelTool
     @s = @e = null
 
 
-class PixelFillTool extends PixelTool
+class PixelFillRectTool extends PixelTool
 
   constructor: () ->
     super
-    @name = 'Fill'
+    @name = 'rect'
 
   render: (context) ->
     return unless @s && @e
@@ -62,11 +62,11 @@ class PixelFillTool extends PixelTool
         context.fillPixel(x,y)
 
 
-class PixelFillCircleTool extends PixelTool
+class PixelFillEllipseTool extends PixelTool
 
   constructor: () ->
     super
-    @name = 'Fill Circle'
+    @name = 'ellipse'
 
   render: (context) ->
     return unless @s && @e
@@ -86,7 +86,7 @@ class PixelFreehandTool extends PixelTool
 
   constructor: () ->
     super
-    @name = 'Pen'
+    @name = 'pen'
 
   mousedown: (point) ->
     @down = true
@@ -116,7 +116,7 @@ class PixelLineTool extends PixelTool
 
   constructor: () ->
     super
-    @name = 'Line'
+    @name = 'line'
 
   render: (context) ->
     return unless @s && @e
@@ -130,7 +130,7 @@ class PixelArtCanvas
     @width = canvas.width
     @height = canvas.height
     @image = image
-    @tools = [new PixelFreehandTool(), new PixelLineTool(), new PixelFillCircleTool(), new PixelFillTool()]
+    @tools = [new PixelFreehandTool(), new PixelLineTool(), new PixelFillEllipseTool(), new PixelFillRectTool()]
     @tool = @tools[0]
     @toolColor = "rgba(0,0,0,255)"
     @pixelSize = Math.floor(@width / Tile.WIDTH)

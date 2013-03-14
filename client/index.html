@@ -116,52 +116,71 @@
   </div>
 </div>
 
-<div class="container" style="width:1120px;margin:auto;">
-  <div class="row">
-    <div class="span10">
-      <div class="canvasHolder">
-        <canvas droppable id="platformerCanvas" width="800" height="530" style="background-color:black">
-          Your browser doesn't support HTML5 Canvas!
-        </canvas>
-      </div>
+<div class="container" style="width:1120px; margin:auto;">
+  <div class="white-box" style="float:left;line-height:0;">
+    <canvas droppable id="platformerCanvas" width="800" height="530" style="background-color:black">
+      Your browser doesn't support HTML5 Canvas!
+    </canvas>
+  </div>
+
+  <!-- Begin Rules Controller -->
+  <script type="text/ng-template" id="rule_template.html">
+
+    <ng-switch on="struct.type">
+
+    <div ng-switch-when="group-event" class="event">
+      <div class="name">{{struct.event}}</div>
+      <ul class="unstyled">
+        <li ng-repeat="struct in struct.rules" ng-include="'rule_template.html'"></li>
+      </ul>
     </div>
 
-    <!-- Begin Rules Controller -->
-    <div class="span4" ng-controller="RulesCtrl">
-      <ul class="nav nav-tabs">
-        <li><a href="#rules" data-toggle="tab">Rules</a></li>
-        <li><a href="#variables" data-toggle="tab">Variables</a></li>
+    <div ng-switch-when="group-flow" class="group">
+      <div class="name">{{struct.behavior}}</div>
+      <ul class="unstyled">
+        <li ng-repeat="struct in struct.rules" ng-include="'rule_template.html'"></li>
       </ul>
+    </div>
 
-      <div class="tab-content">
-        <div class="tab-pane active" id="rules">
-          <ul class="unstyled">
-            <li class="rule" ng-repeat="rule in rules()">
-              <div class="name">{{rule.name}}</div>
-              <div class="divider">When:</div>
-              <ul>
-                <li ng-repeat="trigger in rule.triggers">
-                  <span class="condition">Key Pressed</span>
-                  <span class="condition-value">{{trigger.code}}</span>
-                </li>
-              </ul>
+    <div ng-switch-default class="rule" data-ng-show="!struct.type">
+      <div class="scenario">
+        <img ng-src="{{scenario_before_url(struct)}}"/>
+        <div class="arrow">-></div>
+        <img ng-src="{{scenario_after_url(struct)}}"/>
+      </div>
 
-              <div class="divider">Then:</div>
-              <div class="scenario">
-                <img ng-src="{{scenario_before_url(rule)}}"/>
-                <div class="arrow">-></div>
-                <img ng-src="{{scenario_after_url(rule)}}"/>
-              </div>
-            </li>
-          </ul>
-        </div>
+      <div class="name">{{struct.name}}</div>
 
-        <div class="tab-pane" id="variables">
-          <ul class="unstyled">
-            <li class="variable" ng-repeat="variable in variables()">
-            </li>
-          </ul>
-        </div>
+      <ul class="unstyled">
+        <li ng-repeat="action in struct.actions">
+          <span class="condition-value">{{action}}</span>
+        </li>
+      </ul>
+    </div>
+
+    </ng-switch>
+
+  </script>
+
+
+  <div class="white-box" style="float:left; width:250px;" ng-controller="RulesCtrl">
+    <ul class="nav nav-tabs">
+      <li><a href="#rules" data-toggle="tab">Rules</a></li>
+      <li><a href="#variables" data-toggle="tab">Variables</a></li>
+    </ul>
+
+    <div class="tab-content">
+      <div class="tab-pane active" id="rules">
+        <ul class="unstyled">
+          <li ng-repeat="struct in rules()" ng-include="'rule_template.html'"></li>
+        </ul>
+      </div>
+
+      <div class="tab-pane" id="variables">
+        <ul class="unstyled">
+          <li class="variable" ng-repeat="variable in variables()">
+          </li>
+        </ul>
       </div>
     </div>
     <!-- End Rules Controller -->
@@ -169,9 +188,12 @@
 
   <!-- Begin Library Controller -->
   <div id="library" ng-controller="LibraryCtrl">
-    <div id="definitions" style="width:500px; float:left;">
+    <div id="definitions" class="white-box" style="width:490px; float:left;">
       <h4>{{library_name}}</h4>
-      <div ng-repeat="def in definitions()" data-ng-click="select_definition(def)" class="{{class_for_definition(def)}}">
+      <div data-ng-show="definitions().length == 0" class="empty-message">
+        You haven't defined any actors yet! Create a new actor by clicking the '+' icon.
+      </div>
+      <div ng-repeat="def in definitions()" data-ng-click="select_definition(def)" class="item {{class_for_definition(def)}}">
         <i draggable data-identifier="actor:{{def.identifier}}" style="{{css_for_sprite_frame(def)}}"></i>
         <input class="name" data-ng-model="def.name" data-ng-blur="save_definition(def)" />
       </div>
@@ -180,9 +202,12 @@
 
     </div>
 
-    <div id="appearances" style="width:300px; float:left;">
+    <div id="appearances" class="white-box" style="width:290px; float:left;">
       <h4>Appearances</h4>
-      <div ng-repeat="(id,frames) in appearances()">
+      <div data-ng-show="appearances().length == 0" class="empty-message">
+        Select an actor in your library to view it's appearances.
+      </div>
+      <div ng-repeat="(id,frames) in appearances()" class="item">
         <i draggable data-identifier="appearance:{{id}}" style="{{css_for_sprite_frame(selected_definition(), frames[0])}}" ng-dblclick="edit_appearance(id, frames[0])"></i>
         <input class="name" data-ng-blur="save_appearance_name($event)" data-identifier="{{id}}" value="{{name_for_appearance(id)}}" />
       </div>
@@ -206,7 +231,7 @@
     </div>
     <div class="modal-body" style="max-height:585px;">
 
-      <div style="float:left; width:120px;">
+      <div class="sidebar">
 
         <!-- Colors -->
         <div class="color-preview" style="background-color: {{canvas.toolColor}}"></div>
@@ -218,27 +243,21 @@
             <span class="add-on"><i></i></span>
         </div>
 
-        <!-- Tools -->
+        <div class="divider"></div>
 
-        <div ng-repeat="tool in canvas.tools" class="btn" data-ng-click="set_tool(tool)">{{tool.name}}</div>
+        <!-- Tools -->
+        <div ng-repeat="tool in canvas.tools" class="btn tool icon" data-ng-click="set_tool(tool)">
+          <img src="/img/tool_{{tool.name}}.png"/>
+        </div>
 
         <!-- Undo / Redo -->
 
-        <div class="btn" data-ng-disabled="!canvas.canUndo()" data-ng-click="canvas.undo()">Undo</div>
-        <div class="btn" data-ng-disabled="!canvas.canRedo()" data-ng-click="canvas.redo()">Redo</div>
+        <div class="btn icon" data-ng-disabled="!canvas.canUndo()" data-ng-click="canvas.undo()"><img src="/img/icon_undo.png"></div><div class="btn icon" data-ng-disabled="!canvas.canRedo()" data-ng-click="canvas.redo()"><img src="/img/icon_redo.png"></div>
 
       </div>
       <div style="float:left; width:521px;">
         <canvas id="pixelArtCanvas" width="521" height="521">
         </canvas>
-      </div>
-
-      <div style="clear:both;" class="pagination pagination-centered">
-        <ul>
-          <li class="disabled"><a href="#">&laquo;</a></li>
-          <li class="active"><a href="#">1</a></li>
-          <li><a href="#" data-ng-click="move_editor_to_tile(1,0)">1</a></li>
-        </ul>
       </div>
 
     </div>
