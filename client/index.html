@@ -129,22 +129,42 @@
     <ng-switch on="struct.type">
 
     <div ng-switch-when="group-event" class="rule-container event">
-      <div data-ng-click="toggle_disclosed(struct)" class="triangle {{struct.disclosed}}"></div>
-      <div class="name">{{struct.event}}</div>
+
+      <div class="header">
+        <div style="float:left; width:20px;">
+          <div class="circle"></div>
+          <div data-ng-click="toggle_disclosed(struct)" class="triangle {{struct.disclosed}}"></div>
+        </div>
+
+        <img class="icon" data-ng-src="/img/icon_event_{{struct.event}}.png"/>
+        <div class="name">{{name_for_event_group(struct)}}</div>
+      </div>
       <ul class="unstyled" data-ng-hide="struct.disclosed">
         <li ng-repeat="struct in struct.rules" ng-include="'rule_template.html'"></li>
       </ul>
     </div>
 
     <div ng-switch-when="group-flow" class="rule-container group">
-      <div data-ng-click="toggle_disclosed(struct)" class="triangle {{struct.disclosed}}"></div>
-      <div class="name">{{struct.behavior}}</div>
+      <div class="header">
+        <div style="float:left; width:20px;">
+          <div class="circle"></div>
+          <div data-ng-click="toggle_disclosed(struct)" class="triangle {{struct.disclosed}}"></div>
+        </div>
+
+        <select>
+          <option>Do First Match</option>
+          <option>Do All & Continue</option>
+          <option>Randomize & Do First</option>
+        </select>
+        <input class="name" data-ng-model="struct.name" />
+      </div>
       <ul class="unstyled" data-ng-hide="struct.disclosed">
         <li ng-repeat="struct in struct.rules" ng-include="'rule_template.html'"></li>
       </ul>
     </div>
 
     <div ng-switch-default class="rule-container rule" data-ng-show="!struct.type">
+      <div class="circle" style="position:absolute;z-index:4;"></div>
       <div class="scenario">
         <img ng-src="{{scenario_before_url(struct)}}"/>
         <div class="arrow">-></div>

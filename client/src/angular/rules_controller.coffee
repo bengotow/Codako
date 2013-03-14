@@ -20,6 +20,25 @@ RulesCtrl = ($scope) ->
     else
       struct.disclosed = 'disclosed'
 
+  $scope.name_for_key = (code) ->
+    return "Space Bar" if code == 32
+    return "Up Arrow" if code == 38
+    return "Left Arrow" if code == 37
+    return "Right Arrow" if code == 39
+    return String.fromCharCode(code)
+    
+
+  $scope.name_for_event_group = (struct) ->
+    if struct.event == 'key'
+      return "When the #{$scope.name_for_key(struct.code)} Key is Pressed"
+    else if struct.event = 'click'
+      return "When I'm Clicked"
+    else
+      return "When I'm Idle"
+
+  $scope.name_for_flow_group = (struct) ->
+    return "Flow Group"
+
   $scope.actions_for_rule = (rule) ->
     actions = []
     for block in rule.scenario
