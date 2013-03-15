@@ -13,6 +13,9 @@ RulesCtrl = ($scope) ->
     return [] unless $scope.Manager && $scope.Manager.level.selectedDefinition
     $scope.Manager.level.selectedDefinition.rules
 
+  $scope.save_rules = () ->
+    $scope.Manager.level.selectedDefinition.save()
+
 
   $scope.scenario_before_url = (rule) ->
     cache = $scope.Manager.level.selectedDefinition.ruleRenderCache

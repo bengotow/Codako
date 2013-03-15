@@ -56,12 +56,17 @@ class ProgrammableSprite extends Sprite
       for rule in rules
         @tickRule(rule)
         @applied[struct._id] ||= @applied[rule._id]
+
+      # don't stop, apply next rule
+      return false
+
     else
       for rule in rules
         @tickRule(rule)
         return @applied[struct._id] = true if @applied[rule._id]
 
-    @applied[struct._id]
+    # stop applying rules if we applied a rule
+    return @applied[struct._id]
 
 
   tickRule: (rule) ->

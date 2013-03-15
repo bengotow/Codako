@@ -151,9 +151,9 @@
           <div ng-class="circle_for_rule(struct)"></div>
           <div ng-click="toggle_disclosed(struct)" class="triangle {{struct.disclosed}}"></div>
         </div>
-        <select ng-model="struct.behavior" ng-options="key for (key,value) in flow_types">
+        <select ng-model="struct.behavior" ng-options="key for (key,value) in flow_types" ng-change="save_rules()">
         </select>
-        <input class="name" ng-model="struct.name" />
+        <input class="name" ng-model="struct.name" ng-blur="save_rules()"/>
       </div>
       <ul class="unstyled rules-list" ng-hide="struct.disclosed" sortable='{"connectWith":".rules-list"}'>
         <li ng-repeat="struct in struct.rules" ng-include="'rule_template.html'" data-id="{{struct._id}}"></li>
@@ -161,7 +161,7 @@
     </div>
 
     <div ng-switch-default class="rule-container rule" ng-show="!struct.type">
-      <div ng-class="circle_for_rule(struct)" style="position:absolute;z-index:4;"></div>
+      <div class="zerospace"><div ng-class="circle_for_rule(struct)" style="position:relative;z-index:4;"></div></div>
       <div class="scenario">
         <img ng-src="{{scenario_before_url(struct)}}"/>
         <div class="arrow">-></div>
@@ -169,7 +169,7 @@
       </div>
 
       <div ng-click="toggle_disclosed(struct)" class="triangle {{struct.disclosed}}"></div>
-      <input class="name" ng-model="struct.name" />
+      <input class="name" ng-model="struct.name" ng-blur="save_rules()"/>
 
       <ul class="unstyled" ng-show="!struct.disclosed && actions_for_rule(struct).length">
         <li ng-repeat="action in actions_for_rule(struct)" class="action">
@@ -183,7 +183,7 @@
   </script>
 
 
-  <div class="white-box" style="float:right; width:280px;" ng-controller="RulesCtrl" ng-cloak>
+  <div id="actor-box" class="white-box" style="float:right; width:280px;" ng-controller="RulesCtrl" ng-cloak>
     <ul class="nav nav-tabs">
       <li><a href="#rules" data-toggle="tab">Rules</a></li>
       <li><a href="#variables" data-toggle="tab">Variables</a></li>

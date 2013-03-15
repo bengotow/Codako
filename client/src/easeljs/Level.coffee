@@ -7,16 +7,14 @@ class Level
     @actors = []
     @selectedActor = null
 
-    @ruleCheckInterval = 0.45
+    @ruleCheckInterval = 0.40
     @ruleCheckNextElapsed = 0
     @elapsed = 0
 
     @keysDown = {}
-    @keysUpSinceLast = {}
     document.onkeydown = (e) =>
       @keysDown[e.keyCode] = true
-    document.onkeyup = (e) =>
-      @keysUpSinceLast[e.keyCode] = true
+
 
     # Make the canvas droppable - a bit of a hack
     @stage.canvas.ondrop = (e, dragEl) =>
@@ -28,6 +26,7 @@ class Level
       else if identifier[0..9] == 'appearance'
         @onAppearancePlaced(identifier[11..-1], point)
 
+
     # Creating a random background based on the 3 layers available in 3 versions
     background = new Bitmap(window.Game.Content.imageNamed('Layer0_0'))
     background.addEventListener 'click', (e) =>
@@ -35,9 +34,7 @@ class Level
     @stage.addChild(background)
     @
 
-  #/ <summary>
-  #/ Gets the bounding rectangle of a tile in world space.
-  #/ </summary>
+
   getBounds: (x, y) ->
     new XNARectangle(x * Tile.WIDTH, y * Tile.HEIGHT, Tile.WIDTH, Tile.HEIGHT)
 
@@ -105,12 +102,6 @@ class Level
     return @keysDown[code]
 
 
-  applyLiftedKeys: () ->
-    for code, value of @keysUpSinceLast
-        delete @keysDown[code]
-    @keysUpSinceLast = {}
-
-
   isDescriptorValid: (descriptor) ->
     actorMatchingDescriptor(descriptor)?
 
@@ -167,14 +158,12 @@ class Level
       actor.tick(elapsed)
 
     if elapsed > @ruleCheckNextElapsed
-      console.log 'Testing Rules'
-      @ruleCheckNextElapsed += @ruleCheckInterval
-
       for actor in @actors
         actor.resetRulesApplied()
         actor.tickRules()
-      @applyLiftedKeys()
 
+      @keysDown = {}
+      @ruleCheckNextElapsed += @ruleCheckInterval
       window.rulesScope.$apply()
 
     @stage.update()

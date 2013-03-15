@@ -62,6 +62,7 @@ class UserController
               {
                 _id: '222'
                 type: 'group-flow',
+                name: 'Move Left',
                 behavior: 'all',
                 rules: [
                   {
@@ -120,6 +121,7 @@ class UserController
                 _id: '555'
                 type: 'group-flow',
                 behavior: 'random',
+                name: 'Wander Up & Down',
                 rules: [
                   {
                     _id: '777'
