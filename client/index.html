@@ -128,7 +128,7 @@
 
     <ng-switch on="struct.type">
 
-    <div ng-switch-when="group-event" class="rule-container event">
+    <div ng-switch-when="group-event" class="rule-container event" >
 
       <div class="header">
         <div style="float:left; width:20px;">
@@ -139,8 +139,8 @@
         <img class="icon" data-ng-src="/img/icon_event_{{struct.event}}.png"/>
         <div class="name">{{name_for_event_group(struct)}}</div>
       </div>
-      <ul class="unstyled" data-ng-hide="struct.disclosed">
-        <li ng-repeat="struct in struct.rules" ng-include="'rule_template.html'"></li>
+      <ul class="unstyled rules-list" data-ng-hide="struct.disclosed" sortable='{"connectWith":".rules-list"}'>
+        <li ng-repeat="struct in struct.rules" ng-include="'rule_template.html'" data-id="{{id_for_struct(struct)}}"></li>
       </ul>
     </div>
 
@@ -158,8 +158,8 @@
         </select>
         <input class="name" data-ng-model="struct.name" />
       </div>
-      <ul class="unstyled" data-ng-hide="struct.disclosed">
-        <li ng-repeat="struct in struct.rules" ng-include="'rule_template.html'"></li>
+      <ul class="unstyled rules-list" data-ng-hide="struct.disclosed" sortable='{"connectWith":".rules-list"}'>
+        <li ng-repeat="struct in struct.rules" ng-include="'rule_template.html'" data-id="{{id_for_struct(struct)}}"></li>
       </ul>
     </div>
 
@@ -194,8 +194,8 @@
 
     <div class="tab-content">
       <div class="tab-pane active" id="rules">
-        <ul class="unstyled rules-list">
-          <li ng-repeat="struct in rules()" ng-include="'rule_template.html'"></li>
+        <ul class="unstyled rules-list" sortable='{{sortable_attributes_for_rules_root()}}'>
+          <li ng-repeat="struct in rules()" ng-include="'rule_template.html'" data-id="{{id_for_struct(struct)}}"></li>
         </ul>
       </div>
 
