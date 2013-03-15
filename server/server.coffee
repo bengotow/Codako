@@ -12,6 +12,7 @@ handleUnknownURL = (req, res, next) ->
 	next()
 
 connect = require("connect")
+less = require('connect-less')
 url = require("url")
 posts = {}
 
@@ -23,10 +24,15 @@ module.exports.start = ->
 		.use(setupLocals)
 		.use(connect.logger("dev"))
 		.use(connect.bodyParser())
+		.use(less(
+			src: webdir
+			debug: true
+			force: true
+		))
 		.use(coffeescript(
+			src: webdir
 			baseDir: webdir
 			force: true
-			src: webdir
 		))
 		.use(connect.static(webdir))
 		.use(handleUnknownURL)

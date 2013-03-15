@@ -13,7 +13,7 @@ class UserController
     {
       identifier: 'untitled'
       width: 20
-      height: 12
+      height: 13
       actor_library: ['rock', 'dude']
       actor_descriptors: [
         {

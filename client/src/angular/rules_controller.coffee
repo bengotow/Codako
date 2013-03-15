@@ -26,7 +26,6 @@ RulesCtrl = ($scope) ->
     return "Left Arrow" if code == 37
     return "Right Arrow" if code == 39
     return String.fromCharCode(code)
-    
 
   $scope.name_for_event_group = (struct) ->
     if struct.event == 'key'
