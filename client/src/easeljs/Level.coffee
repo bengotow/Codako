@@ -76,7 +76,6 @@ class Level
 
 
   updatedDataReady: () ->
-    debugger
     for actor in @actors
       actor.createSpriteSheet(actor.definition.img, actor.definition.spritesheet.animations)
 
@@ -170,9 +169,13 @@ class Level
     if elapsed > @ruleCheckNextElapsed
       console.log 'Testing Rules'
       @ruleCheckNextElapsed += @ruleCheckInterval
+
       for actor in @actors
+        actor.resetRulesApplied()
         actor.tickRules()
       @applyLiftedKeys()
+
+      window.rulesScope.$apply()
 
     @stage.update()
 

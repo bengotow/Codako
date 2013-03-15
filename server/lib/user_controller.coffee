@@ -54,15 +54,18 @@ class UserController
         }
         rules: [
           {
+            _id: '111'
             type: 'group-event'
             event:"key",
-            code:39,
+            code:37,
             rules: [
               {
+                _id: '222'
                 type: 'group-flow',
                 behavior: 'all',
                 rules: [
                   {
+                    _id: '001'
                     name: 'Move Left',
                     scenario: [{
                       coord:"-1,0",
@@ -84,20 +87,77 @@ class UserController
           }
           ,
           {
-            name: 'Move Right',
-            scenario: [{
-              coord:"1,0",
-              descriptors: false
-            },{
-              coord:"0,0",
-              descriptors: [{
-                identifier: 'dude'
-                actions: [{
-                  type:"move",
-                  delta:"1,0"
+            _id: '333'
+            type: 'group-event'
+            event:"key",
+            code:39,
+            rules: [
+              {
+                _id: '666'
+                name: 'Move Right',
+                scenario: [{
+                  coord:"1,0",
+                  descriptors: false
+                },{
+                  coord:"0,0",
+                  descriptors: [{
+                    identifier: 'dude'
+                    actions: [{
+                      type:"move",
+                      delta:"1,0"
+                    }]
+                  }]
                 }]
-              }]
-            }]
+              }
+            ]
+          },
+          {
+            _id: '444'
+            type: 'group-event'
+            event: 'idle',
+            rules: [
+              {
+                _id: '555'
+                type: 'group-flow',
+                behavior: 'random',
+                rules: [
+                  {
+                    _id: '777'
+                    name: 'Move Up',
+                    scenario: [{
+                      coord:"0,-1",
+                      descriptors: false
+                    },{
+                      coord:"0,0",
+                      descriptors: [{
+                        identifier: 'dude'
+                        actions: [{
+                          type:"move",
+                          delta:"0,-1"
+                        }]
+                      }]
+                    }]
+                  },
+                  {
+                    _id: '999'
+                    name: 'Move Down',
+                    scenario: [{
+                      coord:"0,1",
+                      descriptors: false
+                    },{
+                      coord:"0,0",
+                      descriptors: [{
+                        identifier: 'dude'
+                        actions: [{
+                          type:"move",
+                          delta:"0,1"
+                        }]
+                      }]
+                    }]
+                  }
+                ]
+              }
+            ]
           }
         ]
       }

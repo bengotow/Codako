@@ -84,7 +84,6 @@ LibraryCtrl = ($scope) ->
 
   $scope.css_for_sprite_frame = (definition, index = 0) ->
     [x,y,w,h] = definition.xywhForSpritesheetFrame(index)
-    console.log x,y,w,h
     "background-image:url(#{definition.spritesheet.data}); background-repeat:no-repeat; width:#{w}px; height:#{h}px; background-position:-#{x}px -#{y}px;"
 
 

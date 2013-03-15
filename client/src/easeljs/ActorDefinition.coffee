@@ -17,8 +17,8 @@ class ActorDefinition
     @[key] = value for key, value of json
     @spritesheet.width ||= Tile.WIDTH
     @spritesheet.animation_names ||= {}
-    @
 
+    @
 
   spritesheetInstance: () ->
     return @spritesheetObj if @spritesheetObj

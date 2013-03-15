@@ -1,6 +1,13 @@
 RulesCtrl = ($scope) ->
 
-  $scope.rule_structs_lookup_table = null
+  window.rulesScope = $scope
+
+  $scope.structs_lookup_table = null
+  $scope.flow_types =
+    'Do First Match': 'first'
+    'Do All & Continue': 'all'
+    'Randomize & Do First': 'random'
+
 
   $scope.rules = () ->
     return [] unless $scope.Manager && $scope.Manager.level.selectedDefinition
@@ -37,7 +44,7 @@ RulesCtrl = ($scope) ->
   $scope.name_for_event_group = (struct) ->
     if struct.event == 'key'
       return "When the #{$scope.name_for_key(struct.code)} Key is Pressed"
-    else if struct.event = 'click'
+    else if struct.event == 'click'
       return "When I'm Clicked"
     else
       return "When I'm Idle"
@@ -50,19 +57,19 @@ RulesCtrl = ($scope) ->
   $scope.sortable_attributes_for_rules_root = () ->
     rules = $scope.rules()
     if rules.length > 0 && rules[0].type == 'group-event'
-      {}
+      return {}
     else
-      {"connectWith":".rules-list"}
+      return {"connectWith":".rules-list"}
 
 
   $scope.sortable_change_start = () ->
-    $scope.rule_structs_lookup_table = {}
+    $scope.structs_lookup_table = {}
     for struct in $scope.rules()
       $scope.populate_structs_lookup_table(struct)
 
 
   $scope.sortable_contents_changed = (event, ui) ->
-    for key, struct of $scope.rule_structs_lookup_table
+    for key, struct of $scope.structs_lookup_table
       $scope.recompute_struct_contents(key) if struct.rules
     $scope.Manager.level.selectedDefinition.save()
 
@@ -75,31 +82,31 @@ RulesCtrl = ($scope) ->
     child_ids.push($(child).data('id')) for child in child_els
 
     # empty and refill this item in our tree
-    container = $scope.rule_structs_lookup_table[container_id]
+    container = $scope.structs_lookup_table[container_id]
     container.rules.length = 0
-    container.rules.push($scope.rule_structs_lookup_table[id]) for id in child_ids
+    container.rules.push($scope.structs_lookup_table[id]) for id in child_ids
 
 
   $scope.populate_structs_lookup_table = (struct) ->
-    $scope.rule_structs_lookup_table[$scope.id_for_struct(struct)] = struct
+    $scope.structs_lookup_table[struct._id] = struct
     if struct.rules
       for rule in struct.rules
         $scope.populate_structs_lookup_table(rule)
 
 
-  $scope.id_for_struct = (struct) ->
-    return unless struct
-    struct._id ||= Math.floor((1 + Math.random()) * 0x10000).toString(6)
-    struct._id
-
+  $scope.circle_for_rule = (struct) ->
+    actor = $scope.Manager.level?.selectedActor
+    return 'circle' unless struct && actor
+    return 'circle true' if actor.applied[struct._id]
+    return 'circle false'
 
   $scope.actions_for_rule = (rule) ->
     actions = []
-    for block in rule.scenario
-      for descriptor in block.descriptors
-        for action in descriptor.actions
-          actions.push({identifier: descriptor.identifier, action})
-    actions
+    # for block in rule.scenario
+    #   for descriptor in block.descriptors
+    #     for action in descriptor.actions
+    #       actions.push({identifier: descriptor.identifier, action})
+    # actions
 
 
 window.RulesCtrl = RulesCtrl

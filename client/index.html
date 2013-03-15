@@ -14,8 +14,8 @@
   <script src="./src/bootstrap.js"></script>
   <script src="./src/bootstrap-colorpicker.js"></script>
 
-  <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
-  <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui.min.js"></script>
+  <link href="./src/jquery-ui.css" rel="stylesheet" type="text/css" />
+  <script src="./src/jquery-ui.min.js"></script>
 
 
   <script src="./src/easeljs/XNARectangle.js"></script>
@@ -32,6 +32,7 @@
   <script src="./src/easeljs/GameManager.js"></script>
   <script src="./src/easeljs/PixelArtCanvas.js"></script>
 
+  <script src="./src/underscore.js"></script>
   <script src="./src/angular.js"></script>
   <script src="./src/angular/directives.js"></script>
   <script src="./src/angular/rules_controller.js"></script>
@@ -132,49 +133,45 @@
 
       <div class="header">
         <div style="float:left; width:20px;">
-          <div class="circle"></div>
-          <div data-ng-click="toggle_disclosed(struct)" class="triangle {{struct.disclosed}}"></div>
+          <div ng-class="circle_for_rule(struct)"></div>
+          <div ng-click="toggle_disclosed(struct)" class="triangle {{struct.disclosed}}"></div>
         </div>
 
-        <img class="icon" data-ng-src="/img/icon_event_{{struct.event}}.png"/>
+        <img class="icon" ng-src="/img/icon_event_{{struct.event}}.png"/>
         <div class="name">{{name_for_event_group(struct)}}</div>
       </div>
-      <ul class="unstyled rules-list" data-ng-hide="struct.disclosed" sortable='{"connectWith":".rules-list"}'>
-        <li ng-repeat="struct in struct.rules" ng-include="'rule_template.html'" data-id="{{id_for_struct(struct)}}"></li>
+      <ul class="unstyled rules-list" ng-hide="struct.disclosed" sortable='{"connectWith":".rules-list"}'>
+        <li ng-repeat="struct in struct.rules" ng-include="'rule_template.html'" data-id="{{struct._id}}"></li>
       </ul>
     </div>
 
     <div ng-switch-when="group-flow" class="rule-container group">
       <div class="header">
         <div style="float:left; width:20px;">
-          <div class="circle"></div>
-          <div data-ng-click="toggle_disclosed(struct)" class="triangle {{struct.disclosed}}"></div>
+          <div ng-class="circle_for_rule(struct)"></div>
+          <div ng-click="toggle_disclosed(struct)" class="triangle {{struct.disclosed}}"></div>
         </div>
-
-        <select>
-          <option>Do First Match</option>
-          <option>Do All & Continue</option>
-          <option>Randomize & Do First</option>
+        <select ng-model="struct.behavior" ng-options="key for (key,value) in flow_types">
         </select>
-        <input class="name" data-ng-model="struct.name" />
+        <input class="name" ng-model="struct.name" />
       </div>
-      <ul class="unstyled rules-list" data-ng-hide="struct.disclosed" sortable='{"connectWith":".rules-list"}'>
-        <li ng-repeat="struct in struct.rules" ng-include="'rule_template.html'" data-id="{{id_for_struct(struct)}}"></li>
+      <ul class="unstyled rules-list" ng-hide="struct.disclosed" sortable='{"connectWith":".rules-list"}'>
+        <li ng-repeat="struct in struct.rules" ng-include="'rule_template.html'" data-id="{{struct._id}}"></li>
       </ul>
     </div>
 
-    <div ng-switch-default class="rule-container rule" data-ng-show="!struct.type">
-      <div class="circle" style="position:absolute;z-index:4;"></div>
+    <div ng-switch-default class="rule-container rule" ng-show="!struct.type">
+      <div ng-class="circle_for_rule(struct)" style="position:absolute;z-index:4;"></div>
       <div class="scenario">
         <img ng-src="{{scenario_before_url(struct)}}"/>
         <div class="arrow">-></div>
         <img ng-src="{{scenario_after_url(struct)}}"/>
       </div>
 
-      <div data-ng-click="toggle_disclosed(struct)" class="triangle {{struct.disclosed}}"></div>
-      <input class="name" data-ng-model="struct.name" />
+      <div ng-click="toggle_disclosed(struct)" class="triangle {{struct.disclosed}}"></div>
+      <input class="name" ng-model="struct.name" />
 
-      <ul class="unstyled" data-ng-show="!struct.disclosed && actions_for_rule(struct).length">
+      <ul class="unstyled" ng-show="!struct.disclosed && actions_for_rule(struct).length">
         <li ng-repeat="action in actions_for_rule(struct)" class="action">
           <span class="condition-value">{{action}}</span>
         </li>
@@ -186,7 +183,7 @@
   </script>
 
 
-  <div class="white-box" style="float:left; width:250px;" ng-controller="RulesCtrl">
+  <div class="white-box" style="float:right; width:280px;" ng-controller="RulesCtrl" ng-cloak>
     <ul class="nav nav-tabs">
       <li><a href="#rules" data-toggle="tab">Rules</a></li>
       <li><a href="#variables" data-toggle="tab">Variables</a></li>
@@ -195,7 +192,7 @@
     <div class="tab-content">
       <div class="tab-pane active" id="rules">
         <ul class="unstyled rules-list" sortable='{{sortable_attributes_for_rules_root()}}'>
-          <li ng-repeat="struct in rules()" ng-include="'rule_template.html'" data-id="{{id_for_struct(struct)}}"></li>
+          <li ng-repeat="struct in rules()" ng-include="'rule_template.html'" data-id="{{struct._id}}"></li>
         </ul>
       </div>
 
@@ -210,18 +207,18 @@
   </div>
 
   <!-- Begin Library Controller -->
-  <div id="library" ng-controller="LibraryCtrl">
+  <div id="library" ng-controller="LibraryCtrl" ng-cloak>
     <div id="definitions" class="white-box" style="width:490px; float:left;">
 
-      <div class="btn btn-mini" style="float:right;" data-ng-click="add_definition()"><i class="icon-plus"></i></div>
+      <div class="btn btn-mini" style="float:right;" ng-click="add_definition()"><i class="icon-plus"></i></div>
       <h4>{{library_name}}</h4>
 
-      <div data-ng-show="definitions().length == 0" class="empty-message">
+      <div ng-show="definitions().length == 0" class="empty-message">
         You haven't defined any actors yet! Create a new actor by clicking the '+' icon.
       </div>
-      <div ng-repeat="def in definitions()" data-ng-click="select_definition(def)" class="item {{class_for_definition(def)}}">
+      <div ng-repeat="def in definitions()" ng-click="select_definition(def)" class="item {{class_for_definition(def)}}">
         <i draggable data-identifier="actor:{{def.identifier}}" style="{{css_for_sprite_frame(def)}}"></i>
-        <input class="name" data-ng-model="def.name" data-ng-blur="save_definition(def)" />
+        <input class="name" ng-model="def.name" ng-blur="save_definition(def)" />
       </div>
 
 
@@ -229,14 +226,14 @@
 
     <div id="appearances" class="white-box" style="width:290px; float:left;">
 
-      <div class="btn btn-mini" style="float:right;" data-ng-click="add_appearance()"><i class="icon-plus"></i></div>
+      <div class="btn btn-mini" style="float:right;" ng-click="add_appearance()"><i class="icon-plus"></i></div>
       <h4>Appearances</h4>
-      <div data-ng-show="appearances().length == 0" class="empty-message">
+      <div ng-show="appearances().length == 0" class="empty-message">
         Select an actor in your library to view it's appearances.
       </div>
       <div ng-repeat="(id,frames) in appearances()" class="item">
         <i draggable data-identifier="appearance:{{id}}" style="{{css_for_sprite_frame(selected_definition(), frames[0])}}" ng-dblclick="edit_appearance(id, frames[0])"></i>
-        <input class="name" data-ng-blur="save_appearance_name($event)" data-identifier="{{id}}" value="{{name_for_appearance(id)}}" />
+        <input class="name" ng-blur="save_appearance_name($event)" data-identifier="{{id}}" value="{{name_for_appearance(id)}}" />
       </div>
     </div>
 
@@ -250,7 +247,7 @@
 
 
 <!-- Begin Pixel Art Controller -->
-  <div ng-controller="PixelArtCtrl" id="pixelArtModal" class="modal hide fade" tabindex="-1" role="dialog" aria-hidden="true" style="width:671px;" data-backdrop="static">
+  <div ng-controller="PixelArtCtrl" id="pixelArtModal" class="modal hide fade" tabindex="-1" role="dialog" aria-hidden="true" style="width:671px;" data-backdrop="static" ng-cloak>
     <div class="modal-header">
       <h3>Edit Appearance</h3>
     </div>
@@ -260,7 +257,7 @@
 
         <!-- Colors -->
         <div class="color-preview" style="background-color: {{canvas.toolColor}}"></div>
-        <div ng-repeat="color in colors" class="btn color" data-color="{{color}}" data-ng-click="set_tool_color(color)">
+        <div ng-repeat="color in colors" class="btn color" data-color="{{color}}" ng-click="set_tool_color(color)">
           <i style="background-color: {{color}}"></i>
         </div>
 
@@ -271,13 +268,13 @@
         <div class="divider"></div>
 
         <!-- Tools -->
-        <div ng-repeat="tool in canvas.tools" class="btn tool icon" data-ng-click="set_tool(tool)">
-          <img src="/img/tool_{{tool.name}}.png"/>
+        <div ng-repeat="tool in canvas.tools" class="btn tool icon" ng-click="set_tool(tool)">
+          <img ng-src="/img/tool_{{tool.name}}.png"/>
         </div>
 
         <!-- Undo / Redo -->
 
-        <div class="btn icon" data-ng-disabled="!canvas.canUndo()" data-ng-click="canvas.undo()"><img src="/img/icon_undo.png"></div><div class="btn icon" data-ng-disabled="!canvas.canRedo()" data-ng-click="canvas.redo()"><img src="/img/icon_redo.png"></div>
+        <div class="btn icon" ng-disabled="!canvas.canUndo()" ng-click="canvas.undo()"><img src="/img/icon_undo.png"></div><div class="btn icon" ng-disabled="!canvas.canRedo()" ng-click="canvas.redo()"><img src="/img/icon_redo.png"></div>
 
       </div>
       <div style="float:left; width:521px;">
@@ -288,7 +285,7 @@
     </div>
     <div class="modal-footer">
       <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-      <button class="btn btn-primary" data-dismiss="modal" data-ng-click="save_editor()">Save Changes</button>
+      <button class="btn btn-primary" data-dismiss="modal" ng-click="save_editor()">Save Changes</button>
     </div>
   </div>
 </div>

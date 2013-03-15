@@ -8,6 +8,7 @@ class ProgrammableSprite extends Sprite
     @identifier = identifier
     @definition = undefined
     @currentFrame = 66
+    @applied = {}
 
     super(position, size, level)
     @setupDragging()
@@ -43,11 +44,43 @@ class ProgrammableSprite extends Sprite
     super
 
 
-  tickRules: () ->
-    return unless @definition
-    for rule in @definition.rules
-      if @checkTriggers(rule.triggers) && @checkScenario(rule.scenario)
-        @applyScenario(rule.scenario)
+  resetRulesApplied: () ->
+    @applied = {}
+
+
+  tickRules: (struct = @definition, behavior = 'first') ->
+    rules = struct.rules
+    rules = _.shuffle(rules) if behavior == 'random'
+
+    if behavior == 'all'
+      for rule in rules
+        @tickRule(rule)
+        @applied[struct._id] ||= @applied[rule._id]
+    else
+      for rule in rules
+        @tickRule(rule)
+        return @applied[struct._id] = true if @applied[rule._id]
+
+    @applied[struct._id]
+
+
+  tickRule: (rule) ->
+    if rule.type == 'group-event'
+      if @checkEvent(rule)
+        @applied[rule._id] = true
+        @tickRules(rule, 'first')
+
+    else if rule.type == 'group-flow'
+      @applied[rule._id] = @tickRules(rule, rule.behavior)
+
+    else if @checkScenario(rule.scenario)
+      @applied[rule._id] = true
+      @applyScenario(rule.scenario)
+
+    else
+      @applied[rule._id] = false
+
+    @applied[rule._id]
 
 
   checkScenario: (scenario) ->
@@ -58,11 +91,15 @@ class ProgrammableSprite extends Sprite
     true
 
 
-  checkTriggers: (triggers) ->
-    for trigger in triggers
-      if trigger.type == 'key'
-        return false unless @level.isKeyDown(trigger.code)
-    true
+  checkEvent: (trigger) ->
+    if trigger.event == 'key'
+      if @level.isKeyDown(trigger.code)
+        debugger
+        return true
+    if trigger.event == 'idle'
+      return true
+    false
+
 
   applyScenario: (scenario) ->
     for block in scenario
@@ -78,7 +115,7 @@ class ProgrammableSprite extends Sprite
     return unless actions
     for action in actions
       if action.type == 'move'
-        @nextPos = Point.sum(@worldPos, Point.fromString(action.delta))
+        @nextPos = Point.sum(@nextPos, Point.fromString(action.delta))
 
 
   # -- drag and drop --- #
