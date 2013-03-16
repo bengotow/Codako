@@ -31,6 +31,7 @@
   <script src="./src/underscore.js"></script>
   <script src="./src/angular.js"></script>
   <script src="./src/angular/directives.js"></script>
+  <script src="./src/angular/controls_controller.js"></script>
   <script src="./src/angular/rules_controller.js"></script>
   <script src="./src/angular/pixel_art_controller.js"></script>
   <script src="./src/angular/library_controller.js"></script>
@@ -88,23 +89,23 @@
   </div>
 </div>
 
-<div class="container" style="width:1120px; margin:auto;">
+<div class="container" style="width:1120px; margin:auto;" ng-controller="ControlsCtrl" ng-cloak>
   <div class="white-box" style="float:left;line-height:0;">
     <canvas droppable id="platformerCanvas" width="800" height="520" style="background-color:black">
       Your browser doesn't support HTML5 Canvas!
     </canvas>
 
     <div>
-      <button class="btn btn-info">Stop</button>
-      <button class="btn">Run</button>
-      <button class="btn">Step Forward</button>
-      <button class="btn">Step Back</button>
-      <button class="btn">Reset</button>
+      <button ng-click="set_running(false)" class="{{class_for_btn(!running())}}">Stop</button>
+      <button ng-click="set_running(true)" class="{{class_for_btn(running())}}">Run</button>
+      <button ng-click="step()" class="btn">Step Forward</button>
+      <button ng-click="step_back()" class="btn">Step Back</button>
+      <button ng-click="reset()" class="btn">Reset</button>
 
       <div class="btn-group">
-        <button class="btn btn-info">Slow</button>
-        <button class="btn">Med.</button>
-        <button class="btn">Fast</button>
+        <button ng-click="set_speed(1000)" class="{{class_for_btn(1000==speed())}}">Slow</button>
+        <button ng-click="set_speed(500)" class="{{class_for_btn(500==speed())}}">Med.</button>
+        <button ng-click="set_speed(200)" class="{{class_for_btn(200==speed())}}">Fast</button>
       </div>
     </div>
 

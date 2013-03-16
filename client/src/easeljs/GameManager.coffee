@@ -8,9 +8,12 @@ class GameManager
     @selectedActor = null
     @width = @height = 0
 
-    @ruleCheckInterval = 0.40
-    @ruleCheckNextElapsed = 0
+    @simulationFrameRate = 500
+    @simulationFrameNextTime = 0
+    @prevFrames = []
+
     @elapsed = 0
+    @running = false
 
     @keysDown = {}
     document.onkeydown = (e) =>
@@ -61,7 +64,6 @@ class GameManager
   loadLevelDataReady: (json) ->
     @width = json['width']
     @height = json['height']
-    @tiles = Array.matrix(@height, @width, "|")
 
     # Creating a random background based on the 3 layers available in 3 versions
     background = new Bitmap(@content.imageNamed('Layer0_0'))
@@ -81,31 +83,65 @@ class GameManager
 
 
   loadFinished: () ->
+    @loadStatusChanged({progress: 100})
     @initialGameTime = Ticker.getTime()
+
+    @update()
+
     Ticker.addListener(@)
     Ticker.useRAF = false
     Ticker.setFPS(60)
+    window.rootScope.$apply()
 
 
-  tick: ->
-    try
-      elapsed = (Ticker.getTime() - @initialGameTime) / 1000
+  tick: () ->
+    @update()
 
-      for actor in @actors
-        actor.tick(elapsed)
 
-      if elapsed > @ruleCheckNextElapsed
-        for actor in @actors
-          actor.resetRulesApplied()
-          actor.tickRules()
+  update: (forceRules = false) ->
+    time = Ticker.getTime()
+    elapsed = (time - @initialGameTime) / 1000
+    for actor in @actors
+      actor.tick(elapsed)
 
-        @keysDown = {}
-        @ruleCheckNextElapsed += @ruleCheckInterval
-        window.rulesScope.$apply()
+    return @stage.update() unless @running || forceRules
 
+    if forceRules || time > @simulationFrameNextTime
+      @frameSave()
+      @frameAdvance()
+      window.rulesScope.$apply()
       @stage.update()
-    catch e
-      console.log "Error", e.message
+
+
+  frameRewind: () ->
+    return alert("Sorry, you can't rewind any further!") unless @prevFrames.length
+    frame = @prevFrames.pop()
+
+    @selectedActor = null
+    for actor in @actors
+      @stage.removeChild(actor)
+    @actors = []
+    for descriptor in frame
+      @addActor(descriptor)
+    window.rulesScope.$apply()
+    @stage.update()
+
+
+  frameSave: () ->
+    currentFrame = []
+    for actor in @actors
+      currentFrame.push(actor.descriptor())
+
+    @prevFrames = @prevFrames[1..-1] if @prevFrames.length > 20
+    @prevFrames.push(currentFrame)
+
+
+  frameAdvance: () ->
+    for actor in @actors
+      actor.resetRulesApplied()
+      actor.tickRules()
+    @keysDown = {}
+    @simulationFrameNextTime = Ticker.getTime() + @simulationFrameRate
 
 
   dispose: ->
@@ -222,12 +258,12 @@ class GameManager
   onAppearancePlaced: (identifier, point) ->
     for actor in @actorsAtPosition(point)
       actor.setAppearance(identifier)
-    @tick()
+    @update()
     @save()
 
   onActorPlaced: (actor_descriptor) ->
     @addActor(actor_descriptor)
-    @tick()
+    @update()
     @save()
 
 

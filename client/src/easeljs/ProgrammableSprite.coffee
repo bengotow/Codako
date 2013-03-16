@@ -99,7 +99,6 @@ class ProgrammableSprite extends Sprite
   checkEvent: (trigger) ->
     if trigger.event == 'key'
       if @level.isKeyDown(trigger.code)
-        debugger
         return true
     if trigger.event == 'idle'
       return true
