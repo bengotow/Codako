@@ -266,4 +266,8 @@ class GameManager
     data
 
 
-  window.GameManager = GameManager
+window.GameManager = GameManager
+window.Tile =
+  WIDTH: 40
+  HEIGHT: 40
+

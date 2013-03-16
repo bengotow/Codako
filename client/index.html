@@ -20,17 +20,13 @@
 
 
   <script src="./src/easeljs/XNARectangle.js"></script>
-  <script src="./src/easeljs/PlatformerHelper.js"></script>
   <script src="./src/easeljs/ContentManager.js"></script>
   <script src="./src/easeljs/Sprite.js"></script>
   <script src="./src/easeljs/ActorDefinition.js"></script>
   <script src="./src/easeljs/ProgrammableSprite.js"></script>
-  <script src="./src/easeljs/Tile.js"></script>
-  <script src="./src/easeljs/Player.js"></script>
-  <script src="./src/easeljs/LibraryManager.js"></script>
-  <script src="./src/easeljs/LibraryHUD.js"></script>
-  <script src="./src/easeljs/GameManager.js"></script>
   <script src="./src/easeljs/PixelArtCanvas.js"></script>
+  <script src="./src/easeljs/LibraryManager.js"></script>
+  <script src="./src/easeljs/GameManager.js"></script>
 
   <script src="./src/underscore.js"></script>
   <script src="./src/angular.js"></script>
@@ -44,32 +40,14 @@
   <link href="/css/colorpicker.css" rel="stylesheet" media="screen">
 
   <script>
-  var canvas;
-  var stage = null;
-  var globalCanvasContext;
-
-  window.KEYCODE_SPACE = 32
-  window.KEYCODE_UP = 38
-  window.KEYCODE_LEFT = 37
-  window.KEYCODE_RIGHT = 39
-  window.KEYCODE_W = 87
-  window.KEYCODE_A = 65
-  window.KEYCODE_D = 68
-  window.KEYCODE_S = 83
-
-
-
   function start() {
-  	if (stage == null) {
-  		//find canvas and load images, wait for last image to load
-  		canvas = document.getElementById("platformerCanvas");
-  		globalCanvasContext = canvas.getContext("2d");
-  		stage = new Stage(canvas);
+		//find canvas and load images, wait for last image to load
+		var canvas = document.getElementById("platformerCanvas");
+		stage = new Stage(canvas);
 
-      //find canvas and load images, wait for last image to load
-      renderingCanvas = document.getElementById("renderingCanvas");
-      renderingStage = new Stage(renderingCanvas);
-    }
+    //find canvas and load images, wait for last image to load
+    renderingCanvas = document.getElementById("renderingCanvas");
+    renderingStage = new Stage(renderingCanvas);
 
     // downloading all needed images ressources and preloading sounds & music
     window.Socket = io.connect(':4430', {secure: false});
