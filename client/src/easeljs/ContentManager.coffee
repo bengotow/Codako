@@ -1,12 +1,10 @@
 ﻿
 class ContentManager
 
-
-  constructor: (width, height) ->
+  constructor: (statusCallback) ->
     @numElementsQueued = 0
     @numElementsLoaded = 0
-    @width = width
-    @height = height
+    @contentStatusCallback = statusCallback
     @elements =
       images: {}
       sounds: {}
@@ -22,10 +20,6 @@ class ContentManager
 
       Ticker.addListener(@)
       Ticker.setInterval(50)
-
-
-  setContentStatusCallback: (callbackMethod) ->
-    @contentStatusCallback = callbackMethod
 
 
   downloadImage: (key, info) ->
@@ -49,12 +43,12 @@ class ContentManager
       @elements.sounds[key].channels.push(asset)
 
 
-  downloadsComplete: () ->
+  downloadsComplete: () =>
     Ticker.removeListener(@)
     @contentStatusCallback({progress: 100})
 
 
-  tick: () ->
+  tick: () =>
     percent = Math.round((@numElementsLoaded / @numElementsQueued) * 100)
     @contentStatusCallback({progress: percent})
 
@@ -80,6 +74,7 @@ class ContentManager
     sound.channels[i].pause() for i in sound.channels.length
 
 
+  # -- Helper Functions -- #
 
   _soundFormatForBrowser: () ->
     # Need to check the canPlayType first or an exception

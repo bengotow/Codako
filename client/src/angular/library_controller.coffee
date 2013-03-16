@@ -11,8 +11,8 @@ LibraryCtrl = ($scope) ->
           definitions = $scope.definitions()
           identifier = identifier[6..-1]
 
-          window.Game.Manager.level.removeActorsMatchingDescriptor({identifier: identifier})
-          window.Game.Manager.level.save()
+          window.Game.removeActorsMatchingDescriptor({identifier: identifier})
+          window.Game.save()
           delete definitions[identifier]
 
       else if identifier[0..9] == 'appearance'
@@ -26,18 +26,19 @@ LibraryCtrl = ($scope) ->
   # -- Definitions -- #
 
   $scope.definitions = () ->
-    return [] unless window.Game?.Library?
-    window.Game.Library.definitions
+    return [] unless window.Game?.library?
+    window.Game.library.definitions
 
   $scope.add_definition = () ->
     actor = new ActorDefinition()
-    window.Game.Library.addActorDefinition(actor)
+    window.Game.library.addActorDefinition(actor)
+    window.Game.selectDefinition(actor)
 
   $scope.select_definition = (def) ->
-    $scope.Manager.level.selectedDefinition = def
+    window.Game.selectedDefinition = def
 
   $scope.selected_definition = () ->
-    $scope.Manager.level.selectedDefinition
+    window.Game.selectedDefinition
 
   $scope.save_definition = (definition = null) ->
     definition = $scope.selected_definition() unless definition
@@ -47,8 +48,8 @@ LibraryCtrl = ($scope) ->
   # -- Appearances -- #
 
   $scope.appearances = () ->
-    return [] unless $scope.Manager && $scope.Manager.level.selectedDefinition
-    $scope.Manager.level.selectedDefinition.spritesheet.animations
+    return [] unless window.Game && window.Game.selectedDefinition
+    window.Game.selectedDefinition.spritesheet.animations
 
   $scope.add_appearance = () ->
     definition = $scope.selected_definition()
@@ -75,7 +76,7 @@ LibraryCtrl = ($scope) ->
     $scope.selected_definition().nameForAppearance(name)
 
   $scope.class_for_definition = (definition) ->
-    return 'active' if definition == $scope.Manager.level.selectedDefinition
+    return 'active' if definition == window.Game.selectedDefinition
     return ''
 
   $scope.class_for_appearance = (identifer) ->

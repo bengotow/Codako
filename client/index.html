@@ -13,6 +13,7 @@
   <script src="./src/socket.io.js"></script>
   <script src="./src/bootstrap.js"></script>
   <script src="./src/bootstrap-colorpicker.js"></script>
+  <script src="./src/extensions.js"></script>
 
   <link href="./src/jquery-ui.css" rel="stylesheet" type="text/css" />
   <script src="./src/jquery-ui.min.js"></script>
@@ -26,7 +27,6 @@
   <script src="./src/easeljs/ProgrammableSprite.js"></script>
   <script src="./src/easeljs/Tile.js"></script>
   <script src="./src/easeljs/Player.js"></script>
-  <script src="./src/easeljs/Level.js"></script>
   <script src="./src/easeljs/LibraryManager.js"></script>
   <script src="./src/easeljs/LibraryHUD.js"></script>
   <script src="./src/easeljs/GameManager.js"></script>
@@ -76,21 +76,14 @@
     window.Socket.on('connect', function () {
         console.log('Socket.io Connection Established.');
         window.Socket.emit('auth', { username: 'default', password: '' })
+        window.Game.load('level1')
     });
     window.Socket.on('disconnect', function () {
         console.log('Socket.io Connection Lost. Trying to reconnect...');
     });
 
-    window.Game = {}
-    window.Game.Library = new LibraryManager('default');
-    window.Game.Content = new ContentManager(canvas.width, canvas.height);
-    window.Game.Manager = new GameManager(stage, renderingStage, canvas.width, canvas.height);
-    window.Game.Content.setContentStatusCallback(window.Game.Manager.contentStatusChanged);
-
+    window.Game = new GameManager(stage, renderingStage);
     window.rootScope = angular.element('body').scope()
-    window.rootScope.Library = window.Game.Library
-    window.rootScope.Content = window.Game.Content
-    window.rootScope.Manager = window.Game.Manager
   }
   </script>
 </head>
@@ -122,6 +115,21 @@
     <canvas droppable id="platformerCanvas" width="800" height="520" style="background-color:black">
       Your browser doesn't support HTML5 Canvas!
     </canvas>
+
+    <div>
+      <button class="btn btn-info">Stop</button>
+      <button class="btn">Run</button>
+      <button class="btn">Step Forward</button>
+      <button class="btn">Step Back</button>
+      <button class="btn">Reset</button>
+
+      <div class="btn-group">
+        <button class="btn btn-info">Slow</button>
+        <button class="btn">Med.</button>
+        <button class="btn">Fast</button>
+      </div>
+    </div>
+
   </div>
 
   <!-- Begin Rules Controller -->
@@ -185,12 +193,19 @@
 
   <div id="actor-box" class="white-box" style="float:right; width:280px;" ng-controller="RulesCtrl" ng-cloak>
     <ul class="nav nav-tabs">
-      <li><a href="#rules" data-toggle="tab">Rules</a></li>
+      <li class="active"><a href="#rules" data-toggle="tab">Rules</a></li>
       <li><a href="#variables" data-toggle="tab">Variables</a></li>
     </ul>
 
     <div class="tab-content">
       <div class="tab-pane active" id="rules">
+        <div ng-show="rules() == undefined" class="empty-message">
+          Select an actor to view rules.
+        </div>
+        <div ng-show="rules().length == 0" class="empty-message">
+          This actor doesn't have any rules. Create<br>
+          a new rule by tapping the 'Record' icon.
+        </div>
         <ul class="unstyled rules-list" sortable='{{sortable_attributes_for_rules_root()}}'>
           <li ng-repeat="struct in rules()" ng-include="'rule_template.html'" data-id="{{struct._id}}"></li>
         </ul>

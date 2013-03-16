@@ -19,12 +19,12 @@ class LibraryHUD
     @reload()
 
   reload: () ->
-    return unless window.Game.Library.definitions
+    return unless window.Game.library.definitions
     @stage.removeChild(stamp) for stamp in @stamps
 
     x = 5
     y = @stage.canvas.height - 45
-    for identifier, def of window.Game.Library.definitions
+    for identifier, def of window.Game.library.definitions
       @_createStampSprite(x, y, identifier)
       x += 50
 
@@ -33,13 +33,12 @@ class LibraryHUD
 
   _createStampSprite: (x, y, identifier) ->
     descriptor = {identifier: identifier}
-    sprite = window.Game.Library.instantiateActorFromDescriptor(descriptor)
+    sprite = window.Game.library.instantiateActorFromDescriptor(descriptor)
     sprite.x = x
     sprite.y = y
     sprite.dropped = (point) ->
-      level = window.Game.Manager.level
-      if point.x < level.width || point.y < level.height
-        window.Game.Manager.level.onActorPlaced({identifier: identifier, position: point})
+      if point.x < window.Game.width || point.y < window.Game.height
+        window.Game.onActorPlaced({identifier: identifier, position: point})
       @dragging = false
       @alpha = 1
       @x = x

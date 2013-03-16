@@ -2,7 +2,7 @@ class ActorDefinition
 
   constructor: (json = {}) ->
     @name = 'Untitled'
-    @identifier = 'untitled'
+    @identifier = Math.createUUID()
     @size = {width: 1, height: 1}
     @spritesheet =
       data: undefined,
@@ -86,7 +86,7 @@ class ActorDefinition
     @spritesheet.animation_names[identifier] = newname
 
   addAppearance: (name = 'Untitled') ->
-    identifier = 'a' + Math.floor((1 + Math.random()) * 0x10000).toString(6)
+    identifier = Math.createUUID()
     animationCount = Object.keys(@spritesheet.animations).length
     framesWide = @img.width / (Tile.WIDTH * @size.width)
     index = framesWide * animationCount

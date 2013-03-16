@@ -184,7 +184,7 @@ class PixelArtCanvas
 
   render: () ->
     @context.fillStyle = "rgb(255,255,255)"
-    @context.fillRect(0,0, @width, @height)
+    @context.clearRect(0,0, @width, @height)
     @applyPixelsFromData(@imageData.data, @context)
     @tool.render(@context) if @tool
 
@@ -266,8 +266,7 @@ class PixelArtCanvas
       [x, y] = @coordsForFrame(@imageDisplayedFrame)
       context = canvas.getContext("2d")
       context.imageSmoothingEnabled = false
-      context.fillStyle = "rgb(255,255,255)"
-      context.fillRect(0,0, canvas.width, canvas.height)
+      context.clearRect(0,0, @width, @height)
       context.drawImage(@image, -x, -y) if @image
       @imageData = context.getImageData(0, 0, canvas.width, canvas.height)
       @imageData.fillPixel = (xx, yy, color = @toolColor) =>

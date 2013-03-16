@@ -10,22 +10,22 @@ RulesCtrl = ($scope) ->
 
 
   $scope.rules = () ->
-    return [] unless $scope.Manager && $scope.Manager.level.selectedDefinition
-    $scope.Manager.level.selectedDefinition.rules
+    return undefined unless window.Game && window.Game.selectedDefinition
+    window.Game.selectedDefinition.rules
 
   $scope.save_rules = () ->
-    $scope.Manager.level.selectedDefinition.save()
+    window.Game.selectedDefinition.save()
 
 
   $scope.scenario_before_url = (rule) ->
-    cache = $scope.Manager.level.selectedDefinition.ruleRenderCache
-    cache["#{rule.name}-before"] ||= window.Game.Manager.renderRuleScenario(rule.scenario)
+    cache = window.Game.selectedDefinition.ruleRenderCache
+    cache["#{rule.name}-before"] ||= window.Game.renderRuleScenario(rule.scenario)
     cache["#{rule.name}-before"]
 
 
   $scope.scenario_after_url = (rule) ->
-    cache = $scope.Manager.level.selectedDefinition.ruleRenderCache
-    cache["#{rule.name}-after"] ||= window.Game.Manager.renderRuleScenario(rule.scenario, true)
+    cache = window.Game.selectedDefinition.ruleRenderCache
+    cache["#{rule.name}-after"] ||= window.Game.renderRuleScenario(rule.scenario, true)
     cache["#{rule.name}-after"]
 
 
@@ -59,6 +59,7 @@ RulesCtrl = ($scope) ->
 
   $scope.sortable_attributes_for_rules_root = () ->
     rules = $scope.rules()
+    return undefined unless rules
     if rules.length > 0 && rules[0].type == 'group-event'
       return {}
     else
@@ -74,7 +75,7 @@ RulesCtrl = ($scope) ->
   $scope.sortable_contents_changed = (event, ui) ->
     for key, struct of $scope.structs_lookup_table
       $scope.recompute_struct_contents(key) if struct.rules
-    $scope.Manager.level.selectedDefinition.save()
+    window.Game.selectedDefinition.save()
 
 
   $scope.recompute_struct_contents = (container_id) ->
@@ -98,7 +99,7 @@ RulesCtrl = ($scope) ->
 
 
   $scope.circle_for_rule = (struct) ->
-    actor = $scope.Manager.level?.selectedActor
+    actor = window.Game?.selectedActor
     return 'circle' unless struct && actor
     return 'circle true' if actor.applied[struct._id]
     return 'circle false'
