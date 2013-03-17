@@ -26,24 +26,25 @@ class LibraryManager
 
 
   loadActorDefinition: (identifier, callback) =>
-    return if @definitions[identifier]
+    return callback(null) if @definitions[identifier]
     @outstanding += 1
     @definitionReadyCallbacks[identifier] = callback
+    console.log(@definitionReadyCallbacks)
     window.Socket.emit 'get-actor', {identifier: identifier}
 
 
-  addActorDefinition: (actor) =>
+  addActorDefinition: (actor, readyCallback = null) =>
     actor.img = new Image()
     actor.img.onload = () =>
-      console.log('Actor Image Loaded')
       @outstanding -= 1
       @definitions[actor.identifier] = actor
 
       progress = (@definitions.length / Object.keys(@definitionReadyCallbacks).length) * 100
-      @libraryProgressCallback({progress: progress})
 
-      callback = @definitionReadyCallbacks[actor.identifier]
-      callback(null)
+      @libraryProgressCallback({progress: progress})
+      @definitionReadyCallbacks[actor.identifier](null) if @definitionReadyCallbacks[actor.identifier]
+      readyCallback(null) if readyCallback
+
 
     actor.spritesheet.data ||= '/game/img/splat.png'
     actor.img.src = actor.spritesheet.data

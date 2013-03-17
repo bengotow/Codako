@@ -8,10 +8,17 @@ RulesCtrl = ($scope) ->
     'Do All & Continue': 'all'
     'Randomize & Do First': 'random'
 
+  $scope.definition_name = () ->
+    return undefined unless window.Game && window.Game.selectedDefinition
+    window.Game.selectedDefinition.name
 
   $scope.rules = () ->
     return undefined unless window.Game && window.Game.selectedDefinition
     window.Game.selectedDefinition.rules
+
+  $scope.add_rule = () ->
+    rule = {}
+    $scope.$root.$broadcast('compose_rule', {actor: window.Game.selectedActor, rule: rule})
 
   $scope.save_rules = () ->
     window.Game.selectedDefinition.save()

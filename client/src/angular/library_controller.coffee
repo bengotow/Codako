@@ -31,8 +31,9 @@ LibraryCtrl = ($scope) ->
 
   $scope.add_definition = () ->
     actor = new ActorDefinition()
-    window.Game.library.addActorDefinition(actor)
-    window.Game.selectDefinition(actor)
+    window.Game.library.addActorDefinition actor, () ->
+      window.Game.selectDefinition(actor)
+      $scope.$apply()
 
   $scope.select_definition = (def) ->
     window.Game.selectedDefinition = def

@@ -34,6 +34,7 @@
   <script src="./src/angular/controls_controller.js"></script>
   <script src="./src/angular/rules_controller.js"></script>
   <script src="./src/angular/pixel_art_controller.js"></script>
+  <script src="./src/angular/compose_rule_controller.js"></script>
   <script src="./src/angular/library_controller.js"></script>
 
   <link href="/css/bootstrap.min.css" rel="stylesheet" media="screen">
@@ -181,6 +182,11 @@
         <div ng-show="rules() == undefined" class="empty-message">
           Select an actor to view rules.
         </div>
+
+        <div class="btn" ng-show="definition_name()" ng-click="add_rule()">
+          Record New Rule for {{definition_name()}}
+        </div>
+
         <div ng-show="rules().length == 0" class="empty-message">
           This actor doesn't have any rules. Create<br>
           a new rule by tapping the 'Record' icon.
@@ -238,6 +244,36 @@
   </div>
   <!-- End Library Controller -->
 </div>
+
+
+  <!-- Begin Compose Rule Controller -->
+  <div ng-controller="ComposeRuleCtrl" id="composeRuleModal" class="modal hide fade" tabindex="-1" role="dialog" aria-hidden="true" style="width:671px;" data-backdrop="static" ng-cloak>
+    <div class="modal-header">
+      <h3>Edit Rule</h3>
+    </div>
+    <div class="modal-body" style="max-height:585px;">
+
+      <div class="scenario">
+        <div class="before">
+          <h4>Before</h4>
+          <img ng-src="{{scenario_before_url(rule)}}"/>
+        </div>
+        <div class="arrow">-></div>
+        <div class="after">
+          <h4>After</h4>
+          <img ng-src="{{scenario_after_url(rule)}}"/>
+        </div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+      <button class="btn btn-primary" data-dismiss="modal" ng-click="save_editor()">Save</button>
+    </div>
+  </div>
+</div>
+<!-- End Pixel Art Controller -->
+
 
 
 <!-- Begin Pixel Art Controller -->
