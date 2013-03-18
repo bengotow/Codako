@@ -12,13 +12,28 @@ RulesCtrl = ($scope) ->
     return undefined unless window.Game && window.Game.selectedDefinition
     window.Game.selectedDefinition.name
 
+
   $scope.rules = () ->
     return undefined unless window.Game && window.Game.selectedDefinition
     window.Game.selectedDefinition.rules
 
+
   $scope.add_rule = () ->
     actor = window.Game.selectedActor
     window.Game.enterRecordingModeForActor(actor)
+    $scope.$root.$broadcast('compose_rule', {})
+
+
+  $scope.add_rule_group_event = (type) ->
+    if type == 'key'
+      code = 'A'
+      window.Game.selectedDefinition.addEventGroup({event: type, code: code})
+    else
+      window.Game.selectedDefinition.addEventGroup({event: type})
+
+
+  $scope.add_rule_group_flow = () ->
+    window.Game.selectedDefinition.addFlowGroup()
 
 
   $scope.save_rules = () ->
@@ -27,14 +42,14 @@ RulesCtrl = ($scope) ->
 
   $scope.scenario_before_url = (rule) ->
     cache = window.Game.selectedDefinition.ruleRenderCache
-    cache["#{rule.name}-before"] ||= window.Game.renderRuleScenario(rule.scenario)
-    cache["#{rule.name}-before"]
+    cache["#{rule._id}-before"] ||= window.Game.renderRuleScenario(rule.scenario)
+    cache["#{rule._id}-before"]
 
 
   $scope.scenario_after_url = (rule) ->
     cache = window.Game.selectedDefinition.ruleRenderCache
-    cache["#{rule.name}-after"] ||= window.Game.renderRuleScenario(rule.scenario, true)
-    cache["#{rule.name}-after"]
+    cache["#{rule._id}-after"] ||= window.Game.renderRuleScenario(rule.scenario, true)
+    cache["#{rule._id}-after"]
 
 
   $scope.toggle_disclosed = (struct) ->
@@ -69,9 +84,11 @@ RulesCtrl = ($scope) ->
     rules = $scope.rules()
     return undefined unless rules
     if rules.length > 0 && rules[0].type == 'group-event'
-      return {}
+      console.log 'disabled'
+      return "disabled"
     else
-      return {"connectWith":".rules-list"}
+      console.log 'valid'
+      return {'connectWith':'.rules-list'}
 
 
   $scope.sortable_change_start = () ->
@@ -111,6 +128,7 @@ RulesCtrl = ($scope) ->
     return 'circle' unless struct && actor
     return 'circle true' if actor.applied[struct._id]
     return 'circle false'
+
 
   $scope.actions_for_rule = (rule) ->
     actions = []

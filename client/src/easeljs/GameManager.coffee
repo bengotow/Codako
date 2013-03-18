@@ -1,16 +1,11 @@
 ﻿
 class GameManager
 
-  constructor: (stage, renderingStage) ->
+  constructor: (stagePane1, stagePane2, renderingStage) ->
     @library = new LibraryManager('default', @loadStatusChanged)
     @content = new ContentManager(@loadStatusChanged)
-    @actors = []
     @selectedActor = null
-    @width = @height = 0
-
-    @recordingHandles = {}
-    @recordingMasks = []
-    @recordingExtent = {}
+    @recordingActor = null
 
     @simulationFrameRate = 500
     @simulationFrameNextTime = 0
@@ -20,18 +15,20 @@ class GameManager
     @running = false
 
     @keysDown = {}
+
     document.onkeydown = (e) =>
+      if e.keyCode == 127 || e.keyCode == 8 #delete / backspace
+        e.preventDefault()
+        @selectedActor.stage.removeActor(@selectedActor) if @selectedActor
+        @selectActor(null)
+        @save()
+
       @keysDown[e.keyCode] = true
 
-    @stage = stage
-    @stage.canvas.ondrop = (e, dragEl) =>
-      identifier = $(dragEl.draggable).data('identifier')
-      parentOffset = $(@stage.canvas).parent().offset()
-      point = new Point(Math.round((e.pageX - e.offsetX - parentOffset.left) / Tile.WIDTH), Math.round((e.pageY - e.offsetY - parentOffset.top) / Tile.HEIGHT))
-      if identifier[0..4] == 'actor'
-        @onActorPlaced({identifier: identifier[6..-1], position: point})
-      else if identifier[0..9] == 'appearance'
-        @onAppearancePlaced(identifier[11..-1], point)
+    @mainStage = @stagePane1 = stagePane1
+    @stagePane2 = stagePane2
+    @stageTotalWidth = @stagePane1.canvas.width
+    @stagePaneDividerTarget = @stageTotalWidth
 
     @renderingStage = renderingStage
     @
@@ -52,50 +49,22 @@ class GameManager
 
   loadStatusChanged: (state) =>
     if (state.progress < 100)
-      # add a text object to output the current donwload progression
-      if !@downloadProgress
-        @downloadProgress = new Text("-- %", "bold 14px Arial", "#FFF")
-        @downloadProgress.x = (@width / 2) - 50
-        @downloadProgress.y = @height / 2
-        @stage.addChild(@downloadProgress)
-      @downloadProgress.text = "Downloading #{state.progress}%"
-      @stage.update()
+      @mainStage.setStatusMessage("Downloading #{state.progress}%")
     else
-      @stage.removeChild(@downloadProgress)
-      @downloadProgress = null
+      @mainStage.setStatusMessage(null)
 
 
   loadLevelDataReady: (json) ->
-    @width = json['width']
-    @height = json['height']
+    @mainStage.prepareWithData json, (err) =>
+      @loadStatusChanged({progress: 100})
+      @initialGameTime = Ticker.getTime()
 
-    # Creating a random background based on the 3 layers available in 3 versions
-    background = new Bitmap(@content.imageNamed('Layer0_0'))
-    background.addEventListener 'click', (e) =>
-      @onActorClicked(null)
-    @stage.addChild(background)
+      @update()
 
-    # make sure all of the actors on the stage are in the library
-    for actor in json.actor_descriptors
-      json.actor_library.push(actor.identifier) if json.actor_library.indexOf(actor.identifier) == -1
-
-    # fetch the actor definitions (which include base64 image data, etc...)
-    @library.loadActorDefinitions json.actor_library, (err) =>
-      for descriptor in json.actor_descriptors
-        @addActor(descriptor)
-      @loadFinished()
-
-
-  loadFinished: () ->
-    @loadStatusChanged({progress: 100})
-    @initialGameTime = Ticker.getTime()
-
-    @update()
-
-    Ticker.addListener(@)
-    Ticker.useRAF = false
-    Ticker.setFPS(60)
-    window.rootScope.$apply()
+      Ticker.addListener(@)
+      Ticker.useRAF = false
+      Ticker.setFPS(60)
+      window.rootScope.$apply()
 
 
   tick: () ->
@@ -105,136 +74,95 @@ class GameManager
   update: (forceRules = false) ->
     time = Ticker.getTime()
     elapsed = (time - @initialGameTime) / 1000
-    for actor in @actors
-      actor.tick(elapsed)
 
-    return @stage.update() unless @running || forceRules
+    w = @stagePane1.canvas.width + (@stagePaneDividerTarget - @stagePane1.canvas.width) / 5
+    @stagePane1.canvas.width = w unless @stagePane1.canvas.width == w
+
+    w = @stagePane2.canvas.width + ((@stageTotalWidth - @stagePaneDividerTarget) - @stagePane2.canvas.width) / 5
+    @stagePane2.canvas.width = w unless @stagePane2.canvas.width == w
+
+    unless @running || forceRules
+      @stagePane1.update(elapsed)
+      @stagePane2.update(elapsed) if @stagePane2.canvas.width > 0
+      return
 
     if forceRules || time > @simulationFrameNextTime
       @frameSave()
       @frameAdvance()
       window.rulesScope.$apply()
-      @stage.update()
+      @mainStage.update(elapsed)
 
 
   frameRewind: () ->
     return alert("Sorry, you can't rewind any further!") unless @prevFrames.length
-    frame = @prevFrames.pop()
-
     @selectedActor = null
-    for actor in @actors
-      @stage.removeChild(actor)
-    @actors = []
-    for descriptor in frame
-      @addActor(descriptor)
-    window.rulesScope.$apply()
-    @stage.update()
+    @mainStage.prepareWithData @prevFrames.pop(), () ->
+      window.rulesScope.$apply()
 
 
   frameSave: () ->
-    currentFrame = []
-    for actor in @actors
-      currentFrame.push(actor.descriptor())
-
     @prevFrames = @prevFrames[1..-1] if @prevFrames.length > 20
-    @prevFrames.push(currentFrame)
+    @prevFrames.push(@mainStage.saveData())
 
 
   frameAdvance: () ->
-    for actor in @actors
+    for actor in @mainStage.actors
       actor.resetRulesApplied()
       actor.tickRules()
+      actor.clickedInCurrentFrame = false
+
     @keysDown = {}
     @simulationFrameNextTime = Ticker.getTime() + @simulationFrameRate
 
 
   dispose: ->
-    @actors = []
     @selectedActor = null
-    @stage.removeAllChildren()
-    @stage.update()
+    @stagePane1.actors = []
+    @stagePane1.removeAllChildren()
+    @stagePane1.update()
+    @stagePane2.actors = []
+    @stagePane2.removeAllChildren()
+    @stagePane2.update()
     try
       @content.pauseSound('globalMusic')
 
 
   save: () ->
-    data =
-      identifier: @identifier
-      width: @width,
-      height: @height,
-      actor_library: @actorIdentifiers(),
-      actor_descriptors: []
-    data.actor_descriptors.push(actor.descriptor()) for actor in @actors
-    console.log 'Saving', data
+    data = @mainStage.saveData()
+    data.identifier = @identifier
     window.Socket.emit 'put-level', data
-
 
   isKeyDown: (code) ->
     return @keysDown[code]
 
 
-  # -- Managing Actors in the World -- #
+  # -- Selecting Actors in the World -- #
 
   addActor: (descriptor) ->
-    actor = @library.instantiateActorFromDescriptor(descriptor, @)
-    return console.log('Could not read descriptor:', descriptor) if !actor
-    actor.addEventListener 'click', (e) =>
-      @onActorClicked(actor)
-    @actors.push(actor)
-    @stage.addChild(actor)
-
+    @mainStage.addActor(descriptor)
 
   isDescriptorValid: (descriptor) ->
-    actorMatchingDescriptor(descriptor)?
-
+    @mainStage.isDescriptorValid(descriptor)
 
   actorsAtPosition: (position) ->
-    results = []
-    for actor in @actors
-      if actor.worldPos.isEqual(position)
-        results.push(actor)
-    results
-
+    @mainStage.actorsAtPosition(position)
 
   actorIdentifiers: () ->
-    ids = []
-    for actor in @actors
-      ids.push(actor.identifier) if ids.indexOf(actor.identifier) == -1
-    ids
-
+    @mainStage.actorIdentifiers()
 
   actorsAtPositionMatchDescriptors: (position, descriptors) ->
-    searchSet = @actorsAtPosition(position)
-
-    return searchSet.length == 0 if !descriptors
-
-    for actor in searchSet
-      matched = false
-      for descriptor in descriptors
-        matched = true if actor.matchesDescriptor(descriptor)
-      return false unless matched
-
-    true
-
+    @mainStage.actorsAtPositionMatchDescriptors(position,descriptors)
 
   actorMatchingDescriptor: (position, descriptor) ->
-    searchSet = @actorsAtPosition(position)
-    for actor in searchSet
-      return actor if actor.matchesDescriptor(descriptor)
-    false
-
+    @mainStage.actorMatchingDescriptor(position, descriptor)
 
   removeActor: (index) ->
-    @stage.removeChild(@actors[index])
-    @actors.splice(index,1)
-
-
-  removeActorsMatchingDescriptor: (descriptor) ->
-    for x in [@actors.length - 1..0] by -1
-      @removeActor(x) if @actors[x].matchesDescriptor(descriptor)
+    @mainStage.removeActor(index)
 
 
   selectActor: (actor) ->
+    return if @selectedActor == actor
+
     @selectedActor.setSelected(false) if @selectedActor
     @selectedDefinition = null
 
@@ -248,9 +176,13 @@ class GameManager
     @selectedDefinition = definition
 
 
-  # -- Event Handling from the World --- #
+  # -- Event Handling from the World and GameStage --- #
 
-  onActorClicked: (actor) ->
+  onActorClicked: (actor) =>
+    actor.clickedInCurrentFrame = true if actor && @running
+
+
+  onActorDoubleClicked: (actor) ->
     @selectActor(actor)
     window.rootScope.$digest()
 
@@ -259,59 +191,109 @@ class GameManager
     @save()
 
 
-  onAppearancePlaced: (identifier, point) ->
-    for actor in @actorsAtPosition(point)
-      actor.setAppearance(identifier)
+  onAppearancePlaced: (stage) ->
     @update()
-    @save()
+    if stage == @mainStage
+      @save()
 
-  onActorPlaced: (actor_descriptor) ->
-    @addActor(actor_descriptor)
+  onActorPlaced: (stage) ->
     @update()
-    @save()
+    if stage == @mainStage
+      @save()
 
 
   # -- Recording Mode -- #
 
   enterRecordingModeForActor: (actor) ->
+    initialExtent = {left: actor.worldPos.x, right: actor.worldPos.x, top: actor.worldPos.y, bottom: actor.worldPos.y}
+    @mainStage.setRecordingMaskStyle('masked')
+    @mainStage.setRecordingExtent(initialExtent)
+    @mainStage.setRecordingCentered(false)
+    @recordingActor = actor
     @selectActor(actor)
-    @setRecordingExtent({left: actor.worldPos.x, right: actor.worldPos.x, top: actor.worldPos.y, bottom: actor.worldPos.y})
-
-  setRecordingExtent: (extent = {left:0,right:0,top:0,bottom:0}) ->
-    # Remove existing elements
-    console.log('Updating Recording Extent', @recordingExtent)
-    @recordingExtent = extent
-
-    for key, obj of @recordingHandles
-      @stage.removeChild(obj)
-    @recordingHandles = {}
-    for obj in @recordingMasks
-      @stage.removeChild(obj)
-    @recordingMasks = []
-
-    # Add gray mask outside of the recording region
-    for x in [0..@width]
-      for y in [0..@height]
-        if (x < extent.left || x > extent.right) || (y < extent.top || y > extent.bottom)
-          sprite = new SquareMaskSprite('masked')
-          sprite.x = x * Tile.WIDTH
-          sprite.y = y * Tile.HEIGHT
-          @stage.addChild(sprite)
-          @recordingMasks.push(sprite)
-
-    # Add the handles
-    for side in ['top', 'left', 'right', 'bottom']
-      @recordingHandles[side] = new HandleSprite(side, extent)
-      @recordingHandles[side].tick(0)
-      @stage.addChild(@recordingHandles[side])
 
 
-  onHandleDragged: (handle) ->
-    @recordingExtent.left = handle.worldPos.x + 1 if handle.side == 'left'
-    @recordingExtent.right = Math.max(@recordingExtent.left, handle.worldPos.x - 1) if handle.side == 'right'
-    @recordingExtent.top = handle.worldPos.y + 1 if handle.side == 'top'
-    @recordingExtent.bottom = Math.max(@recordingExtent.top, handle.worldPos.y - 1) if handle.side == 'bottom'
-    @setRecordingExtent(@recordingExtent)
+  focusAndStartRecording: () ->
+    @stagePane1.draggingEnabled = false
+    @stagePane2.prepareWithData(@mainStage.saveData(), null)
+    @stagePane2.setRecordingExtent(@stagePane1.recordingExtent)
+
+    for stage in [@stagePane1, @stagePane2]
+      stage.setRecordingCentered(true)
+      stage.setRecordingMaskStyle('white')
+
+    @stagePaneDividerTarget = @stageTotalWidth / 2
+
+
+  exitRecordingMode: () ->
+    @stagePane1.setRecordingCentered(false)
+    @stagePane1.setRecordingExtent(null)
+    @stagePane1.centerOnEntireCanvas()
+    @stagePane1.draggingEnabled = true
+    @stagePaneDividerTarget = @stageTotalWidth
+    @recordingActor = null
+
+
+  recordingHandleDragged: (handle, finished = false) =>
+    @extent = @mainStage.recordingExtent
+    @extent.left = Math.min(@selectedActor.worldPos.x, handle.worldPos.x + 1, @extent.right) if handle.side == 'left'
+    @extent.right = Math.max(@selectedActor.worldPos.x, @extent.left, handle.worldPos.x - 1) if handle.side == 'right'
+    @extent.top = Math.min(@selectedActor.worldPos.y, handle.worldPos.y + 1, @extent.bottom) if handle.side == 'top'
+    @extent.bottom = Math.max(@selectedActor.worldPos.y, @extent.top, handle.worldPos.y - 1) if handle.side == 'bottom'
+    @stagePane1.setRecordingExtent(@extent)
+    @stagePane2.setRecordingExtent(@extent)
+
+
+  saveRecording: () ->
+    # first, identify changes to each actor we started with
+    rule =
+      _id: Math.createUUID()
+      name: 'Untitled Rule',
+      scenario: []
+
+    extent = @stagePane1.recordingExtent
+    relX = @recordingActor.worldPos.x
+    relY = @recordingActor.worldPos.y
+    afterActors = []
+    coordStructs = {}
+
+    for x in [extent.left..extent.right]
+      for y in [extent.top..extent.bottom]
+        afterActors = afterActors.concat(@stagePane2.actorsAtPosition(new Point(x,y)) || [])
+
+    for x in [extent.left..extent.right]
+      for y in [extent.top..extent.bottom]
+        coord = "#{x - relX},#{y - relY}"
+        actors = @stagePane1.actorsAtPosition(new Point(x,y))
+        descriptors = []
+        for before in actors
+          struct = before.descriptor()
+          delete struct.position
+          delete struct._id
+
+          # find the matching actor in the after scene
+          after = _.find afterActors, (a) -> a._id == before._id
+
+          # determine changes and push them onto the descriptor
+          struct.actions = before.computeActionsToBecome(after)
+          descriptors.push(struct)
+
+          # remove the after actor so it can no longer be referenced.
+          # this helsp us determine what has been added in the end
+          afterActors = _.reject afterActors, (a) -> a._id == before._id
+
+        coordStructs[coord] = {coord:coord, descriptors: descriptors}
+        rule.scenario.push(coordStructs[coord])
+
+    for newActor in afterActors
+      coord = "#{newActor.worldPos.x - relX},#{newActor.worldPos.y - relY}"
+      coordStructs[coord].added ||= []
+      coordStructs[coord].added.push(newActor.descriptor())
+
+
+    # okay cool - now add the rule to the actor definition
+    @recordingActor.definition.addRule(rule)
+    @exitRecordingMode()
 
 
   # -- Helper Methods -- #
@@ -332,14 +314,23 @@ class GameManager
     @renderingStage.canvas.height = (ymax - ymin + 1) * Tile.HEIGHT
 
     for block in scenario
+      coord = Point.fromString(block.coord)
       for descriptor in block.descriptors
-        coord = Point.fromString(block.coord)
         actor = window.Game.library.instantiateActorFromDescriptor(descriptor)
         actor.nextPos = new Point(-xmin + coord.x, -ymin + coord.y)
         actor.tick()
         actor.applyActions(descriptor.actions) if applyActions
         actor.tick()
         @renderingStage.addChild(actor)
+
+      continue unless block.added
+      for descriptor in block.added
+        descriptor = JSON.parse(JSON.stringify(descriptor))
+        descriptor.position = new Point(-xmin + coord.x, -ymin + coord.y)
+        actor = window.Game.library.instantiateActorFromDescriptor(descriptor)
+        actor.tick()
+        @renderingStage.addChild(actor)
+
 
 
     @renderingStage.update()

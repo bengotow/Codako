@@ -6,8 +6,10 @@ class ProgrammableSprite extends Sprite
 
   constructor: (identifier, position, size) ->
     @identifier = identifier
+    @stage = undefined
     @definition = undefined
     @currentFrame = 66
+    @clickedInCurrentFrame = false
     @applied = {}
 
     super(position, size)
@@ -16,6 +18,7 @@ class ProgrammableSprite extends Sprite
 
   descriptor: () ->
     {
+      _id: @_id
       identifier: @identifier,
       position: {x: @worldPos.x, y: @worldPos.y},
       appearance: @appearance
@@ -100,6 +103,8 @@ class ProgrammableSprite extends Sprite
     if trigger.event == 'key'
       if window.Game.isKeyDown(trigger.code)
         return true
+    if trigger.event == 'click'
+      return @clickedInCurrentFrame
     if trigger.event == 'idle'
       return true
     false
@@ -108,11 +113,17 @@ class ProgrammableSprite extends Sprite
   applyScenario: (scenario) ->
     for block in scenario
       pos = Point.sum(@worldPos, Point.fromString(block.coord))
-      continue unless block.descriptors
-      for descriptor in block.descriptors
-        continue unless descriptor.actions
-        actor = window.Game.actorMatchingDescriptor(pos, descriptor)
-        actor.applyActions(descriptor.actions) if actor
+      if block.descriptors
+        for descriptor in block.descriptors
+          continue unless descriptor.actions
+          actor = window.Game.actorMatchingDescriptor(descriptor, window.Game.actorsAtPosition(pos))
+          actor.applyActions(descriptor.actions) if actor
+
+      if block.added
+        for descriptor in block.added
+          descriptor = JSON.parse(JSON.stringify(descriptor))
+          descriptor.position = pos
+          actor = window.Game.addActor(descriptor)
 
 
   applyActions: (actions) ->
@@ -121,12 +132,38 @@ class ProgrammableSprite extends Sprite
       if action.type == 'move'
         @nextPos = Point.sum(@nextPos, Point.fromString(action.delta))
 
+      if action.type == 'deleted'
+        @stage.removeActor(@) if @stage
+        @nextPos = new Point(-100,-100)
+
+      if action.type == 'appearance'
+        @setAppearance(action.after)
+
+  computeActionsToBecome: (after) ->
+    actions = []
+    if !after
+      actions.push({type:'deleted'})
+      return actions
+
+    # if it is, let's declare changes...
+    if @worldPos.x != after.worldPos.x || @worldPos.y != after.worldPos.y
+      dx = after.worldPos.x - @worldPos.x
+      dy = after.worldPos.y - @worldPos.y
+      actions.push({type:'move', delta: "#{dx},#{dy}"})
+
+    if @appearance != after.appearance
+      actions.push({type:'appearance', after: after.appearance})
+
+    return undefined if actions.length == 0
+    actions
+
 
   # -- drag and drop --- #
 
   setupDragging: () ->
     @dragging = false
     @addEventListener 'mousedown', (e) =>
+      return unless @stage.draggingEnabled
       grabX = e.stageX - @x
       grabY = e.stageY - @y
       @alpha = 0.5

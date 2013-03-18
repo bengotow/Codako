@@ -12,20 +12,20 @@ ComposeRuleCtrl = ($scope) ->
   $scope.extent = null
   $scope.ruleExtent = null
 
-  $scope.$root.$on 'compose_rule', (msg, args) ->
-    w = $('#beforeCanvas').attr('width') / Tile.WIDTH
-    h = $('#beforeCanvas').attr('height') / Tile.HEIGHT
+  # $scope.$root.$on 'compose_rule', (msg, args) ->
+  #   w = $('#beforeCanvas').attr('width') / Tile.WIDTH
+  #   h = $('#beforeCanvas').attr('height') / Tile.HEIGHT
 
-    $scope.extent = {left: -(w-1) / 2, top: -(h-1) / 2, right: (w-1) / 2, bottom: (w-1) / 2}
+  #   $scope.extent = {left: -(w-1) / 2, top: -(h-1) / 2, right: (w-1) / 2, bottom: (w-1) / 2}
 
-    $scope.actor = args.actor
-    $scope.rule = args.rule
-    $('#composeRuleModal').modal({show:true})
-    $scope.setupStages()
+  #   $scope.actor = args.actor
+  #   $scope.rule = args.rule
+  #   $('#composeRuleModal').modal({show:true})
+  #   $scope.setupStages()
 
-    Ticker.addListener($scope)
-    Ticker.useRAF = false
-    Ticker.setFPS(60)
+  #   Ticker.addListener($scope)
+  #   Ticker.useRAF = false
+  #   Ticker.setFPS(60)
 
 
   $scope.tick = () ->

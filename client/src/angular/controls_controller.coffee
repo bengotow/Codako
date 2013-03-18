@@ -2,6 +2,12 @@
 ControlsCtrl = ($scope) ->
 
   window.controlsScope = $scope
+  $scope.control_set = 'testing'
+
+  $scope.$root.$on 'compose_rule', (msg, args) ->
+    $scope.control_set = 'record-preflight'
+
+  # -- Testing Controls -- #
 
   $scope.set_running = (r) ->
     window.Game.running = r
@@ -27,6 +33,19 @@ ControlsCtrl = ($scope) ->
 
   $scope.class_for_btn = (istrue) ->
     if istrue then 'btn btn-info' else 'btn'
+
+
+  # -- Recording Controls -- #
+
+  $scope.start_recording = () ->
+    window.Game.focusAndStartRecording()
+    $scope.control_set = 'recording'
+
+  $scope.cancel_recording = () ->
+    window.Game.exitRecordingMode()
+
+  $scope.save_recording = () ->
+    window.Game.saveRecording()
 
 
 window.ControlsCtrl = ControlsCtrl

@@ -28,6 +28,7 @@
   <script src="./src/easeljs/HandleSprite.js"></script>
   <script src="./src/easeljs/PixelArtCanvas.js"></script>
   <script src="./src/easeljs/LibraryManager.js"></script>
+  <script src="./src/easeljs/GameStage.js"></script>
   <script src="./src/easeljs/GameManager.js"></script>
 
   <script src="./src/underscore.js"></script>
@@ -46,7 +47,8 @@
   <script>
   function start() {
 		//find canvas and load images, wait for last image to load
-		stage = new Stage($("#platformerCanvas")[0]);
+		stagePane1 = new GameStage($("#platformerCanvasPane1")[0]);
+    stagePane2 = new GameStage($("#platformerCanvasPane2")[0]);
     renderingStage = new Stage($("#renderingCanvas")[0]);
 
     // downloading all needed images ressources and preloading sounds & music
@@ -60,7 +62,7 @@
         console.log('Socket.io Connection Lost. Trying to reconnect...');
     });
 
-    window.Game = new GameManager(stage, renderingStage);
+    window.Game = new GameManager(stagePane1, stagePane2, renderingStage);
     window.rootScope = angular.element('body').scope()
   }
   </script>
@@ -90,11 +92,16 @@
 
 <div class="container" style="width:1120px; margin:auto;" ng-controller="ControlsCtrl" ng-cloak>
   <div class="white-box" style="float:left;line-height:0;">
-    <canvas droppable id="platformerCanvas" width="800" height="520" style="background-color:black">
-      Your browser doesn't support HTML5 Canvas!
-    </canvas>
 
-    <div>
+    <div style="overflow:hidden; width:800px; height:520px;">
+      <canvas droppable id="platformerCanvasPane1" width="800" height="520" style="background-color:black">
+        Your browser doesn't support HTML5 Canvas!
+      </canvas>
+      <canvas droppable id="platformerCanvasPane2" width="0" height="520" style="background-color:black;">
+      </canvas>
+    </div>
+
+    <div class="controls" ng-show="control_set == 'testing'">
       <button ng-click="set_running(false)" class="{{class_for_btn(!running())}}">Stop</button>
       <button ng-click="set_running(true)" class="{{class_for_btn(running())}}">Run</button>
       <button ng-click="step()" class="btn">Step Forward</button>
@@ -108,6 +115,15 @@
       </div>
     </div>
 
+    <div class="controls" ng-show="control_set == 'record-preflight'">
+      <button ng-click="cancel_recording()">Cancel</button>
+      <button ng-click="start_recording()">Start Recording</button>
+    </div>
+
+    <div class="controls" ng-show="control_set == 'recording'">
+      <button ng-click="cancel_recording()">Cancel</button>
+      <button ng-click="save_recording()">Save Recording</button>
+    </div>
   </div>
 
   <!-- Begin Rules Controller -->
@@ -185,11 +201,25 @@
           Record New Rule for {{definition_name()}}
         </div>
 
+        <div class="btn-group">
+          <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+            Add Container
+            <span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu">
+            <li><a href="#" ng-click="add_rule_group_event('key')">When a Key is Pressed...</a></li>
+            <li><a href="#" ng-click="add_rule_group_event('click')">When I'm Clicked...</a></li>
+            <li class="divider"></li>
+            <li><a href="#" ng-click="add_rule_group_flow('key')">Flow Container</a></li>
+          </ul>
+        </div>
+
+
         <div ng-show="rules().length == 0" class="empty-message">
           This actor doesn't have any rules. Create<br>
           a new rule by tapping the 'Record' icon.
         </div>
-        <ul class="unstyled rules-list" sortable='{{sortable_attributes_for_rules_root()}}'>
+        <ul class="unstyled rules-list" sortable="{{sortable_attributes_for_rules_root()}}">
           <li ng-repeat="struct in rules()" ng-include="'rule_template.html'" data-id="{{struct._id}}"></li>
         </ul>
       </div>

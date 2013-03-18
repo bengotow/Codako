@@ -73,6 +73,8 @@ class ActorDefinition
     [x * Tile.WIDTH, y * Tile.HEIGHT, @size.width * Tile.WIDTH, @size.height * Tile.HEIGHT]
 
 
+  # Appearance Management
+
   frameForAppearance: (identifier, index = 0) ->
     @spritesheet.animations[identifier][index]
 
@@ -94,9 +96,57 @@ class ActorDefinition
     @spritesheet.animation_names[identifier] = name
     identifier
 
+
   deleteAppearance: (identifier) ->
     delete @spritesheet.animations[identifier]
 
+
+  # Rule Management
+
+  addRule: (rule) ->
+    idle_group = false
+    for existing in @rules
+      idle_group = existing if existing.type == 'group-event' && existing.event == 'idle'
+
+    if idle_group
+      idle_group.rules.splice(0,0,rule)
+    else
+      @rules.splice(0,0,rule)
+
+    @save()
+
+
+  addEventGroup: (rule = {event:'key', code:'36'}) ->
+    has_events = false
+    for existing in @rules
+      has_events = true if existing.type == 'group-event'
+
+    # if no events have been added yet, move the
+    # existing rules into an "idle" event group
+    if !has_events
+      idle =
+        _id: Math.createUUID()
+        type: 'group-event'
+        event: 'idle'
+        rules: [].concat(@rules)
+      @rules = [idle]
+
+    rule._id = Math.createUUID()
+    rule.type = 'group-event'
+    rule.rules = []
+
+    @rules.splice(0, 0, rule)
+    @save()
+
+
+  addFlowGroup: () ->
+    @rules.splice 0, 0,
+      _id: Math.createUUID()
+      type: 'group-flow',
+      name: 'Untitled Group',
+      behavior: 'all',
+      rules: []
+    @save()
 
 
 window.ActorDefinition = ActorDefinition

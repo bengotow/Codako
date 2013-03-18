@@ -3,9 +3,6 @@ class LibraryManager
 
 
   constructor: (name, progressCallback) ->
-    @stage = stage
-    @renderingStage = renderingStage
-
     @libraryName = name
     @libraryProgressCallback = progressCallback
     @definitions = {}
@@ -57,12 +54,12 @@ class LibraryManager
     def = @definitions[ident]
     return false unless def
 
-    pos = new Point(0,0)
+    pos = new Point(-1,-1)
     pos = Point.fromHash(descriptor.position) if descriptor.position
 
-    console.log ('Instantiating Actor')
     model = new ProgrammableSprite(ident, pos, def.size, level)
     model.setSpriteSheet(def.spritesheetInstance())
+    model._id = descriptor._id || Math.createUUID()
     model.definition = def
     model.setAppearance(descriptor.appearance)
     model

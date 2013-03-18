@@ -7,6 +7,9 @@ class Sprite extends BitmapAnimation
     @worldSize = size
     @elapsed = 0
     @selected = false
+    graphics = new createjs.Graphics().beginFill("#ff0000").drawRect(0, 0, Tile.HEIGHT, Tile.WIDTH);
+    @hitArea = new createjs.Shape(graphics);
+
 
 
   setSpriteSheet: (sheet) ->
@@ -27,12 +30,14 @@ class Sprite extends BitmapAnimation
     SpriteSheetUtils.addFlippedFrames(sheet, true, false, false)
     @setSpriteSheet(sheet)
 
+
   tick: (elapsed) ->
     if @nextPos
       @worldPos = @nextPos
       @x = @worldPos.x * Tile.WIDTH
       @y = @worldPos.y * Tile.HEIGHT
     @
+
 
   setSelected: (sel) ->
     @selected = sel

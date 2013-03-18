@@ -17,10 +17,12 @@ class UserController
       actor_library: ['rock', 'dude']
       actor_descriptors: [
         {
+          _id: '000123',
           identifier: 'dude',
           position: {x: 10, y: 10}
         },
         {
+          _id: '00012a',
           identifier: 'rock',
           position: {x: 7, y: 10}
         }
