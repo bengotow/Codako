@@ -8,6 +8,10 @@ class GameManager
     @selectedActor = null
     @width = @height = 0
 
+    @recordingHandles = {}
+    @recordingMasks = []
+    @recordingExtent = {}
+
     @simulationFrameRate = 500
     @simulationFrameNextTime = 0
     @prevFrames = []
@@ -266,6 +270,48 @@ class GameManager
     @update()
     @save()
 
+
+  # -- Recording Mode -- #
+
+  enterRecordingModeForActor: (actor) ->
+    @selectActor(actor)
+    @setRecordingExtent({left: actor.worldPos.x, right: actor.worldPos.x, top: actor.worldPos.y, bottom: actor.worldPos.y})
+
+  setRecordingExtent: (extent = {left:0,right:0,top:0,bottom:0}) ->
+    # Remove existing elements
+    console.log('Updating Recording Extent', @recordingExtent)
+    @recordingExtent = extent
+
+    for key, obj of @recordingHandles
+      @stage.removeChild(obj)
+    @recordingHandles = {}
+    for obj in @recordingMasks
+      @stage.removeChild(obj)
+    @recordingMasks = []
+
+    # Add gray mask outside of the recording region
+    for x in [0..@width]
+      for y in [0..@height]
+        if (x < extent.left || x > extent.right) || (y < extent.top || y > extent.bottom)
+          sprite = new SquareMaskSprite('masked')
+          sprite.x = x * Tile.WIDTH
+          sprite.y = y * Tile.HEIGHT
+          @stage.addChild(sprite)
+          @recordingMasks.push(sprite)
+
+    # Add the handles
+    for side in ['top', 'left', 'right', 'bottom']
+      @recordingHandles[side] = new HandleSprite(side, extent)
+      @recordingHandles[side].tick(0)
+      @stage.addChild(@recordingHandles[side])
+
+
+  onHandleDragged: (handle) ->
+    @recordingExtent.left = handle.worldPos.x + 1 if handle.side == 'left'
+    @recordingExtent.right = Math.max(@recordingExtent.left, handle.worldPos.x - 1) if handle.side == 'right'
+    @recordingExtent.top = handle.worldPos.y + 1 if handle.side == 'top'
+    @recordingExtent.bottom = Math.max(@recordingExtent.top, handle.worldPos.y - 1) if handle.side == 'bottom'
+    @setRecordingExtent(@recordingExtent)
 
 
   # -- Helper Methods -- #

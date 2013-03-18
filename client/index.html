@@ -24,6 +24,8 @@
   <script src="./src/easeljs/Sprite.js"></script>
   <script src="./src/easeljs/ActorDefinition.js"></script>
   <script src="./src/easeljs/ProgrammableSprite.js"></script>
+  <script src="./src/easeljs/SquareMaskSprite.js"></script>
+  <script src="./src/easeljs/HandleSprite.js"></script>
   <script src="./src/easeljs/PixelArtCanvas.js"></script>
   <script src="./src/easeljs/LibraryManager.js"></script>
   <script src="./src/easeljs/GameManager.js"></script>
@@ -44,12 +46,8 @@
   <script>
   function start() {
 		//find canvas and load images, wait for last image to load
-		var canvas = document.getElementById("platformerCanvas");
-		stage = new Stage(canvas);
-
-    //find canvas and load images, wait for last image to load
-    renderingCanvas = document.getElementById("renderingCanvas");
-    renderingStage = new Stage(renderingCanvas);
+		stage = new Stage($("#platformerCanvas")[0]);
+    renderingStage = new Stage($("#renderingCanvas")[0]);
 
     // downloading all needed images ressources and preloading sounds & music
     window.Socket = io.connect(':4430', {secure: false});
@@ -256,12 +254,16 @@
       <div class="scenario">
         <div class="before">
           <h4>Before</h4>
-          <img ng-src="{{scenario_before_url(rule)}}"/>
+          <canvas id="beforeCanvas" width="360" height="360">
+          </canvas>
         </div>
+
         <div class="arrow">-></div>
+
         <div class="after">
           <h4>After</h4>
-          <img ng-src="{{scenario_after_url(rule)}}"/>
+          <canvas id="afterCanvas" width="360" height="360">
+          </canvas>
         </div>
       </div>
 

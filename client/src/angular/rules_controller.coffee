@@ -17,8 +17,9 @@ RulesCtrl = ($scope) ->
     window.Game.selectedDefinition.rules
 
   $scope.add_rule = () ->
-    rule = {}
-    $scope.$root.$broadcast('compose_rule', {actor: window.Game.selectedActor, rule: rule})
+    actor = window.Game.selectedActor
+    window.Game.enterRecordingModeForActor(actor)
+
 
   $scope.save_rules = () ->
     window.Game.selectedDefinition.save()

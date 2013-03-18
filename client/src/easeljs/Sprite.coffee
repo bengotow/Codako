@@ -1,11 +1,10 @@
 
 class Sprite extends BitmapAnimation
 
-  constructor: (position, size, level) ->
+  constructor: (position, size) ->
     @worldPos = position
     @nextPos = position
     @worldSize = size
-    @level = level
     @elapsed = 0
     @selected = false
 
@@ -15,7 +14,7 @@ class Sprite extends BitmapAnimation
     @gotoAndStop(0)
 
 
-  createSpriteSheet: (image, animations) ->
+  createSpriteSheet: (image, animations = {idle: [0,0]}) ->
     sheet = new SpriteSheet(
       images: [image] #image to use
       animations: animations
@@ -33,7 +32,7 @@ class Sprite extends BitmapAnimation
       @worldPos = @nextPos
       @x = @worldPos.x * Tile.WIDTH
       @y = @worldPos.y * Tile.HEIGHT
-
+    @
 
   setSelected: (sel) ->
     @selected = sel

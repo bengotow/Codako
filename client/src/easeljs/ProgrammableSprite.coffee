@@ -4,13 +4,13 @@ class ProgrammableSprite extends Sprite
   GroundDragFactor = 0.48
   MaxMoveSpeed = 1750.0
 
-  constructor: (identifier, position, size, level) ->
+  constructor: (identifier, position, size) ->
     @identifier = identifier
     @definition = undefined
     @currentFrame = 66
     @applied = {}
 
-    super(position, size, level)
+    super(position, size)
     @setupDragging()
     @
 
@@ -27,7 +27,7 @@ class ProgrammableSprite extends Sprite
     return id_match && (appearance_match || !descriptor.appearance)
 
 
-  setAppearance: (identifier) ->
+  setAppearance: (identifier = 'idle') ->
     console.log 'Set appearance', identifier
     return unless @definition.hasAppearance(identifier)
     @appearance = identifier
@@ -92,13 +92,13 @@ class ProgrammableSprite extends Sprite
     for block in scenario
       pos = Point.sum(@worldPos, Point.fromString(block.coord))
       descriptors = block.descriptors
-      return false unless @level.actorsAtPositionMatchDescriptors(pos, descriptors)
+      return false unless window.Game.actorsAtPositionMatchDescriptors(pos, descriptors)
     true
 
 
   checkEvent: (trigger) ->
     if trigger.event == 'key'
-      if @level.isKeyDown(trigger.code)
+      if window.Game.isKeyDown(trigger.code)
         return true
     if trigger.event == 'idle'
       return true
@@ -111,7 +111,7 @@ class ProgrammableSprite extends Sprite
       continue unless block.descriptors
       for descriptor in block.descriptors
         continue unless descriptor.actions
-        actor = @level.actorMatchingDescriptor(pos, descriptor)
+        actor = window.Game.actorMatchingDescriptor(pos, descriptor)
         actor.applyActions(descriptor.actions) if actor
 
 
@@ -145,7 +145,7 @@ class ProgrammableSprite extends Sprite
     @worldPos = @nextPos = point
     @dragging = false
     @alpha = 1
-    @level.onActorDragged(@)
+    window.Game.onActorDragged(@)
 
 
 window.ProgrammableSprite = ProgrammableSprite

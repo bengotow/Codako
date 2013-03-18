@@ -64,7 +64,7 @@ class LibraryManager
     model = new ProgrammableSprite(ident, pos, def.size, level)
     model.setSpriteSheet(def.spritesheetInstance())
     model.definition = def
-    model.setAppearance(descriptor.appearance) if descriptor.appearance
+    model.setAppearance(descriptor.appearance)
     model
 
 
