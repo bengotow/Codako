@@ -4,8 +4,9 @@ ControlsCtrl = ($scope) ->
   window.controlsScope = $scope
   $scope.control_set = 'testing'
 
-  $scope.$root.$on 'compose_rule', (msg, args) ->
+  $scope.$root.$on 'start_compose_rule', (msg, args) ->
     $scope.control_set = 'record-preflight'
+
 
   # -- Testing Controls -- #
 
@@ -34,6 +35,9 @@ ControlsCtrl = ($scope) ->
   $scope.class_for_btn = (istrue) ->
     if istrue then 'btn btn-info' else 'btn'
 
+  $scope.definition_name = () ->
+    return undefined unless window.Game && window.Game.selectedDefinition
+    window.Game.selectedDefinition.name
 
   # -- Recording Controls -- #
 
@@ -43,9 +47,11 @@ ControlsCtrl = ($scope) ->
 
   $scope.cancel_recording = () ->
     window.Game.exitRecordingMode()
+    $scope.control_set = 'testing'
 
   $scope.save_recording = () ->
     window.Game.saveRecording()
+    $scope.control_set = 'testing'
 
 
 window.ControlsCtrl = ControlsCtrl

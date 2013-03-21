@@ -1,24 +1,27 @@
 PixelArtCtrl = ($scope) ->
 
-  $scope.actor_definition = null
 
-  $scope.colors = ['rgba(255, 0, 0, 255)',
-                   'rgba(255, 100, 100, 255)',
-                   'rgba(100, 0, 0, 255)',
-                   'rgba(0, 0, 0, 255)',
-                   'rgba(100, 100, 100, 255)',
-                   'rgba(255, 255, 255, 255)',
-                   'rgba(0, 255, 0, 255)',
-                   'rgba(100, 255, 100, 255)',
-                   'rgba(0, 100, 0, 255)',
-                   'rgba(0, 0, 255, 255)',
-                   'rgba(100, 100, 255, 255)',
-                   'rgba(0, 0, 100, 255)']
+  $scope.actor_definition = null
+  $scope.colors = []
+  $scope.colors.push("rgba(255,255,255,255)")
+  $scope.colors.push("rgba(180,180,180,255)")
+  $scope.colors.push("rgba(100,100,100,255)")
+  $scope.colors.push("rgba(0,0,0,255)")
+  for h in [0..70] by 10
+    [r,g,b] = hsvToRgb(h/70.0,1,1)
+    $scope.colors.push("rgba(#{Math.round(r)},#{Math.round(g)},#{Math.round(b)},255)")
+    [r,g,b] = hsvToRgb(h/70.0,0.4,1)
+    $scope.colors.push("rgba(#{Math.round(r)},#{Math.round(g)},#{Math.round(b)},255)")
+    [r,g,b] = hsvToRgb(h/70.0,0.4,0.75)
+    $scope.colors.push("rgba(#{Math.round(r)},#{Math.round(g)},#{Math.round(b)},255)")
+    [r,g,b] = hsvToRgb(h/70.0,1,0.5)
+    $scope.colors.push("rgba(#{Math.round(r)},#{Math.round(g)},#{Math.round(b)},255)")
 
   $scope.colorpicker = $('#cp1').colorpicker()
   $scope.colorpicker.show()
   $scope.colorpicker.on 'changeColor', (ev)->
-    $scope.set_active_color(ev.color.toRGB())
+    c = ev.color.toRGB()
+    $scope.set_tool_color("rgba(#{c.r},#{c.g},#{c.b},#{c.a})")
 
 
   $scope.$root.$on 'edit_appearance', (msg, args) ->
@@ -36,6 +39,7 @@ PixelArtCtrl = ($scope) ->
 
   $scope.set_tool_color = (color) ->
     $scope.canvas.toolColor = color
+    $scope.colorpicker.data('colorpicker').setValue(color)
 
 
   $scope.set_tool = (tool) ->

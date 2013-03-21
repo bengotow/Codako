@@ -9,7 +9,7 @@
   <script type="text/javascript" src="./src/async.js"></script>
 
   <script src="./src/jquery.js"></script>
-  <script src="./src/easeljs.js"></script>
+  <script src="./src/easeljs-NEXT.min.js"></script>
   <script src="./src/socket.io.js"></script>
   <script src="./src/bootstrap.js"></script>
   <script src="./src/bootstrap-colorpicker.js"></script>
@@ -79,14 +79,17 @@
         <span class="icon-bar"></span>
       </button>
       <a class="brand" href="#">Kodako</a>
-<!--       <div class="nav-collapse collapse">
+      <div class="nav-collapse collapse">
         <ul class="nav">
-          <li class="active"><a href="#">Home</a></li>
-          <li><a href="#about">About</a></li>
-          <li><a href="#contact">Contact</a></li>
+          <li class="dropdown">
+            <a id="drop1" href="#" role="button" class="dropdown-toggle" data-toggle="dropdown">My World <b class="caret"></b></a>
+            <ul class="dropdown-menu" role="menu" aria-labelledby="drop1">
+              <li role="presentation"><a role="menuitem" tabindex="-1" href="http://google.com">Stage Settings</a></li>
+            </ul>
+          </li>
         </ul>
       </div>
- -->    </div>
+    </div>
   </div>
 </div>
 
@@ -94,35 +97,42 @@
   <div class="white-box" style="float:left;line-height:0;">
 
     <div style="overflow:hidden; width:800px; height:520px;">
+    <div style="width:1605px; height:520px;">
       <canvas droppable id="platformerCanvasPane1" width="800" height="520" style="background-color:black">
         Your browser doesn't support HTML5 Canvas!
       </canvas>
       <canvas droppable id="platformerCanvasPane2" width="0" height="520" style="background-color:black;">
       </canvas>
     </div>
+    </div>
 
-    <div class="controls" ng-show="control_set == 'testing'">
-      <button ng-click="set_running(false)" class="{{class_for_btn(!running())}}">Stop</button>
-      <button ng-click="set_running(true)" class="{{class_for_btn(running())}}">Run</button>
-      <button ng-click="step()" class="btn">Step Forward</button>
-      <button ng-click="step_back()" class="btn">Step Back</button>
-      <button ng-click="reset()" class="btn">Reset</button>
+    <div class="controls" ng-show="control_set == 'testing'" style="text-align:center;">
+      <button ng-click="reset()" class="btn" style="float:left; margin-top:12px;"><i class="icon-repeat"></i> Reset</button>
 
-      <div class="btn-group">
+      <div class="center">
+        <button ng-click="step_back()" class="btn btn-mini" style="margin-right:4px; margin-top:1px;"><i class="icon-step-backward"></i> Back</button>
+        <button ng-click="set_running(false)" class="{{class_for_btn(!running())}}"><i class="icon-stop"></i> Stop</button>
+        <button ng-click="set_running(true)" class="{{class_for_btn(running())}}"><i class="icon-play"></i> Run</button>
+        <button ng-click="step()" class="btn btn-mini"  style="margin-left:4px; margin-top:1px;"><i class="icon-step-forward"></i> Forward</button>
+      </div>
+
+      <div class="btn-group right">
         <button ng-click="set_speed(1000)" class="{{class_for_btn(1000==speed())}}">Slow</button>
         <button ng-click="set_speed(500)" class="{{class_for_btn(500==speed())}}">Med.</button>
         <button ng-click="set_speed(200)" class="{{class_for_btn(200==speed())}}">Fast</button>
       </div>
     </div>
 
-    <div class="controls" ng-show="control_set == 'record-preflight'">
-      <button ng-click="cancel_recording()">Cancel</button>
-      <button ng-click="start_recording()">Start Recording</button>
+    <div class="controls" ng-show="control_set == 'record-preflight'" style="text-align:center;">
+      <label>Set the stage! Highlight the area around the {{definition_name()}} you want to record in.</label>
+      <button ng-click="start_recording()" class="btn btn-success right"><i class="icon-facetime-video"></i> Start Recording</button>
+      <button ng-click="cancel_recording()" class="btn right"><i class="icon-remove"></i> Cancel</button>
     </div>
 
-    <div class="controls" ng-show="control_set == 'recording'">
-      <button ng-click="cancel_recording()">Cancel</button>
-      <button ng-click="save_recording()">Save Recording</button>
+    <div class="controls" ng-show="control_set == 'recording'" style="text-align:center;">
+      <label>Act out what you want to happen in the picture on the right.</label>
+      <button ng-click="save_recording()" class="btn btn-success right"><i class="icon-check"></i> Save Recording</button>
+      <button ng-click="cancel_recording()" class="btn right"><i class="icon-remove"></i> Cancel</button>
     </div>
   </div>
 
@@ -193,27 +203,26 @@
 
     <div class="tab-content">
       <div class="tab-pane active" id="rules">
+
+        <div style="position:absolute;z-index:1000;">
+        <div style="position:relative;left:200px;top:-37px;" class="btn-group" ng-show="definition_name()">
+          <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+            <i class="icon-tasks"></i> Add <span class="caret"></span>
+          </a>
+          <ul id="rules-dropdown" class="dropdown-menu">
+            <li><a href="#" ng-click="add_rule()"><span class="badge"></span> Add New Rule</a></li>
+            <li class="divider"></li>
+            <li><a href="#" ng-click="add_rule_group_flow('key')"><span class="badge badge-info"></span> Add Flow Container</a></li>
+            <li class="divider"></li>
+            <li><a href="#" ng-click="add_rule_group_event('key')"><span class="badge badge-success"></span> When a Key is Pressed...</a></li>
+            <li><a href="#" ng-click="add_rule_group_event('click')"><span class="badge badge-success"></span> When I'm Clicked...</a></li>
+          </ul>
+        </div>
+      </div>
+
         <div ng-show="rules() == undefined" class="empty-message">
           Select an actor to view rules.
         </div>
-
-        <div class="btn" ng-show="definition_name()" ng-click="add_rule()">
-          Record New Rule for {{definition_name()}}
-        </div>
-
-        <div class="btn-group">
-          <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-            Add Container
-            <span class="caret"></span>
-          </a>
-          <ul class="dropdown-menu">
-            <li><a href="#" ng-click="add_rule_group_event('key')">When a Key is Pressed...</a></li>
-            <li><a href="#" ng-click="add_rule_group_event('click')">When I'm Clicked...</a></li>
-            <li class="divider"></li>
-            <li><a href="#" ng-click="add_rule_group_flow('key')">Flow Container</a></li>
-          </ul>
-        </div>
-
 
         <div ng-show="rules().length == 0" class="empty-message">
           This actor doesn't have any rules. Create<br>
@@ -249,12 +258,11 @@
         <input class="name" ng-model="def.name" ng-blur="save_definition(def)" />
       </div>
 
-
     </div>
 
     <div id="appearances" class="white-box" style="width:290px; float:left;">
 
-      <div class="btn btn-mini" style="float:right;" ng-click="add_appearance()"><i class="icon-plus"></i></div>
+      <div ng-show="selected_definition()" class="btn btn-mini" style="float:right;" ng-click="add_appearance()"><i class="icon-plus"></i></div>
       <h4>Appearances</h4>
       <div ng-show="appearances().length == 0" class="empty-message">
         Select an actor in your library to view it's appearances.
@@ -318,13 +326,11 @@
       <div class="sidebar">
 
         <!-- Colors -->
-        <div class="color-preview" style="background-color: {{canvas.toolColor}}"></div>
+        <div class="btn color color-preview" style="background-color: {{canvas.toolColor}}" data-color="{{canvas.toolColor}}" data-color-format="rgb" id="cp1">
+            <span class="add-on"><i></i></span>
+        </div>
         <div ng-repeat="color in colors" class="btn color" data-color="{{color}}" ng-click="set_tool_color(color)">
           <i style="background-color: {{color}}"></i>
-        </div>
-
-        <div class="btn color" data-color="rgb(255, 146, 180)" data-color-format="rgb" id="cp1">
-            <span class="add-on"><i></i></span>
         </div>
 
         <div class="divider"></div>

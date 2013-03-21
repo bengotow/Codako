@@ -28,7 +28,6 @@ class GameManager
     @mainStage = @stagePane1 = stagePane1
     @stagePane2 = stagePane2
     @stageTotalWidth = @stagePane1.canvas.width
-    @stagePaneDividerTarget = @stageTotalWidth
 
     @renderingStage = renderingStage
     @
@@ -75,15 +74,9 @@ class GameManager
     time = Ticker.getTime()
     elapsed = (time - @initialGameTime) / 1000
 
-    w = @stagePane1.canvas.width + (@stagePaneDividerTarget - @stagePane1.canvas.width) / 5
-    @stagePane1.canvas.width = w unless @stagePane1.canvas.width == w
-
-    w = @stagePane2.canvas.width + ((@stageTotalWidth - @stagePaneDividerTarget) - @stagePane2.canvas.width) / 5
-    @stagePane2.canvas.width = w unless @stagePane2.canvas.width == w
-
     unless @running || forceRules
-      @stagePane1.update(elapsed)
-      @stagePane2.update(elapsed) if @stagePane2.canvas.width > 0
+      @stagePane1.update(elapsed) if @stagePane1.onscreen()
+      @stagePane2.update(elapsed) if @stagePane2.onscreen()
       return
 
     if forceRules || time > @simulationFrameNextTime
@@ -162,7 +155,6 @@ class GameManager
 
   selectActor: (actor) ->
     return if @selectedActor == actor
-
     @selectedActor.setSelected(false) if @selectedActor
     @selectedDefinition = null
 
@@ -215,14 +207,15 @@ class GameManager
 
   focusAndStartRecording: () ->
     @stagePane1.draggingEnabled = false
-    @stagePane2.prepareWithData(@mainStage.saveData(), null)
-    @stagePane2.setRecordingExtent(@stagePane1.recordingExtent)
+    @stagePane2.prepareWithData @mainStage.saveData(), () =>
+      @stagePane2.setRecordingExtent(@stagePane1.recordingExtent)
 
-    for stage in [@stagePane1, @stagePane2]
-      stage.setRecordingCentered(true)
-      stage.setRecordingMaskStyle('white')
+      for stage in [@stagePane1, @stagePane2]
+        stage.setRecordingCentered(true)
+        stage.setRecordingMaskStyle('white')
 
-    @stagePaneDividerTarget = @stageTotalWidth / 2
+      @stagePane1.setWidth(@stageTotalWidth / 2 - 2)
+      @stagePane2.setWidth(@stageTotalWidth / 2 - 2)
 
 
   exitRecordingMode: () ->
@@ -230,7 +223,11 @@ class GameManager
     @stagePane1.setRecordingExtent(null)
     @stagePane1.centerOnEntireCanvas()
     @stagePane1.draggingEnabled = true
-    @stagePaneDividerTarget = @stageTotalWidth
+
+    @stagePane1.setWidth(@stageTotalWidth)
+    @stagePane2.setWidth(0)
+
+    @selectActor(@recordingActor)
     @recordingActor = null
 
 

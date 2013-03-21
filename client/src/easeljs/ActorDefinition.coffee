@@ -140,13 +140,12 @@ class ActorDefinition
 
 
   addFlowGroup: () ->
-    @rules.splice 0, 0,
+    @addRule
       _id: Math.createUUID()
       type: 'group-flow',
       name: 'Untitled Group',
       behavior: 'all',
       rules: []
-    @save()
 
 
 window.ActorDefinition = ActorDefinition

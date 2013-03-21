@@ -21,7 +21,7 @@ RulesCtrl = ($scope) ->
   $scope.add_rule = () ->
     actor = window.Game.selectedActor
     window.Game.enterRecordingModeForActor(actor)
-    $scope.$root.$broadcast('compose_rule', {})
+    $scope.$root.$broadcast('start_compose_rule', {})
 
 
   $scope.add_rule_group_event = (type) ->
@@ -110,10 +110,21 @@ RulesCtrl = ($scope) ->
     child_ids = []
     child_ids.push($(child).data('id')) for child in child_els
 
-    # empty and refill this item in our tree
+    # empty this struct's rule set and add rules by ID
     container = $scope.structs_lookup_table[container_id]
     container.rules.length = 0
-    container.rules.push($scope.structs_lookup_table[id]) for id in child_ids
+
+    for id in child_ids
+      child_struct = $scope.structs_lookup_table[id]
+
+      # our approach is great, except for the fact that the root rules() array
+      # is not a struct, so it never gets rebuilt when you sort something from
+      # the root into a subtree. To account for this, let's just remove the item
+      # from the rules array if we find it's a root item.
+      root_index = $scope.rules().indexOf(child_struct)
+      $scope.rules().splice(root_index, 1) if root_index >= 0
+
+      container.rules.push(child_struct)
 
 
   $scope.populate_structs_lookup_table = (struct) ->

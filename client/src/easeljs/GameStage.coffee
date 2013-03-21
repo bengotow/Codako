@@ -11,6 +11,11 @@ class GameStage extends Stage
     @statusMessage = null
     @draggingEnabled = true
     @actors = []
+    @wrapX = true
+    @wrapY = true
+
+    @widthTarget = canvas.width
+    @widthCurrent = canvas.width
 
     @canvas.ondrop = (e, dragEl) =>
       identifier = $(dragEl.draggable).data('identifier')
@@ -32,12 +37,21 @@ class GameStage extends Stage
           actor.setAppearance(identifier[11..-1])
         window.Game.onAppearancePlaced(@)
 
+  onscreen: () ->
+    @widthTarget > 0 || @widthCurrent > 0
+
+
+  setWidth: (width) ->
+    @widthTarget = width
+
 
   saveData: () ->
     data =
       identifier: @identifier
       width: @width,
       height: @height,
+      wrapX: @wrapX,
+      wrapY: @wrapY,
       actor_library: @actorIdentifiers(),
       actor_descriptors: []
     data.actor_descriptors.push(actor.descriptor()) for actor in @actors
@@ -52,6 +66,8 @@ class GameStage extends Stage
 
     @width = json['width']
     @height = json['height']
+    @wrapX = json['wrapX']
+    @wrapY = json['wrapY']
 
     # Creating a random background based on the 3 layers available in 3 versions
     background = new Bitmap(window.Game.content.imageNamed('Layer0_0'))
@@ -143,14 +159,22 @@ class GameStage extends Stage
 
 
   update: (elapsed) ->
+    @widthCurrent = @widthCurrent + (@widthTarget - @widthCurrent) / 15.0
+    @canvas.width = Math.round(@widthCurrent) unless @canvas.width == Math.round(@widthCurrent)
+
     super
 
     for actor in @actors
       actor.tick(elapsed)
 
-    @x += (@offsetTarget.x - @x) / 5
-    @y += (@offsetTarget.y - @y) / 5
+    @x += (@offsetTarget.x - @x) / 15
+    @y += (@offsetTarget.y - @y) / 15
 
+
+  wrappedPosition: (pos) ->
+    pos.x = (pos.x + @width) % @width if @wrapX
+    pos.y = (pos.y + @height) % @height if @wrapY
+    pos
 
   # -- Managing Actors on the Stage -- #
 
@@ -163,6 +187,7 @@ class GameStage extends Stage
     actor.addEventListener 'dblclick', (e) =>
       window.Game.onActorDoubleClicked(actor)
     actor.stage = @
+    actor.tick(0)
 
     @actors.push(actor)
     @addChild(actor)
@@ -173,6 +198,7 @@ class GameStage extends Stage
 
 
   actorsAtPosition: (position) ->
+    position = @wrappedPosition(position)
     results = []
     for actor in @actors
       if actor.worldPos.isEqual(position)
@@ -189,8 +215,14 @@ class GameStage extends Stage
 
   actorsAtPositionMatchDescriptors: (position, descriptors) ->
     searchSet = @actorsAtPosition(position)
-    return searchSet.length == 0 if !descriptors
 
+    # if the descriptor is empty and no actors are present, we've got a match
+    return true if searchSet.length == 0 && (!descriptors || descriptors.length == 0)
+
+    # if we don't have a descriptor for each item in the search set, no match
+    return false if searchSet.length != descriptors.length
+
+    # make sure the descriptors and actors all match
     for actor in searchSet
       matched = false
       for descriptor in descriptors

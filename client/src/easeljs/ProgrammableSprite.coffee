@@ -122,6 +122,7 @@ class ProgrammableSprite extends Sprite
       if block.added
         for descriptor in block.added
           descriptor = JSON.parse(JSON.stringify(descriptor))
+          pos = @stage.wrappedPosition(pos) if @stage
           descriptor.position = pos
           actor = window.Game.addActor(descriptor)
 
@@ -131,6 +132,7 @@ class ProgrammableSprite extends Sprite
     for action in actions
       if action.type == 'move'
         @nextPos = Point.sum(@nextPos, Point.fromString(action.delta))
+        @nextPos = @stage.wrappedPosition(@nextPos) if @stage
 
       if action.type == 'deleted'
         @stage.removeActor(@) if @stage
@@ -138,6 +140,7 @@ class ProgrammableSprite extends Sprite
 
       if action.type == 'appearance'
         @setAppearance(action.after)
+
 
   computeActionsToBecome: (after) ->
     actions = []
