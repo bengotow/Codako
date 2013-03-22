@@ -2,26 +2,6 @@ LibraryCtrl = ($scope) ->
 
   $scope.library_name = 'Library'
   $scope.selected_appearance = null
-  $scope.trash = $('#trashcan')
-  $scope.trash[0].ondrop = (e, dragEl) ->
-    setTimeout () ->
-      identifier = $(dragEl.draggable).data('identifier')
-      if identifier[0..4] == 'actor'
-        if confirm('Are you sure you want to remove this actor? When you delete something from your library, all copies of it are deleted.')
-          definitions = $scope.definitions()
-          identifier = identifier[6..-1]
-
-          window.Game.removeActorsMatchingDescriptor({identifier: identifier})
-          window.Game.save()
-          delete definitions[identifier]
-
-      else if identifier[0..9] == 'appearance'
-        if confirm('Are you sure you want to delete this appearance?')
-          $scope.selected_definition.deleteAppearance(identifier[11..-1])
-          $scope.selected_definition.save()
-      $scope.$apply()
-    ,250
-
 
   # -- Definitions -- #
 
@@ -36,10 +16,20 @@ LibraryCtrl = ($scope) ->
       $scope.$apply()
 
   $scope.select_definition = (def) ->
-    window.Game.selectedDefinition = def
+    if window.Game.tool == 'delete'
+      if confirm('Are you sure you want to remove this actor? When you delete something from your library, all copies of it are deleted.')
+        definitions = $scope.definitions()
+        identifier = identifier[6..-1]
+
+        window.Game.removeActorsMatchingDescriptor({identifier: identifier})
+        window.Game.save()
+        delete definitions[identifier]
+      window.Game.resetToolAfterAction()
+    else
+      window.Game.selectedDefinition = def
 
   $scope.selected_definition = () ->
-    window.Game.selectedDefinition
+    window.Game?.selectedDefinition
 
   $scope.save_definition = (definition = null) ->
     definition = $scope.selected_definition() unless definition
@@ -57,11 +47,15 @@ LibraryCtrl = ($scope) ->
     identifier = definition.addAppearance()
     $scope.$root.$broadcast('edit_appearance', {actor_definition: definition, identifier: identifier})
 
-  $scope.select_appearance = (identifier) ->
-    $scope.selected_appearance = identifier
+  $scope.select_appearance = (id) ->
+    if window.Game.tool == 'delete'
+      if confirm('Are you sure you want to delete this appearance?')
+        $scope.selected_definition().deleteAppearance(id)
+        $scope.selected_definition().save()
+      window.Game.resetToolAfterAction()
 
-  $scope.edit_appearance = (identifier) ->
-    $scope.$root.$broadcast('edit_appearance', {actor_definition: $scope.selected_definition(), identifier: identifier})
+  $scope.edit_appearance = (id) ->
+    $scope.$root.$broadcast('edit_appearance', {actor_definition: $scope.selected_definition(), identifier: id})
 
   $scope.save_appearance_name = (event) ->
     definition = $scope.selected_definition()

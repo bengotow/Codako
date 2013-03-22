@@ -8,6 +8,19 @@ body {
   user-select: none;
 }
 
+body.tool-pointer {
+}
+body.tool-paint {
+  cursor: url(../img/RedBrush.cur), url(img/RedBrush.cur), default;
+}
+body.tool-record {
+  cursor: url(../img/camera.cur), url(img/camera.cur), default;
+}
+body.tool-delete {
+  cursor: url(../img/trashcan.ani), url(img/trashcan.ani), default;
+}
+
+
 h4 {
   margin:3px;
   margin-right:4px;
@@ -288,6 +301,7 @@ h4 {
 }
 
 #library {
+  margin-left:60px;
   .name {
     width:54px;
     border:0;

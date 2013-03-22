@@ -72,7 +72,7 @@
 
 <div class="navbar navbar-inverse navbar-static-top">
   <div class="navbar-inner">
-    <div class="container" style="width:1120px;margin:auto;">
+    <div class="container" style="width:1180px;margin:auto;">
       <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -93,7 +93,14 @@
   </div>
 </div>
 
-<div class="container" style="width:1120px; margin:auto;" ng-controller="ControlsCtrl" ng-cloak>
+<div class="container" style="width:1180px; margin:auto;" ng-controller="ControlsCtrl" ng-cloak>
+  <div class="white-box" style="float:left;line-height:0;width:40px;">
+    <div class="{{class_for_btn(tool() == 'pointer')}}" ng-click="set_tool('pointer')">M</div>
+    <div class="{{class_for_btn(tool() == 'paint')}}" ng-click="set_tool('paint')">P</div>
+    <div class="{{class_for_btn(tool() == 'record')}}" ng-click="set_tool('record')">R</div>
+    <div class="{{class_for_btn(tool() == 'delete')}}" ng-click="set_tool('delete')">D</div>
+  </div>
+
   <div class="white-box" style="float:left;line-height:0;">
 
     <div style="overflow:hidden; width:800px; height:520px;">
@@ -268,14 +275,12 @@
         Select an actor in your library to view it's appearances.
       </div>
       <div ng-repeat="(id,frames) in appearances()" class="item">
-        <i draggable data-identifier="appearance:{{id}}" style="{{css_for_sprite_frame(selected_definition(), frames[0])}}" ng-dblclick="edit_appearance(id, frames[0])"></i>
+        <i draggable data-identifier="appearance:{{id}}" style="{{css_for_sprite_frame(selected_definition(), frames[0])}}" ng-click="select_appearance(id)" ng-dblclick="edit_appearance(id, frames[0])"></i>
         <input class="name" ng-blur="save_appearance_name($event)" data-identifier="{{id}}" value="{{name_for_appearance(id)}}" />
       </div>
     </div>
 
     <div style="clear:both;"></div>
-
-    <div id="trashcan" droppable class="btn"><i class="icon-trash"></i></div>
 
   </div>
   <!-- End Library Controller -->

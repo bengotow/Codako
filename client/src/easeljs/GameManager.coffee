@@ -6,6 +6,7 @@ class GameManager
     @content = new ContentManager(@loadStatusChanged)
     @selectedActor = null
     @recordingActor = null
+    @tool = 'pointer'
 
     @simulationFrameRate = 500
     @simulationFrameNextTime = 0
@@ -17,7 +18,7 @@ class GameManager
     @keysDown = {}
 
     document.onkeydown = (e) =>
-      if e.keyCode == 127 || e.keyCode == 8 #delete / backspace
+      if $(e.target).prop('tagName') != 'INPUT' && (e.keyCode == 127 || e.keyCode == 8)
         e.preventDefault()
         @selectedActor.stage.removeActor(@selectedActor) if @selectedActor
         @selectActor(null)
@@ -155,6 +156,7 @@ class GameManager
 
   selectActor: (actor) ->
     return if @selectedActor == actor
+
     @selectedActor.setSelected(false) if @selectedActor
     @selectedDefinition = null
 
@@ -168,10 +170,31 @@ class GameManager
     @selectedDefinition = definition
 
 
+  setTool: (t) ->
+    $('body').removeClass("tool-#{@tool}")
+    @tool = t
+    $('body').addClass("tool-#{@tool}")
+    window.rootScope.$broadcast('set_tool', 'pointer')
+
+
+  resetToolAfterAction: () ->
+    canRepeat = @tool == 'delete'
+    @setTool('pointer') unless canRepeat && (@keysDown[16] || @keysDown[17] || @keysDown[18])
+
   # -- Event Handling from the World and GameStage --- #
 
   onActorClicked: (actor) =>
     actor.clickedInCurrentFrame = true if actor && @running
+
+    if @tool == 'paint'
+      window.rootScope.$broadcast('edit_appearance', {actor_definition: actor.definition, identifier: actor.appearance})
+    if @tool == 'delete'
+      @removeActor(actor)
+      @save()
+    if @tool == 'record'
+      @enterRecordingModeForActor(actor)
+
+    @resetToolAfterAction()
 
 
   onActorDoubleClicked: (actor) ->
@@ -197,6 +220,7 @@ class GameManager
   # -- Recording Mode -- #
 
   enterRecordingModeForActor: (actor) ->
+    window.rootScope.$broadcast('start_compose_rule')
     initialExtent = {left: actor.worldPos.x, right: actor.worldPos.x, top: actor.worldPos.y, bottom: actor.worldPos.y}
     @mainStage.setRecordingMaskStyle('masked')
     @mainStage.setRecordingExtent(initialExtent)
@@ -233,10 +257,10 @@ class GameManager
 
   recordingHandleDragged: (handle, finished = false) =>
     @extent = @mainStage.recordingExtent
-    @extent.left = Math.min(@selectedActor.worldPos.x, handle.worldPos.x + 1, @extent.right) if handle.side == 'left'
-    @extent.right = Math.max(@selectedActor.worldPos.x, @extent.left, handle.worldPos.x - 1) if handle.side == 'right'
-    @extent.top = Math.min(@selectedActor.worldPos.y, handle.worldPos.y + 1, @extent.bottom) if handle.side == 'top'
-    @extent.bottom = Math.max(@selectedActor.worldPos.y, @extent.top, handle.worldPos.y - 1) if handle.side == 'bottom'
+    @extent.left = Math.min(@recordingActor.worldPos.x, handle.worldPos.x + 1, @extent.right) if handle.side == 'left'
+    @extent.right = Math.max(@recordingActor.worldPos.x, @extent.left, handle.worldPos.x - 1) if handle.side == 'right'
+    @extent.top = Math.min(@recordingActor.worldPos.y, handle.worldPos.y + 1, @extent.bottom) if handle.side == 'top'
+    @extent.bottom = Math.max(@recordingActor.worldPos.y, @extent.top, handle.worldPos.y - 1) if handle.side == 'bottom'
     @stagePane1.setRecordingExtent(@extent)
     @stagePane2.setRecordingExtent(@extent)
 

@@ -21,7 +21,6 @@ RulesCtrl = ($scope) ->
   $scope.add_rule = () ->
     actor = window.Game.selectedActor
     window.Game.enterRecordingModeForActor(actor)
-    $scope.$root.$broadcast('start_compose_rule', {})
 
 
   $scope.add_rule_group_event = (type) ->

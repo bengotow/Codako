@@ -2,11 +2,14 @@
 ControlsCtrl = ($scope) ->
 
   window.controlsScope = $scope
+
   $scope.control_set = 'testing'
 
   $scope.$root.$on 'start_compose_rule', (msg, args) ->
     $scope.control_set = 'record-preflight'
 
+  $scope.$root.$on 'set_tool', (msg, args) ->
+    $scope.$apply() unless $scope.$$phase
 
   # -- Testing Controls -- #
 
@@ -34,6 +37,12 @@ ControlsCtrl = ($scope) ->
 
   $scope.class_for_btn = (istrue) ->
     if istrue then 'btn btn-info' else 'btn'
+
+  $scope.tool = () ->
+    window.Game?.tool
+
+  $scope.set_tool = (t) ->
+    window.Game.setTool(t)
 
   $scope.definition_name = () ->
     return undefined unless window.Game && window.Game.selectedDefinition
