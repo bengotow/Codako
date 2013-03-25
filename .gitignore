@@ -1,10 +1,24 @@
 /.DS_Store
 *.DS_Store
-/client/src/*.js
-/client/src/*/*.js
-/client/src/*/*/*.js
 
 
 /server/dump.rdb
 /client/css/editor.css
 /server/node_modules
+/client/src/extensions.js
+/client/src/easeljs/XNARectangle.js
+/client/src/easeljs/SquareMaskSprite.js
+/client/src/easeljs/Sprite.js
+/client/src/easeljs/ProgrammableSprite.js
+/client/src/easeljs/PixelArtCanvas.js
+/client/src/easeljs/LibraryManager.js
+/client/src/easeljs/HandleSprite.js
+/client/src/easeljs/GameStage.js
+/client/src/easeljs/GameManager.js
+/client/src/easeljs/ContentManager.js
+/client/src/easeljs/ActorDefinition.js
+/client/src/angular/rules_controller.js
+/client/src/angular/pixel_art_controller.js
+/client/src/angular/library_controller.js
+/client/src/angular/controls_controller.js
+/client/src/angular/compose_rule_controller.js
