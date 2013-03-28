@@ -223,7 +223,7 @@ class UserController
     return callback(new Error('Permission Denied')) if !@username
     rdb.get "u:#{@username}-a:#{identifier}", (err, result) =>
       result = JSON.parse(result) if result
-      result = UserController.DEFAULT_ACTORS[identifier] if result == null
+      result = {identifier: identifier} if !result || Object.keys(result).length == 0
       callback(err, result)
 
 

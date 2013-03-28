@@ -18,7 +18,7 @@ class LibraryManager
   # -- Actor Definitions -- #
 
   loadActorDefinitions: (identifiers, callback) =>
-    return unless identifiers && identifiers.length
+    return callback(null) unless identifiers && identifiers.length
     async.each(identifiers, @loadActorDefinition, callback)
 
 
@@ -39,6 +39,7 @@ class LibraryManager
       progress = (@definitions.length / Object.keys(@definitionReadyCallbacks).length) * 100
 
       @libraryProgressCallback({progress: progress})
+      console.log 'got actor identifier', actor.identifier
       @definitionReadyCallbacks[actor.identifier](null) if @definitionReadyCallbacks[actor.identifier]
       readyCallback(null) if readyCallback
 

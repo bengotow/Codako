@@ -11,15 +11,22 @@ body {
 body.tool-pointer {
 }
 body.tool-paint {
-  cursor: url(../img/RedBrush.cur), url(img/RedBrush.cur), default;
+  cursor: url(../img/cursor_paint.png), url(img/cursor_paint.png), default;
 }
 body.tool-record {
-  cursor: url(../img/camera.cur), url(img/camera.cur), default;
+  cursor: url(../img/cursor_camera.png), url(img/cursor_camera.png), default;
 }
 body.tool-delete {
-  cursor: url(../img/trashcan.ani), url(img/trashcan.ani), default;
+  cursor: url(../img/cursor_trashcan.png), url(img/cursor_trashcan.png), default;
 }
 
+.btn-tool, .btn-tool-first {
+  padding:0;
+  margin-bottom:5px;
+}
+.btn-tool-first {
+  margin-bottom:15px;
+}
 
 h4 {
   margin:3px;
@@ -267,12 +274,12 @@ h4 {
 }
 
 .btn.icon {
-  padding:6px;
-  margin-right:6px;
-  margin-top:6px;
+  padding:4px;
+  margin-right:4px;
+  margin-top:4px;
   img {
-    width:40px;
-    height:40px;
+    width:26px;
+    height:26px;
   }
 }
 

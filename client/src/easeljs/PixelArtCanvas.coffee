@@ -62,6 +62,26 @@ class PixelFillRectTool extends PixelTool
         context.fillPixel(x,y)
 
 
+class PixelPaintbucketTool extends PixelTool
+
+  constructor: () ->
+    super
+    @name = 'paintbucket'
+
+  render: (context, canvas, root = @e, imageData = null, startPixelData = null) ->
+    return unless root && root.x >= 0 && root.y >= 0 && root.x < Tile.WIDTH && root.y < Tile.HEIGHT
+    imageData ||= canvas.prepareDataForDisplayedFrame()
+    startPixelData ||= imageData.getPixel(root.x, root.y)
+
+    context.fillPixel(root.x, root.y)
+
+    for p in [{x:-1, y:0}, {x:0,y:1}, {x:0,y:-1}, {x:1,y:0}]
+      pixelData = imageData.getPixel(root.x + p.x, root.y + p.y)
+      colorDelta = 0
+      colorDelta += Math.abs(pixelData[i] - startPixelData[i]) for i in [0..3]
+      @render(context, canvas, new Point(root.x + p.x, root.y + p.y), imageData, startPixelData) if colorDelta < 10
+
+
 class PixelFillEllipseTool extends PixelTool
 
   constructor: () ->
@@ -130,7 +150,7 @@ class PixelArtCanvas
     @width = canvas.width
     @height = canvas.height
     @image = image
-    @tools = [new PixelFreehandTool(), new PixelLineTool(), new PixelFillEllipseTool(), new PixelFillRectTool()]
+    @tools = [new PixelFreehandTool(), new PixelLineTool(), new PixelFillEllipseTool(), new PixelFillRectTool(), new PixelPaintbucketTool()]
     @tool = @tools[0]
     @toolColor = "rgba(0,0,0,255)"
     @pixelSize = Math.floor(@width / Tile.WIDTH)
@@ -147,6 +167,8 @@ class PixelArtCanvas
     @context.fillPixel = (x, y, color = @toolColor) =>
       @context.fillStyle = color
       @context.fillRect(x * @pixelSize, y * @pixelSize, @pixelSize, @pixelSize)
+    @context.getPixel = (x,y) =>
+      rgba = @context.getImageData(x * @pixelSize + 1, y * @pixelSize + 1, 1, 1).data
 
     # generate initial image of the workspace
     @setDisplayedFrame(0)
@@ -186,7 +208,7 @@ class PixelArtCanvas
     @context.fillStyle = "rgb(255,255,255)"
     @context.clearRect(0,0, @width, @height)
     @applyPixelsFromData(@imageData.data, @context)
-    @tool.render(@context) if @tool
+    @tool.render(@context, @) if @tool
 
     @context.strokeStyle = "rgba(70,70,70,.30)"
     @context.beginPath()
@@ -203,7 +225,7 @@ class PixelArtCanvas
   applyTool: () ->
     @undoStack.push(new Uint8ClampedArray(@imageData.data))
     @redoStack = []
-    @tool.render(@imageData)
+    @tool.render(@imageData, @)
     @tool.reset()
     window.rootScope.$apply()
 
@@ -273,6 +295,9 @@ class PixelArtCanvas
         components = color[5..-2].split(',')
         for i in [0..components.length-1]
           @imageData.data[(yy * Tile.WIDTH + xx) * 4 + i] = components[i]/1
+      @imageData.getPixel = (xx, yy) ->
+        oo = (yy * Tile.WIDTH + xx) * 4
+        [@data[oo],@data[oo+1],@data[oo+2],@data[oo+3]]
     @imageData
 
 

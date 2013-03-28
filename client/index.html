@@ -14,6 +14,7 @@
   <script src="./src/bootstrap.js"></script>
   <script src="./src/bootstrap-colorpicker.js"></script>
   <script src="./src/extensions.js"></script>
+  <script src="./src/underscore.js"></script>
 
   <link href="./src/jquery-ui.css" rel="stylesheet" type="text/css" />
   <script src="./src/jquery-ui.min.js"></script>
@@ -31,7 +32,6 @@
   <script src="./src/easeljs/GameStage.js"></script>
   <script src="./src/easeljs/GameManager.js"></script>
 
-  <script src="./src/underscore.js"></script>
   <script src="./src/angular.js"></script>
   <script src="./src/angular/directives.js"></script>
   <script src="./src/angular/controls_controller.js"></script>
@@ -95,10 +95,10 @@
 
 <div class="container" style="width:1180px; margin:auto;" ng-controller="ControlsCtrl" ng-cloak>
   <div class="white-box" style="float:left;line-height:0;width:40px;">
-    <div class="{{class_for_btn(tool() == 'pointer')}}" ng-click="set_tool('pointer')">M</div>
-    <div class="{{class_for_btn(tool() == 'paint')}}" ng-click="set_tool('paint')">P</div>
-    <div class="{{class_for_btn(tool() == 'record')}}" ng-click="set_tool('record')">R</div>
-    <div class="{{class_for_btn(tool() == 'delete')}}" ng-click="set_tool('delete')">D</div>
+    <div class="{{class_for_btn(tool() == 'pointer')}} btn-tool-first" ng-click="set_tool('pointer')"><img src="img/sidebar_pointer.png"></div>
+    <div class="{{class_for_btn(tool() == 'paint')}} btn-tool" ng-click="set_tool('paint')"><img src="img/sidebar_paint.png"></div>
+    <div class="{{class_for_btn(tool() == 'record')}} btn-tool" ng-click="set_tool('record')"><img src="img/sidebar_record.png"></div>
+    <div class="{{class_for_btn(tool() == 'delete')}} btn-tool" ng-click="set_tool('delete')"><img src="img/sidebar_trash.png"></div>
   </div>
 
   <div class="white-box" style="float:left;line-height:0;">
@@ -341,7 +341,7 @@
         <div class="divider"></div>
 
         <!-- Tools -->
-        <div ng-repeat="tool in canvas.tools" class="btn tool icon" ng-click="set_tool(tool)">
+        <div ng-repeat="tool in canvas.tools" class="{{css_for_tool(tool)}}" ng-click="set_tool(tool)">
           <img ng-src="/img/tool_{{tool.name}}.png"/>
         </div>
 

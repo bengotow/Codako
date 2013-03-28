@@ -8,13 +8,13 @@ PixelArtCtrl = ($scope) ->
   $scope.colors.push("rgba(100,100,100,255)")
   $scope.colors.push("rgba(0,0,0,255)")
   for h in [0..70] by 10
-    [r,g,b] = hsvToRgb(h/70.0,1,1)
+    [r,g,b] = hsvToRgb(h/80.0,1,1)
     $scope.colors.push("rgba(#{Math.round(r)},#{Math.round(g)},#{Math.round(b)},255)")
-    [r,g,b] = hsvToRgb(h/70.0,0.4,1)
+    [r,g,b] = hsvToRgb(h/80.0,0.4,1)
     $scope.colors.push("rgba(#{Math.round(r)},#{Math.round(g)},#{Math.round(b)},255)")
-    [r,g,b] = hsvToRgb(h/70.0,0.4,0.75)
+    [r,g,b] = hsvToRgb(h/80.0,0.4,0.75)
     $scope.colors.push("rgba(#{Math.round(r)},#{Math.round(g)},#{Math.round(b)},255)")
-    [r,g,b] = hsvToRgb(h/70.0,1,0.5)
+    [r,g,b] = hsvToRgb(h/80.0,1,0.5)
     $scope.colors.push("rgba(#{Math.round(r)},#{Math.round(g)},#{Math.round(b)},255)")
 
   $scope.colorpicker = $('#cp1').colorpicker()
@@ -45,6 +45,9 @@ PixelArtCtrl = ($scope) ->
   $scope.set_tool = (tool) ->
     $scope.canvas.tool = tool
 
+  $scope.css_for_tool = (tool) ->
+    return 'btn-info btn tool icon' if $scope.canvas.tool == tool
+    'btn tool icon'
 
   $scope.save_editor = () ->
     return unless $scope.actor_definition

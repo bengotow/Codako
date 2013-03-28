@@ -55,6 +55,7 @@ class GameManager
 
 
   loadLevelDataReady: (json) ->
+    console.log('loadLevelDataReady')
     @mainStage.prepareWithData json, (err) =>
       @loadStatusChanged({progress: 100})
       @initialGameTime = Ticker.getTime()
@@ -184,15 +185,16 @@ class GameManager
   # -- Event Handling from the World and GameStage --- #
 
   onActorClicked: (actor) =>
-    actor.clickedInCurrentFrame = true if actor && @running
+    if actor
+      actor.clickedInCurrentFrame = true if @running
 
-    if @tool == 'paint'
-      window.rootScope.$broadcast('edit_appearance', {actor_definition: actor.definition, identifier: actor.appearance})
-    if @tool == 'delete'
-      @removeActor(actor)
-      @save()
-    if @tool == 'record'
-      @enterRecordingModeForActor(actor)
+      if @tool == 'paint'
+        window.rootScope.$broadcast('edit_appearance', {actor_definition: actor.definition, identifier: actor.appearance})
+      if @tool == 'delete'
+        @removeActor(actor)
+        @save()
+      if @tool == 'record'
+        @enterRecordingModeForActor(actor)
 
     @resetToolAfterAction()
 
@@ -220,6 +222,7 @@ class GameManager
   # -- Recording Mode -- #
 
   enterRecordingModeForActor: (actor) ->
+    return unless actor
     window.rootScope.$broadcast('start_compose_rule')
     initialExtent = {left: actor.worldPos.x, right: actor.worldPos.x, top: actor.worldPos.y, bottom: actor.worldPos.y}
     @mainStage.setRecordingMaskStyle('masked')
