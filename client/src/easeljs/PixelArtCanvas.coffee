@@ -68,19 +68,27 @@ class PixelPaintbucketTool extends PixelTool
     super
     @name = 'paintbucket'
 
-  render: (context, canvas, root = @e, imageData = null, startPixelData = null) ->
-    return unless root && root.x >= 0 && root.y >= 0 && root.x < Tile.WIDTH && root.y < Tile.HEIGHT
-    imageData ||= canvas.prepareDataForDisplayedFrame()
-    startPixelData ||= imageData.getPixel(root.x, root.y)
+  render: (context, canvas) ->
+    return unless @e
+    startPixelData = canvas.imageData.getPixel(@e.x, @e.y)
 
-    context.fillPixel(root.x, root.y)
+    points = [@e]
+    pointsHit = {}
 
-    for p in [{x:-1, y:0}, {x:0,y:1}, {x:0,y:-1}, {x:1,y:0}]
-      pixelData = imageData.getPixel(root.x + p.x, root.y + p.y)
-      colorDelta = 0
-      colorDelta += Math.abs(pixelData[i] - startPixelData[i]) for i in [0..3]
-      @render(context, canvas, new Point(root.x + p.x, root.y + p.y), imageData, startPixelData) if colorDelta < 10
+    while (p = points.pop())
+      context.fillPixel(p.x, p.y)
 
+      for d in [{x:-1, y:0}, {x:0,y:1}, {x:0,y:-1}, {x:1,y:0}]
+        pp = new Point(p.x + d.x, p.y + d.y)
+        continue unless pp.x >= 0 && pp.y >= 0 && pp.x < Tile.WIDTH && pp.y < Tile.HEIGHT
+        continue if pointsHit["#{pp.x}-#{pp.y}"]
+
+        pixelData = canvas.imageData.getPixel(pp.x, pp.y)
+        colorDelta = 0
+        colorDelta += Math.abs(pixelData[i] - startPixelData[i]) for i in [0..3]
+        if colorDelta < 20
+          points.push(pp)
+          pointsHit["#{pp.x}-#{pp.y}"] = true
 
 class PixelFillEllipseTool extends PixelTool
 
