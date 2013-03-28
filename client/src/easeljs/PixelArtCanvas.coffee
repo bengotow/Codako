@@ -173,8 +173,13 @@ class PixelArtCanvas
     # augment our context object
     @context = canvas.getContext("2d")
     @context.fillPixel = (x, y, color = @toolColor) =>
+      if color[-3..-1] != ',1)'
+        @context.fillStyle = "rgba(230,230,230,1)"
+        @context.fillRect(x * @pixelSize, y * @pixelSize, @pixelSize / 2, @pixelSize / 2)
+        @context.fillRect(x * @pixelSize + @pixelSize / 2, y * @pixelSize + @pixelSize / 2, @pixelSize / 2, @pixelSize / 2)
       @context.fillStyle = color
       @context.fillRect(x * @pixelSize, y * @pixelSize, @pixelSize, @pixelSize)
+
     @context.getPixel = (x,y) =>
       rgba = @context.getImageData(x * @pixelSize + 1, y * @pixelSize + 1, 1, 1).data
 

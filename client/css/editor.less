@@ -8,16 +8,28 @@ body {
   user-select: none;
 }
 
-body.tool-pointer {
+.stage {
+  background-color:black;
 }
-body.tool-paint {
-  cursor: url(../img/cursor_paint.png), url(img/cursor_paint.png), default;
+
+body.tool-pointer .stage {
 }
-body.tool-record {
-  cursor: url(../img/cursor_camera.png), url(img/cursor_camera.png), default;
+body.tool-paint .stage,
+body.tool-paint #appearances .item,
+{
+  cursor: url(../img/cursor_paint.png), url(img/cursor_paint.png), default !important;
 }
-body.tool-delete {
-  cursor: url(../img/cursor_trashcan.png), url(img/cursor_trashcan.png), default;
+
+body.tool-record .stage {
+  cursor: url(../img/cursor_camera.png), url(img/cursor_camera.png), default !important;
+}
+
+body.tool-delete .stage,
+body.tool-delete .event,
+body.tool-delete #definitions .item,
+body.tool-delete #appearances .item,
+body.tool-delete .group {
+  cursor: url(../img/cursor_trashcan.png), url(img/cursor_trashcan.png), default !important;
 }
 
 .btn-tool, .btn-tool-first {

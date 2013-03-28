@@ -23,6 +23,15 @@ RulesCtrl = ($scope) ->
     window.Game.enterRecordingModeForActor(actor)
 
 
+  $scope.rule_clicked = (rule) ->
+    if window.Game.tool == 'delete'
+      if rule.event == 'idle'
+        alert('Sorry, you can\'t remove the idle case!')
+      else if confirm('Are you sure you want to delete this rule? You can\'t undo this action.')
+        window.Game.selectedDefinition.removeRule(rule)
+    window.Game.resetToolAfterAction()
+
+
   $scope.add_rule_group_event = (type) ->
     if type == 'key'
       code = 'A'

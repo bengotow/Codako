@@ -26,6 +26,9 @@ class GameManager
 
       @keysDown[e.keyCode] = true
 
+    document.onkeyup = (e) =>
+      @keysDown[e.keyCode] = false if !@running
+
     @mainStage = @stagePane1 = stagePane1
     @stagePane2 = stagePane2
     @stageTotalWidth = @stagePane1.canvas.width

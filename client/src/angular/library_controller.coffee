@@ -26,6 +26,7 @@ LibraryCtrl = ($scope) ->
         delete definitions[identifier]
       window.Game.resetToolAfterAction()
     else
+      window.Game.selectActor(null)
       window.Game.selectedDefinition = def
 
   $scope.selected_definition = () ->
@@ -52,7 +53,11 @@ LibraryCtrl = ($scope) ->
       if confirm('Are you sure you want to delete this appearance?')
         $scope.selected_definition().deleteAppearance(id)
         $scope.selected_definition().save()
-      window.Game.resetToolAfterAction()
+    if window.Game.tool == 'paint'
+      $scope.edit_appearance(id)
+
+    window.Game.resetToolAfterAction()
+
 
   $scope.edit_appearance = (id) ->
     $scope.$root.$broadcast('edit_appearance', {actor_definition: $scope.selected_definition(), identifier: id})

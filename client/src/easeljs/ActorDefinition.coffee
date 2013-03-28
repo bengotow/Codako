@@ -14,6 +14,8 @@ class ActorDefinition
     @rules = []
     @ruleRenderCache = {}
 
+    @variableDefaults = {}
+
     @[key] = value for key, value of json
     @spritesheet.width ||= Tile.WIDTH
     @spritesheet.animation_names ||= {}
@@ -49,6 +51,7 @@ class ActorDefinition
       identifier: @identifier
       name: @name
       spritesheet: @spritesheet
+      variables: @variableDefaults
       rules: @rules
 
     console.log 'Saving Actor ', json
@@ -115,6 +118,15 @@ class ActorDefinition
 
     @save()
 
+  removeRule: (rule, searchRoot = @rules) ->
+    for ii in [0..searchRoot.length-1]
+      if searchRoot[ii]._id == rule._id
+        searchRoot.splice(ii, 1)
+        @save()
+        return
+      if searchRoot[ii].rules
+        @removeRule(rule, searchRoot[ii].rules)
+
 
   addEventGroup: (rule = {event:'key', code:'36'}) ->
     has_events = false
@@ -146,6 +158,21 @@ class ActorDefinition
       name: 'Untitled Group',
       behavior: 'all',
       rules: []
+
+
+  # Variable Management
+
+  variables: () ->
+    @variableDefaults
+
+  addVariable: () ->
+    newID = Math.createUUID()
+    @variableDefaults[newID] =
+      _id: newID,
+      name: 'Untited',
+      value: 0
+
+  removeVariable: (variable) ->
 
 
 window.ActorDefinition = ActorDefinition

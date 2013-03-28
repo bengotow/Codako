@@ -35,6 +35,7 @@
   <script src="./src/angular.js"></script>
   <script src="./src/angular/directives.js"></script>
   <script src="./src/angular/controls_controller.js"></script>
+  <script src="./src/angular/variables_controller.js"></script>
   <script src="./src/angular/rules_controller.js"></script>
   <script src="./src/angular/pixel_art_controller.js"></script>
   <script src="./src/angular/compose_rule_controller.js"></script>
@@ -105,10 +106,10 @@
 
     <div style="overflow:hidden; width:800px; height:520px;">
     <div style="width:1605px; height:520px;">
-      <canvas droppable id="platformerCanvasPane1" width="800" height="520" style="background-color:black">
+      <canvas droppable id="platformerCanvasPane1" width="800" height="520" class="stage">
         Your browser doesn't support HTML5 Canvas!
       </canvas>
-      <canvas droppable id="platformerCanvasPane2" width="0" height="520" style="background-color:black;">
+      <canvas droppable id="platformerCanvasPane2" width="0" height="520" class="stage">
       </canvas>
     </div>
     </div>
@@ -160,7 +161,7 @@
         <div class="name">{{name_for_event_group(struct)}}</div>
       </div>
       <ul class="unstyled rules-list" ng-hide="struct.disclosed" sortable='{"connectWith":".rules-list"}'>
-        <li ng-repeat="struct in struct.rules" ng-include="'rule_template.html'" data-id="{{struct._id}}"></li>
+        <li ng-repeat="struct in struct.rules"  ng-click="rule_clicked(struct)" ng-include="'rule_template.html'" data-id="{{struct._id}}"></li>
       </ul>
     </div>
 
@@ -175,7 +176,7 @@
         <input class="name" ng-model="struct.name" ng-blur="save_rules()"/>
       </div>
       <ul class="unstyled rules-list" ng-hide="struct.disclosed" sortable='{"connectWith":".rules-list"}'>
-        <li ng-repeat="struct in struct.rules" ng-include="'rule_template.html'" data-id="{{struct._id}}"></li>
+        <li ng-repeat="struct in struct.rules" ng-click="rule_clicked(struct)" ng-include="'rule_template.html'" data-id="{{struct._id}}"></li>
       </ul>
     </div>
 
@@ -202,14 +203,14 @@
   </script>
 
 
-  <div id="actor-box" class="white-box" style="float:right; width:280px;" ng-controller="RulesCtrl" ng-cloak>
+  <div id="actor-box" class="white-box" style="float:right; width:280px;" ng-cloak>
     <ul class="nav nav-tabs">
       <li class="active"><a href="#rules" data-toggle="tab">Rules</a></li>
       <li><a href="#variables" data-toggle="tab">Variables</a></li>
     </ul>
 
     <div class="tab-content">
-      <div class="tab-pane active" id="rules">
+      <div class="tab-pane active" id="rules" ng-controller="RulesCtrl">
 
         <div style="position:absolute;z-index:1000;">
         <div style="position:relative;left:200px;top:-37px;" class="btn-group" ng-show="definition_name()">
@@ -236,13 +237,24 @@
           a new rule by tapping the 'Record' icon.
         </div>
         <ul class="unstyled rules-list" sortable="{{sortable_attributes_for_rules_root()}}">
-          <li ng-repeat="struct in rules()" ng-include="'rule_template.html'" data-id="{{struct._id}}"></li>
+          <li ng-repeat="struct in rules()"  ng-click="rule_clicked(struct)" ng-include="'rule_template.html'" data-id="{{struct._id}}"></li>
         </ul>
       </div>
 
-      <div class="tab-pane" id="variables">
+      <div class="tab-pane" id="variables" ng-controller="VariablesCtrl">
+        <div style="position:absolute;z-index:1000;">
+        <div style="position:relative;left:200px;top:-37px;" class="btn-group" ng-show="variables()">
+          <div class="btn btn-mini" style="float:right;" ng-click="add_variable()"><i class="icon-plus"></i></div>
+        </div></div>
+
+        <div ng-show="variables().length == 0" class="empty-message">
+          Select an actor in your library or on the stage to define it's variables.
+        </div>
+
         <ul class="unstyled">
-          <li class="variable" ng-repeat="variable in variables()">
+          <li class="variable" ng-repeat="(id, variable) in variables()" ng-click="select_variable(id)" data-identifier="variable:{{id}}">
+            <input class="value" ng-blur="save_variable_attr($event, 'value')" data-identifier="{{id}}" value="{{variable.value}}" />
+            <input class="name" ng-blur="save_variable_attr($event, 'name')" data-identifier="{{id}}" value="{{variable.name}}" />
           </li>
         </ul>
       </div>

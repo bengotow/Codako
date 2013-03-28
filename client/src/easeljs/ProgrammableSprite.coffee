@@ -10,18 +10,25 @@ class ProgrammableSprite extends Sprite
     @definition = undefined
     @currentFrame = 66
     @clickedInCurrentFrame = false
+    @instanceVariables = {}
     @applied = {}
 
     super(position, size)
     @setupDragging()
     @
 
+  variables: () ->
+    for key, value of @definition.variables()
+      @instanceVariables[key] = _.clone(value) unless @instanceVariables[key]
+    @instanceVariables
+
   descriptor: () ->
     {
       _id: @_id
       identifier: @identifier,
       position: {x: @worldPos.x, y: @worldPos.y},
-      appearance: @appearance
+      appearance: @appearance,
+      variables: @instanceVariables
     }
 
   matchesDescriptor: (descriptor) ->
