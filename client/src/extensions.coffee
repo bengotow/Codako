@@ -36,6 +36,9 @@ Point.isZero = (coord) ->
 Point.sum = (a,b) ->
   new Point(a.x + b.x, a.y + b.y)
 
+Point.dif = (a,b) ->
+  new Point(a.x - b.x, a.y - b.y)
+
 Point::isEqual = (coord) ->
   coord.x == @x && coord.y == @y
 

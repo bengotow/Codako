@@ -357,6 +357,9 @@
           <img ng-src="/img/tool_{{tool.name}}.png"/>
         </div>
 
+        <div class="btn icon" ng-click="copy()"><img src="/img/icon_copy.png"></div>
+        <div class="btn icon" ng-click="paste()"><img src="/img/icon_paste.png"></div>
+
         <!-- Undo / Redo -->
 
         <div class="btn icon" ng-disabled="!canvas.canUndo()" ng-click="canvas.undo()"><img src="/img/icon_undo.png"></div><div class="btn icon" ng-disabled="!canvas.canRedo()" ng-click="canvas.redo()"><img src="/img/icon_redo.png"></div>

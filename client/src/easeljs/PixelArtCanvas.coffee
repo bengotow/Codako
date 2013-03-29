@@ -25,7 +25,7 @@ class PixelTool
 
   render: (context) ->
 
-  renderLine: (context,x0,y0,x1,y1) ->
+  renderLine: (context,x0,y0,x1,y1,color=null) ->
     dx = Math.abs(x1 - x0)
     dy = Math.abs(y1 - y0)
     if x0 < x1 then sx = 1 else sx = -1
@@ -33,7 +33,7 @@ class PixelTool
     err = dx - dy
 
     while true
-      context.fillPixel(x0,y0)
+      context.fillPixel(x0,y0,color)
       return if x0 == x1 and y0 == y1
 
       e2 = 2 * err
@@ -151,6 +151,61 @@ class PixelLineTool extends PixelTool
     @renderLine(context, @s.x,@s.y,@e.x,@e.y)
 
 
+class PixelEraserTool extends PixelTool
+
+  constructor: () ->
+    super
+    @name = 'eraser'
+
+  mousedown: (point) ->
+    @down = true
+    @points.push(point)
+
+  mousemove: (point) ->
+    return unless @down
+    @points.push(point)
+
+  mouseup: (point) ->
+    return unless @down
+    @down = false
+    @points.push(point)
+
+  reset: () ->
+    @points = []
+
+  render: (context) ->
+    return unless @points.length
+    prev = @points[0]
+    for point in @points
+      @renderLine(context, prev.x,prev.y,point.x,point.y, "rgba(0,0,0,0)")
+      prev = point
+
+
+class PixelRectSelectionTool extends PixelTool
+
+  constructor: () ->
+    super
+    @name = 'select'
+
+  mouseup: (point) ->
+    return unless @down
+    @down = false
+    @e = point
+
+  render: (context,canvas) ->
+    return unless @s && @e
+    return unless context instanceof CanvasRenderingContext2D
+    for x in [@s.x..@e.x]
+      for y in [@s.y..@e.y]
+        #context.fillPixel(x,y)
+        context.strokeRect( @s.x * canvas.pixelSize, @s.y * canvas.pixelSize, (@e.x - @s.x) * canvas.pixelSize, (@e.y - @s.y) * canvas.pixelSize )
+        canvas.selectionRect = { topLeft:@s, botRight:@e }
+
+  reset: () ->
+    #@s = @e = null
+
+
+
 class PixelArtCanvas
 
   constructor: (image, canvas, controller_scope) ->
@@ -158,7 +213,7 @@ class PixelArtCanvas
     @width = canvas.width
     @height = canvas.height
     @image = image
-    @tools = [new PixelFreehandTool(), new PixelLineTool(), new PixelFillEllipseTool(), new PixelFillRectTool(), new PixelPaintbucketTool()]
+    @tools = [new PixelFreehandTool(), new PixelLineTool(), new PixelFillEllipseTool(), new PixelFillRectTool(), new PixelPaintbucketTool(), new PixelEraserTool(), new PixelRectSelectionTool()]
     @tool = @tools[0]
     @toolColor = "rgba(0,0,0,255)"
     @pixelSize = Math.floor(@width / Tile.WIDTH)
@@ -216,6 +271,20 @@ class PixelArtCanvas
     @applyTool() if ev.type == 'mouseup'
     @render()
 
+  copy: () =>
+    @clipboardData = new Uint8ClampedArray( @imageData.data )
+
+  paste: () =>
+    return unless @clipboardData and @selectionRect
+    #iterate through the given selection rect, and paste.
+    sel_x = @selectionRect.topLeft.x
+    sel_y = @selectionRect.topLeft.y
+    sel_u = @selectionRect.botRight.x
+    sel_v = @selectionRect.botRight.y
+
+    @applyPixelsFromData( @clipboardData, @imageData, sel_x, sel_y, sel_u, sel_v )
+    @render()
+
 
   render: () ->
     @context.fillStyle = "rgb(255,255,255)"
@@ -243,9 +312,9 @@ class PixelArtCanvas
     window.rootScope.$apply()
 
 
-  applyPixelsFromData: (data, target) ->
-    for x in [0..Tile.WIDTH+1]
-      for y in [0..Tile.HEIGHT+1]
+  applyPixelsFromData: (data, target, startX=0, startY=0, endX=Tile.WIDTH+1, endY=Tile.HEIGHT+1) ->
+    for x in [startX..endX]
+      for y in [startY..endY]
         r = data[(y * Tile.WIDTH + x) * 4 + 0]
         g = data[(y * Tile.WIDTH + x) * 4 + 1]
         b = data[(y * Tile.WIDTH + x) * 4 + 2]
