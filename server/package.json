@@ -8,5 +8,15 @@
   },
   "repository": "",
   "author": "Ben Gotow",
-  "license": "BSD"
+  "license": "BSD",
+  "dependencies": {
+    "coffeescript-compiler":"0.1.1",
+    "connect":"2.7.3",
+    "connect-coffee-script":"0.1.1",
+    "connect-less":"0.3.1",
+    "knox":"0.5.4",
+    "redis":"0.8.2",
+    "socket.io":"0.9.13",
+    "underscore":"1.4.4"
+  }
 }
