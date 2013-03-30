@@ -83,6 +83,7 @@ class GameManager
       @frameSave()
       @frameAdvance()
       window.rulesScope.$apply()
+      window.variablesScope.$apply()
       @mainStage.update(elapsed)
     else
       @stagePane1.update(elapsed) if @stagePane1.onscreen()
@@ -94,6 +95,7 @@ class GameManager
     @selectedActor = null
     @mainStage.prepareWithData @prevFrames.pop(), () ->
       window.rulesScope.$apply()
+      window.variablesScope.$apply()
 
 
   frameSave: () ->

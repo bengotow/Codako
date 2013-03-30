@@ -301,18 +301,22 @@ class PixelArtCanvas
 
   handleCanvasEvent: (ev) =>
     return unless @tool
+
+    type = ev.type
+    type = 'mouseup' if type == 'mouseout'
+
     if @inDragMode == false
-      @tool[ev.type](@stagePointToPixel(ev.offsetX, ev.offsetY))
-      @applyTool() if (ev.type == 'mouseup' or ev.type == 'mouseout') and @tool.autoApplyChanges == true
+      @tool[type](@stagePointToPixel(ev.offsetX, ev.offsetY))
+      @applyTool() if type == 'mouseup' and @tool.autoApplyChanges == true
       @render()
     else
-      if ev.type == 'mousedown' and @dragging == false
+      if type == 'mousedown' and @dragging == false
         @dragging = true
-        @dragStart.x = ev.offsetX - @dragData.offsetX 
+        @dragStart.x = ev.offsetX - @dragData.offsetX
         @dragStart.y = ev.offsetY - @dragData.offsetY
-      if (ev.type == 'mouseup' or ev.type == 'mouseout')
+      if type == 'mouseup'
         @dragging = false
-      if ev.type == 'mousemove' and @dragging == true
+      if type == 'mousemove' and @dragging == true
         @dragData.offsetX = Math.floor((ev.offsetX-@dragStart.x) / @pixelSize) * @pixelSize
         @dragData.offsetY = Math.floor((ev.offsetY-@dragStart.y) / @pixelSize) * @pixelSize
 

@@ -145,10 +145,10 @@ class ProgrammableSprite extends Sprite
         @setAppearance(action.after)
 
       if action.type == 'variable-incr'
-        @variableValues[action.id] += action.increment
+        @variableValues[action.id] = @variableValue(action.id) + action.increment / 1
 
       if action.type == 'variable-set'
-        @variableValues[action.id] += action.after
+        @variableValues[action.id] = action.after / 1
 
 
   computeActionsToBecome: (after) ->
@@ -166,9 +166,9 @@ class ProgrammableSprite extends Sprite
     if @appearance != after.appearance
       actions.push({type:'appearance', after: after.appearance})
 
-    for id, variable in @definition.variables()
-      b = @variableValue[id]
-      a = @after.variableValue[id]
+    for id, variable of @definition.variables()
+      b = @variableValue(id)
+      a = after.variableValue(id)
       continue if a == b
       if Math.abs(a-b) == 1
         actions.push({type:'variable-incr', id: id, increment: a-b})
