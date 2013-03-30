@@ -41,6 +41,11 @@ PixelArtCtrl = ($scope) ->
     $scope.canvas.toolColor = color
     $scope.colorpicker.data('colorpicker').setValue(color)
 
+  $scope.copy = () ->
+    $scope.canvas.copy()
+
+  $scope.paste = () ->
+    $scope.canvas.paste()
 
   $scope.set_tool = (tool) ->
     $scope.canvas.tool = tool
@@ -51,6 +56,7 @@ PixelArtCtrl = ($scope) ->
 
   $scope.save_editor = () ->
     return unless $scope.actor_definition
+    $scope.canvas.cleanup()
     $scope.actor_definition.updateImageData($scope.canvas.dataURLRepresentation())
     $scope.actor_definition.save()
 

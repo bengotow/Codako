@@ -17,7 +17,7 @@ class GameManager
 
     @keysDown = {}
 
-    document.onkeydown = (e) =>
+    $('body').keydown (e) =>
       if $(e.target).prop('tagName') != 'INPUT' && (e.keyCode == 127 || e.keyCode == 8)
         e.preventDefault()
         @selectedActor.stage.removeActor(@selectedActor) if @selectedActor

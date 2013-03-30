@@ -338,7 +338,18 @@
 <!-- Begin Pixel Art Controller -->
   <div ng-controller="PixelArtCtrl" id="pixelArtModal" class="modal hide fade" tabindex="-1" role="dialog" aria-hidden="true" style="width:671px;" data-backdrop="static" ng-cloak>
     <div class="modal-header">
-      <h3>Edit Appearance</h3>
+      <div style="float:left;">
+        <h3>Edit Appearance</h3>
+      </div>
+      <div align="right">
+        <!--Undo, Redo buttons-->
+        <div class="btn icon" ng-disabled="!canvas.canUndo()" ng-click="canvas.undo()"><img src="/img/icon_undo.png"></div>
+        <div class="btn icon" ng-disabled="!canvas.canRedo()" ng-click="canvas.redo()"><img src="/img/icon_redo.png"></div>
+        <!--Copy, Paste Buttons-->
+        <div class="btn icon" ng-click="copy()"><img src="/img/icon_copy.png"></div>
+        <div class="btn icon" ng-click="paste()"><img src="/img/icon_paste.png"></div>
+      </div>
+
     </div>
     <div class="modal-body" style="max-height:585px;">
 
@@ -359,10 +370,15 @@
           <img ng-src="/img/tool_{{tool.name}}.png"/>
         </div>
 
+        <!--
+        <div class="btn icon" ng-click="copy()"><img src="/img/icon_copy.png"></div>
+        <div class="btn icon" ng-click="paste()"><img src="/img/icon_paste.png"></div>
+        -->
         <!-- Undo / Redo -->
 
+        <!--
         <div class="btn icon" ng-disabled="!canvas.canUndo()" ng-click="canvas.undo()"><img src="/img/icon_undo.png"></div><div class="btn icon" ng-disabled="!canvas.canRedo()" ng-click="canvas.redo()"><img src="/img/icon_redo.png"></div>
-
+        -->
       </div>
       <div style="float:left; width:521px;">
         <canvas id="pixelArtCanvas" width="521" height="521">
