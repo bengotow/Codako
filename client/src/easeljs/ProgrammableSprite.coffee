@@ -145,7 +145,10 @@ class ProgrammableSprite extends Sprite
         @setAppearance(action.after)
 
       if action.type == 'variable-incr'
-        @variableValues[action.id] = action.increment
+        @variableValues[action.id] += action.increment
+
+      if action.type == 'variable-set'
+        @variableValues[action.id] += action.after
 
 
   computeActionsToBecome: (after) ->
@@ -163,7 +166,7 @@ class ProgrammableSprite extends Sprite
     if @appearance != after.appearance
       actions.push({type:'appearance', after: after.appearance})
 
-    for id, var in @definition.variables
+    for id, variable in @definition.variables()
       b = @variableValue[id]
       a = @after.variableValue[id]
       continue if a == b
