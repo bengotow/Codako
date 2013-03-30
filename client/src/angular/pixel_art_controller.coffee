@@ -54,6 +54,9 @@ PixelArtCtrl = ($scope) ->
     return 'btn-info btn tool icon' if $scope.canvas.tool == tool
     'btn tool icon'
 
+  $scope.close_editor = () ->
+    $scope.canvas.cleanup()
+
   $scope.save_editor = () ->
     return unless $scope.actor_definition
     $scope.canvas.cleanup()
