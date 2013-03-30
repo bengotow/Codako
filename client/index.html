@@ -251,7 +251,7 @@
             Select an actor in your library or on the stage to define it's variables.
           </div>
 
-          <div draggable="{}" class="variable" ng-repeat="(id, variable) in variables()" data-identifier="{{id}}" style="{{css_for_variable(variable)}}" >
+          <div draggable="{}" class="variable" ng-repeat="(id, variable) in variables()" data-identifier="{{id}}" style="{{css_for_variable(variable)}}" ng-click="variable_clicked(variable)">
             <div class="name" ng-dblclick="edit_variable_attr($event, 'name')">{{variable.name}}</div>
             <input class="name" style="display:none;" ng-blur="save_variable_attr($event, 'name')" value="{{variable.name}}">
 

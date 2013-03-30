@@ -12,10 +12,12 @@ VariablesCtrl = ($scope) ->
     window.Game?.selectedDefinition.addVariable()
     window.Game?.selectedDefinition.save()
 
-  $scope.select_variable = (id) ->
+  $scope.variable_clicked = (variable) ->
     if window.Game.tool == 'delete'
-      if confirm('Are you sure you want to delete this variable?')
-        window.Game?.selectedDefinition.removeVariable(id)
+      definition = window.Game?.selectedDefinition
+      if confirm("Are you sure you want to delete the variable '#{variable.name}'? When you delete the variable, it will be deleted from all '#{definition.name}'.")
+        definition.removeVariable(variable)
+        definition.save()
     window.Game.resetToolAfterAction()
 
   $scope.edit_variable_attr = (event, attr) ->

@@ -172,6 +172,7 @@ class ActorDefinition
       value: 0
 
   removeVariable: (variable) ->
+    delete @variableDefaults[variable._id]
 
 
 window.ActorDefinition = ActorDefinition

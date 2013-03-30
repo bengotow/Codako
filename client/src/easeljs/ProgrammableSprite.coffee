@@ -15,7 +15,7 @@ class ProgrammableSprite extends Sprite
 
 
   variableValue: (id) ->
-    val = @variableValues[id] || @definition.variables()[id]['value']
+    val = @variableValues?[id] || @definition.variables()[id]['value']
     val / 1
 
 
