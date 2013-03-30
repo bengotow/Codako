@@ -56,6 +56,7 @@ PixelArtCtrl = ($scope) ->
 
   $scope.save_editor = () ->
     return unless $scope.actor_definition
+    $scope.canvas.cleanup()
     $scope.actor_definition.updateImageData($scope.canvas.dataURLRepresentation())
     $scope.actor_definition.save()
 
