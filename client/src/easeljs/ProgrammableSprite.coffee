@@ -1,26 +1,22 @@
 class ProgrammableSprite extends Sprite
 
-  MoveAcceleration = 13000.0
-  GroundDragFactor = 0.48
-  MaxMoveSpeed = 1750.0
-
   constructor: (identifier, position, size) ->
     @identifier = identifier
     @stage = undefined
     @definition = undefined
     @currentFrame = 66
     @clickedInCurrentFrame = false
-    @instanceVariables = {}
+    @variableValues = {}
     @applied = {}
 
     super(position, size)
     @setupDragging()
     @
 
-  variables: () ->
-    for key, value of @definition.variables()
-      @instanceVariables[key] = _.clone(value) unless @instanceVariables[key]
-    @instanceVariables
+
+  variableValue: (id) ->
+    @variableValues[id] || @definition.variables()[id]['value']
+
 
   descriptor: () ->
     {
@@ -28,7 +24,7 @@ class ProgrammableSprite extends Sprite
       identifier: @identifier,
       position: {x: @worldPos.x, y: @worldPos.y},
       appearance: @appearance,
-      variables: @instanceVariables
+      variableValues: @variableValues
     }
 
   matchesDescriptor: (descriptor) ->
@@ -148,6 +144,9 @@ class ProgrammableSprite extends Sprite
       if action.type == 'appearance'
         @setAppearance(action.after)
 
+      if action.type == 'variable-incr'
+        @variableValues[action.id] = action.increment
+
 
   computeActionsToBecome: (after) ->
     actions = []
@@ -163,6 +162,15 @@ class ProgrammableSprite extends Sprite
 
     if @appearance != after.appearance
       actions.push({type:'appearance', after: after.appearance})
+
+    for id, var in @definition.variables
+      b = @variableValue[id]
+      a = @after.variableValue[id]
+      continue if a == b
+      if Math.abs(a-b) == 1
+        actions.push({type:'variable-incr', id: id, increment: a-b})
+      else
+        actions.push({type:'variable-set', id: id, after: a})
 
     return undefined if actions.length == 0
     actions

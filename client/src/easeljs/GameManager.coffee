@@ -79,16 +79,14 @@ class GameManager
     time = Ticker.getTime()
     elapsed = (time - @initialGameTime) / 1000
 
-    unless @running || forceRules
-      @stagePane1.update(elapsed) if @stagePane1.onscreen()
-      @stagePane2.update(elapsed) if @stagePane2.onscreen()
-      return
-
-    if forceRules || time > @simulationFrameNextTime
+    if @running && (forceRules || time > @simulationFrameNextTime)
       @frameSave()
       @frameAdvance()
       window.rulesScope.$apply()
       @mainStage.update(elapsed)
+    else
+      @stagePane1.update(elapsed) if @stagePane1.onscreen()
+      @stagePane2.update(elapsed) if @stagePane2.onscreen()
 
 
   frameRewind: () ->

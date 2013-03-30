@@ -3,6 +3,7 @@ class ActorDefinition
   constructor: (json = {}) ->
     @name = 'Untitled'
     @identifier = Math.createUUID()
+    @variableDefaults = {}
     @size = {width: 1, height: 1}
     @spritesheet =
       data: undefined,
@@ -13,8 +14,6 @@ class ActorDefinition
 
     @rules = []
     @ruleRenderCache = {}
-
-    @variableDefaults = {}
 
     @[key] = value for key, value of json
     @spritesheet.width ||= Tile.WIDTH
@@ -51,7 +50,7 @@ class ActorDefinition
       identifier: @identifier
       name: @name
       spritesheet: @spritesheet
-      variables: @variableDefaults
+      variableDefaults: @variableDefaults
       rules: @rules
 
     console.log 'Saving Actor ', json

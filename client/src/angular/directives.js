@@ -57,6 +57,8 @@ App.directive('droppable', function($compile) {
       //This makes an element Droppable
       element.droppable({
         drop:function(event,ui) {
+          if (scope.ondrop)
+            scope.ondrop(event,ui)
           scope.$apply();
         }
       });

@@ -241,22 +241,24 @@
         </ul>
       </div>
 
-      <div class="tab-pane" id="variables" ng-controller="VariablesCtrl">
+      <div droppable class="tab-pane" id="variables" ng-controller="VariablesCtrl">
         <div style="position:absolute;z-index:1000;">
-        <div style="position:relative;left:200px;top:-37px;" class="btn-group" ng-show="variables()">
-          <div class="btn btn-mini" style="float:right;" ng-click="add_variable()"><i class="icon-plus"></i></div>
-        </div></div>
+        <a style="position:relative;left:212px;top:-37px;" class="btn" ng-click="add_variable()" ng-show="variables()">
+          <i class="icon-inbox"></i> Add</span>
+        </a></div>
+        <div class="variables-container">
+          <div ng-show="variables().length == 0" class="empty-message">
+            Select an actor in your library or on the stage to define it's variables.
+          </div>
 
-        <div ng-show="variables().length == 0" class="empty-message">
-          Select an actor in your library or on the stage to define it's variables.
+          <div draggable="{}" class="variable" ng-repeat="(id, variable) in variables()" data-identifier="{{id}}" style="{{css_for_variable(variable)}}" >
+            <div class="name" ng-dblclick="edit_variable_attr($event, 'name')">{{variable.name}}</div>
+            <input class="name" style="display:none;" ng-blur="save_variable_attr($event, 'name')" value="{{variable.name}}">
+
+            <div class="value" ng-dblclick="edit_variable_attr($event, 'value')">{{value_for_variable(id)}}</div>
+            <input class="value" style="display:none;" ng-blur="save_variable_attr($event, 'value')" value="{{variable.value}}">
+          </div>
         </div>
-
-        <ul class="unstyled">
-          <li class="variable" ng-repeat="(id, variable) in variables()" ng-click="select_variable(id)" data-identifier="variable:{{id}}">
-            <input class="value" ng-blur="save_variable_attr($event, 'value')" data-identifier="{{id}}" value="{{variable.value}}" />
-            <input class="name" ng-blur="save_variable_attr($event, 'name')" data-identifier="{{id}}" value="{{variable.name}}" />
-          </li>
-        </ul>
       </div>
     </div>
     <!-- End Rules Controller -->

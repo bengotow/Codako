@@ -363,6 +363,44 @@ h4 {
   }
 }
 
+.variables-container {
+  position:relative;
+  margin:10px;
+}
+
+.variable {
+  width:70px;
+  border:5px solid orange;
+  border-top:0;
+  position:absolute;
+  background-color:orange;
+  .name {
+    border:0;
+    background-color:orange;
+    text-align:center;
+    width:70px;
+    padding:0;
+    padding-top:3px;
+    padding-bottom:3px;
+    margin:0;
+  }
+  .value {
+    border:0;
+    background-color:white;
+    text-align:center;
+    width:70px;
+    height:36px;
+    padding:0;
+    padding-top:3px;
+    padding-bottom:3px;
+    font-size:1.2em;
+    font-weight:bold;
+  }
+  div.value {
+    padding-top:10px;
+    height:26px;
+  }
+}
 #composeRuleModal {
   .scenario {
     .before,.after {
