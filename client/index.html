@@ -256,7 +256,7 @@
             <input class="name" style="display:none;" ng-blur="save_variable_attr($event, 'name')" value="{{variable.name}}">
 
             <div class="value" ng-dblclick="edit_variable_attr($event, 'value')">{{value_for_variable(id)}}</div>
-            <input class="value" style="display:none;" ng-blur="save_variable_attr($event, 'value')" value="{{variable.value}}">
+            <input class="value" style="display:none;" ng-blur="save_variable_attr($event, 'value')" value="{{value_for_variable(id)}}">
           </div>
         </div>
       </div>

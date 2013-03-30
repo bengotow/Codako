@@ -22,3 +22,5 @@
 /client/src/angular/library_controller.js
 /client/src/angular/controls_controller.js
 /client/src/angular/compose_rule_controller.js
+
+/client/src/angular/variables_controller.js

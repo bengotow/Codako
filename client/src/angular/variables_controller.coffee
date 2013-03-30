@@ -44,7 +44,8 @@ VariablesCtrl = ($scope) ->
     variableEl.find("div.#{attr}").text(value)
 
   $scope.value_for_variable = (id) ->
-    window.Game?.selectedActor?.variableValue(id) || window.Game.selectedDefinition.variables()[id]['value']
+    return window.Game.selectedDefinition.variables()[id]['value'] unless window.Game?.selectedActor
+    window.Game.selectedActor.variableValue(id)
 
   $scope.css_for_variable = (variable) ->
     "left:#{variable.x * $scope.var_width}px; top:#{variable.y * $scope.var_height}px;"

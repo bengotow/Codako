@@ -79,7 +79,7 @@ class GameManager
     time = Ticker.getTime()
     elapsed = (time - @initialGameTime) / 1000
 
-    if @running && (forceRules || time > @simulationFrameNextTime)
+    if (@running && time > @simulationFrameNextTime) || forceRules
       @frameSave()
       @frameAdvance()
       window.rulesScope.$apply()
@@ -246,6 +246,10 @@ class GameManager
 
       @stagePane1.setWidth(@stageTotalWidth / 2 - 2)
       @stagePane2.setWidth(@stageTotalWidth / 2 - 2)
+
+      # select the recording actor on the right side so the user
+      # can jump into changing variables
+      @selectActor(@stagePane2.actorMatchingDescriptor(@recordingActor.descriptor()))
 
 
   exitRecordingMode: () ->

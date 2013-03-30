@@ -15,7 +15,8 @@ class ProgrammableSprite extends Sprite
 
 
   variableValue: (id) ->
-    @variableValues[id] || @definition.variables()[id]['value']
+    val = @variableValues[id] || @definition.variables()[id]['value']
+    val / 1
 
 
   descriptor: () ->
@@ -151,7 +152,7 @@ class ProgrammableSprite extends Sprite
         @variableValues[action.id] = action.after / 1
 
 
-  computeActionsToBecome: (after) ->
+  computeActionsToBecome: (after) =>
     actions = []
     if !after
       actions.push({type:'deleted'})
@@ -169,8 +170,9 @@ class ProgrammableSprite extends Sprite
     for id, variable of @definition.variables()
       b = @variableValue(id)
       a = after.variableValue(id)
+      console.log('Rule:', a,b)
       continue if a == b
-      if Math.abs(a-b) == 1
+      if Math.abs(a - b) == 1
         actions.push({type:'variable-incr', id: id, increment: a-b})
       else
         actions.push({type:'variable-set', id: id, after: a})
