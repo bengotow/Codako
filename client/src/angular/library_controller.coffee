@@ -20,7 +20,8 @@ LibraryCtrl = ($scope) ->
       if confirm('Are you sure you want to remove this actor? When you delete something from your library, all copies of it are deleted.')
         definitions = $scope.definitions()
         delete definitions[def.identifier]
-        window.Game.removeActorsMatchingDescriptor({identifier: def.identifier})
+        window.Game.mainStage.removeActorsMatchingDescriptor({identifier: def.identifier})
+        window.Game.stagePane1.removeActorsMatchingDescriptor({identifier: def.identifier})
         window.Game.save()
 
       window.Game.resetToolAfterAction()

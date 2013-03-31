@@ -21,9 +21,14 @@ class PixelTool
     @down = false
     @e = point
 
+  previewRender: (context,canvas) ->
+    @render(context,canvas)
+
   render: (context) ->
 
-  renderLine: (context,x0,y0,x1,y1,color=null) ->
+  renderLine: (context,x0,y0,x1,y1,color=null, method=null) ->
+    method ||= context.fillPixel #add a default value (we can't reference one parameter from another in the prototype)
+
     dx = Math.abs(x1 - x0)
     dy = Math.abs(y1 - y0)
     if x0 < x1 then sx = 1 else sx = -1
@@ -31,7 +36,7 @@ class PixelTool
     err = dx - dy
 
     while true
-      context.fillPixel(x0,y0,color)
+      method(x0,y0,color)
       return if x0 == x1 and y0 == y1
 
       e2 = 2 * err
@@ -155,7 +160,13 @@ class PixelEraserTool extends PixelTool
   reset: () ->
     @points = []
 
-  render: (context) ->
+  previewRender: (context, canvas) ->
+    prev = @points[0]
+    for point in @points
+      @renderLine(context, prev.x,prev.y,point.x,point.y, "rgba(0,0,0,0)", context.clearPixel )
+      prev = point
+
+  render: (context,canvas) ->
     return unless @points.length
     prev = @points[0]
     for point in @points
@@ -181,8 +192,10 @@ class PixelRectSelectionTool extends PixelTool
     return unless context instanceof CanvasRenderingContext2D
     
     canvas.selectedPixels = []
-    for sel_x in [@s.x..@e.x]
-      for sel_y in [@s.y..@e.y]
+    return if @s.x == @e.x or @s.y == @e.y
+
+    for sel_x in [@s.x..@e.x-1]
+      for sel_y in [@s.y..@e.y-1]
         canvas.selectedPixels.push( {x:sel_x, y:sel_y} )
 
   reset: () ->
@@ -243,8 +256,8 @@ class PixelArtCanvas
         @context.fillStyle = color
         @context.fillRect(x * @pixelSize, y * @pixelSize, @pixelSize, @pixelSize)
 
-    @context.getPixel = (x,y) =>
-      rgba = @context.getImageData(x * @pixelSize + 1, y * @pixelSize + 1, 1, 1).data
+    @context.clearPixel = (x, y ) =>
+       @context.clearRect(x * @pixelSize, y * @pixelSize, @pixelSize, @pixelSize)
 
     @inDragMode = false
     @dragging = false
@@ -297,8 +310,10 @@ class PixelArtCanvas
 
     if ev.keyCode == 8 or ev.keyCode == 46
       return unless @selectedPixels
+      @undoStack.push(new Uint8ClampedArray(@imageData.data))
+      @redoStack = []
       @clearPixels( @selectedPixels )
-      #@clearRect( @selectionRect.min.x, @selectionRect.min.y, @selectionRect.max.x, @selectionRect.max.y )
+      @selectedPixels = [] # deselection makes things look cleaner in the editor.
       @render()
 
     if ev.keyCode == 67 and ev.metaKey
@@ -308,10 +323,10 @@ class PixelArtCanvas
 
     if ev.keyCode == 90 and ev.metaKey and ev.shiftKey
       @redo()
-      window.rootScope.$apply()
+      window.rootScope.$apply() unless window.rootScope.$$phase
     else if ev.keyCode == 90 and ev.metaKey
       @undo()
-      window.rootScope.$apply()
+      window.rootScope.$apply() unless window.rootScope.$$phase
 
 
   handleCanvasEvent: (ev) =>
@@ -346,20 +361,19 @@ class PixelArtCanvas
       @clipboardData[ (p.y * Tile.WIDTH + p.x) * 4 + 2 ] = @imageData.data[ (p.y * Tile.WIDTH + p.x) * 4 + 2 ]
       @clipboardData[ (p.y * Tile.WIDTH + p.x) * 4 + 3 ] = @imageData.data[ (p.y * Tile.WIDTH + p.x) * 4 + 3 ]
 
-    window.rootScope.$apply()
+    window.rootScope.$apply() unless window.rootScope.$$phase
 
   paste: () =>
+    @undoStack.push(new Uint8ClampedArray(@imageData.data))
+    @redoStack = []
     return unless @clipboardData
     @dragData.clearRect( 0, 0, Tile.WIDTH, Tile.HEIGHT )
     @applyPixelsFromData( @clipboardData, @dragData, 0, 0, Tile.WIDTH, Tile.HEIGHT )
     @inDragMode = true
-    @undoStack.push(new Uint8ClampedArray(@imageData.data))
-    @redoStack = []
+    @selectedPixels = [] # deselection makes things look cleaner in the editor.
     @render()
 
   clearPixels: ( pixels ) =>
-    @undoStack.push(new Uint8ClampedArray(@imageData.data))
-    @redoStack = []
     for p in pixels
       @imageData.clearRect( p.x, p.y, p.x+1, p.y+1 )
 
@@ -381,7 +395,7 @@ class PixelArtCanvas
       @applyPixelsFromData(@dragData.data, @context, 0, 0, @dragData.width, @dragData.height, @dragData.width)
       @context.translate( -@dragData.offsetX, -@dragData.offsetY )
 
-    @tool.render(@context, @) if @tool
+    @tool.previewRender(@context, @) if @tool
 
       # draw selected pixels
     for p in @selectedPixels
@@ -406,7 +420,7 @@ class PixelArtCanvas
     @redoStack = []
     @tool.render(@imageData, @)
     @tool.reset()
-    window.rootScope.$apply()
+    window.rootScope.$apply() unless window.rootScope.$$phase
 
 
   applyPixelsFromData: (data, target, startX=0, startY=0, endX=Tile.WIDTH, endY=Tile.HEIGHT, dataWidth=Tile.WIDTH, offsetX = 0, offsetY = 0) ->
