@@ -68,25 +68,9 @@ class PixelPaintbucketTool extends PixelTool
 
   render: (context, canvas) ->
     return unless @e
-    startPixelData = canvas.imageData.getPixel(@e.x, @e.y)
+    canvas.getContiguousPixels @e, canvas.selectedPixels, (p) ->
+      context.fillPixel( p.x, p.y )
 
-    points = [@e]
-    pointsHit = {}
-
-    while (p = points.pop())
-      context.fillPixel(p.x, p.y)
-
-      for d in [{x:-1, y:0}, {x:0,y:1}, {x:0,y:-1}, {x:1,y:0}]
-        pp = new Point(p.x + d.x, p.y + d.y)
-        continue unless pp.x >= 0 && pp.y >= 0 && pp.x < Tile.WIDTH && pp.y < Tile.HEIGHT
-        continue if pointsHit["#{pp.x}-#{pp.y}"]
-
-        pixelData = canvas.imageData.getPixel(pp.x, pp.y)
-        colorDelta = 0
-        colorDelta += Math.abs(pixelData[i] - startPixelData[i]) for i in [0..3]
-        if colorDelta < 20
-          points.push(pp)
-          pointsHit["#{pp.x}-#{pp.y}"] = true
 
 class PixelFillEllipseTool extends PixelTool
 
@@ -191,23 +175,32 @@ class PixelRectSelectionTool extends PixelTool
     @down = false
     @e = point
 
+
   render: (context,canvas) ->
     return unless @s && @e
     return unless context instanceof CanvasRenderingContext2D
-    # #draw the selection marquee
-    # context.lineWidth = 2
-    # context.strokeStyle = "rgba(128,128,128,1)"
-    # context.strokeRect( @s.x * canvas.pixelSize, @s.y * canvas.pixelSize, (@e.x - @s.x) * canvas.pixelSize, (@e.y - @s.y) * canvas.pixelSize )
-    # context.lineWidth = 1
-
-    # ensure that the "topLeft" value is actually above and to the left :P
-    minPoint = new Point( Math.min(@s.x, @e.x), Math.min(@s.y, @e.y) )
-    maxPoint = new Point( Math.max(@s.x, @e.x), Math.max(@s.y, @e.y) )
-    canvas.selectionRect = { min:minPoint, max:maxPoint }
+    
+    canvas.selectedPixels = []
+    for sel_x in [@s.x..@e.x]
+      for sel_y in [@s.y..@e.y]
+        canvas.selectedPixels.push( {x:sel_x, y:sel_y} )
 
   reset: () ->
     @s = @e = null
 
+
+class PixelMagicSelectionTool extends PixelTool
+
+  constructor: () ->
+    super
+    @name = 'magicWand'
+    #@autoApplyChanges = false
+
+  render: (context,canvas) ->
+    return unless @e
+    canvas.selectedPixels = []
+    canvas.getContiguousPixels @e, null, (p) ->
+      canvas.selectedPixels.push( p )
 
 
 class PixelArtCanvas
@@ -217,7 +210,7 @@ class PixelArtCanvas
     @width = canvas.width
     @height = canvas.height
     @image = image
-    @tools = [new PixelRectSelectionTool(), new PixelFreehandTool(), new PixelEraserTool(), new PixelLineTool(), new PixelFillEllipseTool(), new PixelFillRectTool(), new PixelPaintbucketTool()]
+    @tools = [new PixelRectSelectionTool(), new PixelFreehandTool(), new PixelEraserTool(), new PixelMagicSelectionTool(), new PixelLineTool(), new PixelFillEllipseTool(), new PixelFillRectTool(), new PixelPaintbucketTool()]
     @tool = @tools[0]
     @toolColor = "rgba(0,0,0,255)"
     @pixelSize = Math.floor(@width / Tile.WIDTH)
@@ -260,6 +253,7 @@ class PixelArtCanvas
     @dragData.offsetX = 0
     @dragData.offsetY = 0
     @dragStart = {x:0, y:0}
+    @selectedPixels = []
     
 
 
@@ -285,7 +279,7 @@ class PixelArtCanvas
 
 
   stagePointToPixel: (x, y) ->
-    new Point(Math.floor(x / @pixelSize), Math.floor(y / @pixelSize))
+    new Point( Math.min( Math.round(x / @pixelSize), Tile.WIDTH ) , Math.min( Math.round(y / @pixelSize), Tile.HEIGHT ) ) 
 
 
   handleKeyEvent: (ev) =>
@@ -302,8 +296,9 @@ class PixelArtCanvas
       @render()
 
     if ev.keyCode == 8 or ev.keyCode == 46
-      return unless @selectionRect
-      @clearRect( @selectionRect.min.x, @selectionRect.min.y, @selectionRect.max.x, @selectionRect.max.y )
+      return unless @selectedPixels
+      @clearPixels( @selectedPixels )
+      #@clearRect( @selectionRect.min.x, @selectionRect.min.y, @selectionRect.max.x, @selectionRect.max.y )
       @render()
 
     if ev.keyCode == 67 and ev.metaKey
@@ -343,32 +338,30 @@ class PixelArtCanvas
       @render()
 
   copy: () =>
-    return unless @selectionRect
-    # copies the contents of the selection rect.
-    sel_x = @selectionRect.min.x
-    sel_y = @selectionRect.min.y
-    sel_w = @selectionRect.max.x - @selectionRect.min.x
-    sel_h = @selectionRect.max.y - @selectionRect.min.y
+    @clipboardData = new Uint8ClampedArray( Tile.WIDTH * Tile.HEIGHT * 4 )
 
-    @clipboardData = new Uint8ClampedArray( sel_w * sel_h * 4 )
-    @clipboardSize = {width:sel_w, height:sel_h}
+    for p in @selectedPixels
+      @clipboardData[ (p.y * Tile.WIDTH + p.x) * 4 + 0 ] = @imageData.data[ (p.y * Tile.WIDTH + p.x) * 4 + 0 ]
+      @clipboardData[ (p.y * Tile.WIDTH + p.x) * 4 + 1 ] = @imageData.data[ (p.y * Tile.WIDTH + p.x) * 4 + 1 ]
+      @clipboardData[ (p.y * Tile.WIDTH + p.x) * 4 + 2 ] = @imageData.data[ (p.y * Tile.WIDTH + p.x) * 4 + 2 ]
+      @clipboardData[ (p.y * Tile.WIDTH + p.x) * 4 + 3 ] = @imageData.data[ (p.y * Tile.WIDTH + p.x) * 4 + 3 ]
 
-    @copyPixelsFromData( @imageData.data, @clipboardData, sel_x, sel_y, sel_x+sel_w, sel_y+sel_h )
     window.rootScope.$apply()
 
   paste: () =>
-    return unless @clipboardData and @clipboardSize
+    return unless @clipboardData
     @dragData.clearRect( 0, 0, Tile.WIDTH, Tile.HEIGHT )
-    @applyPixelsFromData( @clipboardData, @dragData, 0, 0, @clipboardSize.width, @clipboardSize.height, @clipboardSize.width )
+    @applyPixelsFromData( @clipboardData, @dragData, 0, 0, Tile.WIDTH, Tile.HEIGHT )
     @inDragMode = true
     @undoStack.push(new Uint8ClampedArray(@imageData.data))
     @redoStack = []
     @render()
 
-  clearRect: ( startX, startY, endX, endY ) =>
+  clearPixels: ( pixels ) =>
     @undoStack.push(new Uint8ClampedArray(@imageData.data))
     @redoStack = []
-    @imageData.clearRect( @selectionRect.min.x, @selectionRect.min.y, @selectionRect.max.x, @selectionRect.max.y )
+    for p in pixels
+      @imageData.clearRect( p.x, p.y, p.x+1, p.y+1 )
 
 
   render: () ->
@@ -388,14 +381,12 @@ class PixelArtCanvas
       @applyPixelsFromData(@dragData.data, @context, 0, 0, @dragData.width, @dragData.height, @dragData.width)
       @context.translate( -@dragData.offsetX, -@dragData.offsetY )
 
-    if @selectionRect
-      #draw the selection marquee
-      @context.lineWidth = 2
-      @context.strokeStyle = "rgba(128,128,128,1)"
-      @context.strokeRect( @selectionRect.min.x * @pixelSize, @selectionRect.min.y * @pixelSize, 
-        (@selectionRect.max.x - @selectionRect.min.x) * @pixelSize, (@selectionRect.max.y - @selectionRect.min.y) * @pixelSize )
-
     @tool.render(@context, @) if @tool
+
+      # draw selected pixels
+    for p in @selectedPixels
+      @context.fillPixel(p.x, p.y, "rgba(0, 0, 0, 0.2)")
+
 
     @context.lineWidth = 1
     @context.strokeStyle = "rgba(70,70,70,.30)"
@@ -451,13 +442,36 @@ class PixelArtCanvas
         target[ (y*w + x) * 4 + 3 ] = data[ ((startY+y) * dataWidth + (startX+x)) * 4 + 3 ]
 
 
+  getContiguousPixels: (startPixel, region, callback ) =>
+    points = [startPixel]
+    startPixelData = @imageData.getPixel( startPixel.x, startPixel.y)
+    pointsHit =  {}
+    pointsHit[ "#{startPixel.x}-#{startPixel.y}" ] = 1
+
+    while (p = points.pop())
+      callback(p)
+
+      for d in [{x:-1, y:0}, {x:0,y:1}, {x:0,y:-1}, {x:1,y:0}]
+        pp = new Point(p.x + d.x, p.y + d.y)
+        continue unless pp.x >= 0 && pp.y >= 0 && pp.x < Tile.WIDTH && pp.y < Tile.HEIGHT
+        continue if region?.length and !_.find region, (test) -> pp.x == test.x && pp.y == test.y
+        continue if pointsHit["#{pp.x}-#{pp.y}"]
+
+        pixelData = @imageData.getPixel(pp.x, pp.y)
+        colorDelta = 0
+        colorDelta += Math.abs(pixelData[i] - startPixelData[i]) for i in [0..3]
+        if colorDelta < 15
+          points.push(pp)
+          pointsHit["#{pp.x}-#{pp.y}"] = true
+
+
   canCopy: () ->
-    return false if (@selectionRect.max.x - @selectionRect.min.x) == 0
-    return false if (@selectionRect.max.y - @selectionRect.min.y) == 0
-    return true
+    #return false if (@selectionRect.max.x - @selectionRect.min.x) == 0
+    #return false if (@selectionRect.max.y - @selectionRect.min.y) == 0
+    @selectedPixels.length
 
   canPaste: () ->
-    return true if @clipboardSize.width > 0 and @clipboardSize.height > 0
+    return true if @clipboardData
     return false
 
   canUndo: () ->
@@ -520,7 +534,7 @@ class PixelArtCanvas
     @dragging = false
     @dragData.clearRect( 0, 0, Tile.WIDTH, Tile.HEIGHT )
     @dragStart = {x:0, y:0}
-    @selectionRect = null
+    @selectedPixels = []
     @render()
 
   _extendImageData: (imgData) ->
