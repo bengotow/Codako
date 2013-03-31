@@ -7,16 +7,16 @@ class PixelTool
     @autoApplyChanges = true
     @reset()
 
-  mousedown: (point) ->
+  mousedown: (point, canvas) ->
     @down = true
     @s = point
     @e = point
 
-  mousemove: (point) ->
+  mousemove: (point, canvas) ->
     return unless @down
     @e = point
 
-  mouseup: (point) ->
+  mouseup: (point, canvas) ->
     return unless @down
     @down = false
     @e = point
@@ -216,6 +216,23 @@ class PixelMagicSelectionTool extends PixelTool
       canvas.selectedPixels.push( p )
 
 
+class PixelTranslateTool extends PixelTool
+
+  constructor: () ->
+    super
+    @name = 'translate'
+
+  mousedown: (point, canvas) ->
+    @down = true
+    return unless canvas.selectedPixels.length
+    canvas.cut()
+    canvas.paste()
+    # if canvas.dragging == false
+    # canvas.dragStart.x = point.x - canvas.dragData.offsetX
+    # canvas.dragStart.y = point.y - canvas.dragData.offsetY
+    # canvas.dragging = true
+
+
 class PixelArtCanvas
 
   constructor: (image, canvas, controller_scope) ->
@@ -223,7 +240,7 @@ class PixelArtCanvas
     @width = canvas.width
     @height = canvas.height
     @image = image
-    @tools = [new PixelRectSelectionTool(), new PixelFreehandTool(), new PixelEraserTool(), new PixelMagicSelectionTool(), new PixelLineTool(), new PixelFillEllipseTool(), new PixelFillRectTool(), new PixelPaintbucketTool()]
+    @tools = [new PixelRectSelectionTool(), new PixelMagicSelectionTool(), new PixelTranslateTool(), new PixelFreehandTool(), new PixelEraserTool(), new PixelLineTool(), new PixelFillEllipseTool(), new PixelFillRectTool(), new PixelPaintbucketTool()]
     @tool = @tools[0]
     @toolColor = "rgba(0,0,0,255)"
     @pixelSize = Math.floor(@width / Tile.WIDTH)
@@ -319,6 +336,8 @@ class PixelArtCanvas
 
     if ev.keyCode == 67 and ev.metaKey
       @copy()
+    if ev.keyCode == 88 and ev.metaKey
+      @cut()
     if ev.keyCode == 86 and ev.metaKey
       @paste()
 
@@ -337,7 +356,7 @@ class PixelArtCanvas
     type = 'mouseup' if type == 'mouseout'
 
     if @inDragMode == false
-      @tool[type](@stagePointToPixel(ev.offsetX, ev.offsetY))
+      @tool[type](@stagePointToPixel(ev.offsetX, ev.offsetY), @)
       @applyTool() if type == 'mouseup' and @tool.autoApplyChanges == true
       @render()
     else
@@ -363,6 +382,10 @@ class PixelArtCanvas
       @clipboardData[ (p.y * Tile.WIDTH + p.x) * 4 + 3 ] = @imageData.data[ (p.y * Tile.WIDTH + p.x) * 4 + 3 ]
 
     window.rootScope.$apply() unless window.rootScope.$$phase
+
+  cut: () =>
+    @copy()
+    @clearPixels( @selectedPixels )
 
   paste: () =>
     @undoStack.push(new Uint8ClampedArray(@imageData.data))
