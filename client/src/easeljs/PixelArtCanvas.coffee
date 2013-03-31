@@ -234,6 +234,7 @@ class PixelArtCanvas
     canvas.addEventListener('mousemove', @handleCanvasEvent, false)
     canvas.addEventListener('mouseup',   @handleCanvasEvent, false)
     canvas.addEventListener('mouseout',  @handleCanvasEvent, false)
+    Ticker.addListener(@)
     $('body').keydown @handleKeyEvent
 
     # augment our context object
@@ -378,6 +379,11 @@ class PixelArtCanvas
       @imageData.clearRect( p.x, p.y, p.x+1, p.y+1 )
 
 
+  tick: () ->
+    # for the fun marching-ants selection areas.
+    if @selectedPixels
+      @render()
+
   render: () ->
     @context.fillStyle = "rgb(255,255,255)"
     @context.clearRect(0,0, @width, @height)
@@ -397,10 +403,32 @@ class PixelArtCanvas
 
     @tool.previewRender(@context, @) if @tool
 
-      # draw selected pixels
-    for p in @selectedPixels
-      @context.fillPixel(p.x, p.y, "rgba(0, 0, 0, 0.2)")
-
+    # draw selected pixels with marching ant funtimes.
+    # for p in @selectedPixels
+    #   @context.fillPixel(p.x, p.y, "rgba(0, 0, 0, 0.2)")
+    @context.lineWidth = 1
+    @context.strokeStyle = "rgba(70,70,70,.90)"
+    @context.beginPath()
+    @getBorderPixels @selectedPixels, (x,y, left, right, top, bot) => 
+      if (Math.floor( Ticker.getTime() / 250 ) + x + y * (Tile.WIDTH+1)) % 2 == 0
+        topY = (y)*@pixelSize
+        botY = (y+1)*@pixelSize
+        leftX = (x)*@pixelSize
+        rightX = (x+1)*@pixelSize
+        if !left
+          @context.moveTo( leftX, topY )
+          @context.lineTo( leftX, botY )
+        if !right
+          @context.moveTo( rightX, topY )
+          @context.lineTo( rightX, botY )
+        if !top
+          @context.moveTo( leftX, topY )
+          @context.lineTo( rightX, topY )
+        if !bot
+          @context.moveTo( leftX, botY )
+          @context.lineTo( rightX, botY )
+    @context.stroke()
+    #end marching ant funtimes.
 
     @context.lineWidth = 1
     @context.strokeStyle = "rgba(70,70,70,.30)"
@@ -478,6 +506,18 @@ class PixelArtCanvas
           points.push(pp)
           pointsHit["#{pp.x}-#{pp.y}"] = true
 
+  #this function calls a callback on every pixel on the border of a group of pixels
+  getBorderPixels: ( pixels, callback ) =>
+    for p in pixels
+      left = right = top = bot = false
+      for other in pixels 
+        left = true if other.x == p.x-1 and other.y == p.y
+        right = true if  other.x == p.x+1 and other.y == p.y
+        top = true if  other.x == p.x and other.y == p.y-1
+        bot = true if  other.x == p.x and other.y == p.y+1
+
+      if not left or not right or not top or not bot
+        callback( p.x, p.y, left, right, top, bot )
 
   canCopy: () ->
     #return false if (@selectionRect.max.x - @selectionRect.min.x) == 0

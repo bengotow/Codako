@@ -67,7 +67,7 @@ class GameManager
 
       Ticker.addListener(@)
       Ticker.useRAF = false
-      Ticker.setFPS(60)
+      Ticker.setFPS(30)
       window.rootScope.$apply()
 
 
