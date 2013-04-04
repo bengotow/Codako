@@ -62,5 +62,23 @@ ControlsCtrl = ($scope) ->
     window.Game.saveRecording()
     $scope.control_set = 'testing'
 
+  $scope.recording_checks = () ->
+    window.Game.recordingChecks
+
+  $scope.save_recording_check_value = (id) ->
+
+  $scope.ondrop = (event, ui) ->
+    variableID = ui.draggable.data('identifier')
+    variable = window.Game.selectedDefinition.variables()[variableID]
+    variableValue = window.Game.selectedActor.variableValue(variableID)
+
+    checkID = $(event.target).data('identifier')
+    window.Game.recordingCheck(checkID)['_id'] = variableID
+    if window.Game.recordingChecks[-1]._id == checkID
+      window.Game.addRecordingCheck()
+
+    debugger
+
+
 
 window.ControlsCtrl = ControlsCtrl

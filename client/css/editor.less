@@ -30,7 +30,7 @@ body.tool-delete .event,
 body.tool-delete #definitions .item,
 body.tool-delete #appearances .item,
 body.tool-delete .rule,
-body.tool-delete .variable,
+body.tool-delete .variable-box,
 body.tool-delete .group {
   cursor: url(../img/cursor_trashcan.png), url(img/cursor_trashcan.png), default !important;
 }
@@ -367,11 +367,11 @@ h4 {
 }
 
 .variables-container {
-  position:relative;
+  position:absolute;
   margin:10px;
 }
 
-.variable {
+.variable-box {
   width:70px;
   border:5px solid orange;
   border-top:0;
@@ -415,6 +415,26 @@ h4 {
       display:inline-block;
       text-align:center;
       width:20px;
+    }
+  }
+}
+
+.controls {
+  .panel {
+    width:396px;
+    height:120px;
+    display:inline-block;
+    background-color:#eee;
+    position:relative;
+    border:1px solid #ccc;
+    top:-120px;
+
+    .slot {
+      width:100px;
+      display:inline-block;
+      padding:4px;
+      background-color:white;
+      border:1px solid #ccc;
     }
   }
 }

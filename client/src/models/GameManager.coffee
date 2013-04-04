@@ -5,7 +5,10 @@ class GameManager
     @library = new LibraryManager('default', @loadStatusChanged)
     @content = new ContentManager(@loadStatusChanged)
     @selectedActor = null
+
     @recordingActor = null
+    @recordingRule = null
+
     @tool = 'pointer'
 
     @simulationFrameRate = 500
@@ -232,6 +235,7 @@ class GameManager
     @mainStage.setRecordingExtent(initialExtent)
     @mainStage.setRecordingCentered(false)
     @recordingActor = actor
+    @recordingRule = @computeRecordedRule()
     @selectActor(actor)
 
 
@@ -275,8 +279,7 @@ class GameManager
     @stagePane2.setRecordingExtent(@extent)
 
 
-  saveRecording: () ->
-    # first, identify changes to each actor we started with
+  computeRecordedRule: () ->
     rule =
       _id: Math.createUUID()
       name: 'Untitled Rule',
@@ -321,6 +324,12 @@ class GameManager
       coordStructs[coord].added ||= []
       coordStructs[coord].added.push(newActor.descriptor())
 
+    rule
+
+
+  saveRecording: () ->
+    # first, identify changes to each actor we started with
+    rule = @computeRecordedRule()
 
     # okay cool - now add the rule to the actor definition
     @recordingActor.definition.addRule(rule)

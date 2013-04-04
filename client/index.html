@@ -20,17 +20,17 @@
   <script src="./src/jquery-ui.min.js"></script>
 
 
-  <script src="./src/easeljs/XNARectangle.js"></script>
-  <script src="./src/easeljs/ContentManager.js"></script>
-  <script src="./src/easeljs/Sprite.js"></script>
-  <script src="./src/easeljs/ActorDefinition.js"></script>
-  <script src="./src/easeljs/ProgrammableSprite.js"></script>
-  <script src="./src/easeljs/SquareMaskSprite.js"></script>
-  <script src="./src/easeljs/HandleSprite.js"></script>
-  <script src="./src/easeljs/PixelArtCanvas.js"></script>
-  <script src="./src/easeljs/LibraryManager.js"></script>
-  <script src="./src/easeljs/GameStage.js"></script>
-  <script src="./src/easeljs/GameManager.js"></script>
+  <script src="./src/models/XNARectangle.js"></script>
+  <script src="./src/models/ContentManager.js"></script>
+  <script src="./src/models/Sprite.js"></script>
+  <script src="./src/models/ActorDefinition.js"></script>
+  <script src="./src/models/ProgrammableSprite.js"></script>
+  <script src="./src/models/SquareMaskSprite.js"></script>
+  <script src="./src/models/HandleSprite.js"></script>
+  <script src="./src/models/PixelArtCanvas.js"></script>
+  <script src="./src/models/LibraryManager.js"></script>
+  <script src="./src/models/GameStage.js"></script>
+  <script src="./src/models/GameManager.js"></script>
 
   <script src="./src/angular.js"></script>
   <script src="./src/angular/directives.js"></script>
@@ -138,6 +138,29 @@
     </div>
 
     <div class="controls" ng-show="control_set == 'recording'" style="text-align:center;">
+      <div style="position:absolute; height:0;">
+        <div class="panel conditions">
+          <h4>And Check:</h4>
+          <ul>
+            <li class="condition" ng-repeat="check in recording_checks()">
+              <div droppable='{"scope":"variable"}' class="slot">{{check.variable}}</div>
+
+              <div class="btn-group">
+                <button ng-click="set_speed(1000)" class="{{class_for_btn(1000==speed())}}"> > </button>
+                <button ng-click="set_speed(500)" class="{{class_for_btn(500==speed())}}"> = </button>
+                <button ng-click="set_speed(200)" class="{{class_for_btn(200==speed())}}"> < </button>
+              </div>
+
+              <input class="slot" value="{{check.value}}"/>
+
+            </li>
+          </ul>
+        </div>
+        <div class="panel actions">
+          <h4>Actions</h4>
+        </div>
+      </div>
+
       <label>Act out what you want to happen in the picture on the right.</label>
       <button ng-click="save_recording()" class="btn btn-success right"><i class="icon-check"></i> Save Recording</button>
       <button ng-click="cancel_recording()" class="btn right"><i class="icon-remove"></i> Cancel</button>
@@ -241,7 +264,7 @@
         </ul>
       </div>
 
-      <div droppable class="tab-pane" id="variables" ng-controller="VariablesCtrl">
+      <div droppable='{"scope":"variable"}' class="tab-pane" id="variables" ng-controller="VariablesCtrl">
         <div style="position:absolute;z-index:1000;">
         <a style="position:relative;left:212px;top:-37px;" class="btn" ng-click="add_variable()" ng-show="variables()">
           <i class="icon-inbox"></i> Add</span>
@@ -251,7 +274,7 @@
             Select an actor in your library or on the stage to define it's variables.
           </div>
 
-          <div draggable="{}" class="variable" ng-repeat="(id, variable) in variables()" data-identifier="{{id}}" style="{{css_for_variable(variable)}}" ng-click="variable_clicked(variable)">
+          <div draggable='{"revert":"invalid","scope":"variable"}' class="variable-box" ng-repeat="(id, variable) in variables()" data-identifier="{{id}}" style="{{css_for_variable(variable)}}" ng-click="variable_clicked(variable)">
             <div class="name" ng-dblclick="edit_variable_attr($event, 'name')">{{variable.name}}</div>
             <input class="name" style="display:none;" ng-blur="save_variable_attr($event, 'name')" value="{{variable.name}}">
 

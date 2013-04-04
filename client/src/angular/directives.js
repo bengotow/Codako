@@ -55,13 +55,20 @@ App.directive('droppable', function($compile) {
     restrict: 'A',
     link: function(scope,element,attrs){
       //This makes an element Droppable
-      element.droppable({
-        drop:function(event,ui) {
-          if (scope.ondrop)
-            scope.ondrop(event,ui)
-          scope.$apply();
-        }
-      });
+      args = element.attr('droppable')
+      if (args == "")
+        args = { opacity: 0.7, helper: "clone" };
+      else
+        args = JSON.parse(args);
+
+      args['drop'] = function(event,ui) {
+        dropScope = angular.element(event.target).scope()
+        if (dropScope.ondrop)
+          dropScope.ondrop(event,ui)
+        dropScope.$apply();
+      }
+
+      element.droppable(args);
     }
   };
 });
