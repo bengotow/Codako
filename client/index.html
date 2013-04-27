@@ -23,6 +23,7 @@
   <script src="./src/models/XNARectangle.js"></script>
   <script src="./src/models/ContentManager.js"></script>
   <script src="./src/models/Sprite.js"></script>
+  <script src="./src/models/Rule.js"></script>
   <script src="./src/models/ActorDefinition.js"></script>
   <script src="./src/models/ProgrammableSprite.js"></script>
   <script src="./src/models/SquareMaskSprite.js"></script>
@@ -158,6 +159,24 @@
         </div>
         <div class="panel actions">
           <h4>Actions</h4>
+
+          <ul>
+            <li class="action" ng-repeat="action in recording_actions()" ng-switch="action.type">
+              <div ng-switch-when="move">
+                Move <code><img src="{{icon_for_referenced_actor(action.ref)}}" width="26" height="26">{{name_for_referenced_actor(action.ref)}}</code> to
+                <img src="{{icon_for_move(action.delta)}}" style="max-width:50px; max-height: 50px;">
+              </div>
+              <div ng-switch-when="appearance">
+                Change Appearance of <code><img src="{{icon_for_referenced_actor(action.ref)}}" width="26" height="26">{{name_for_referenced_actor(action.ref)}}</code> to <code><img src="{{icon_for_referenced_actor(action.ref,action.to)}}" width="26" height="26">{{name_for_appearance(action.to)}}</code>
+              </div>
+              <div ng-switch-when="create">
+                Create a new <code><img src="{{icon_for_referenced_actor(action.ref)}}" width="26" height="26">{{name_for_referenced_actor(action.ref)}}</code>
+              </div>
+
+            </li>
+          </ul>
+
+
         </div>
       </div>
 

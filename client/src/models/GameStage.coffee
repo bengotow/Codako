@@ -29,13 +29,12 @@ class GameStage extends Stage
       point = new Point(Math.round((e.pageX - e.offsetX) / Tile.WIDTH), Math.round((e.pageY - e.offsetY - parentOffset.top) / Tile.HEIGHT))
 
       if identifier[0..4] == 'actor'
-        @addActor({identifier: identifier[6..-1], position: point})
-        window.Game.onActorPlaced(@)
+        actor = @addActor({identifier: identifier[6..-1], position: point})
+        window.Game.onActorPlaced(actor, @)
 
       else if identifier[0..9] == 'appearance'
-        for actor in @actorsAtPosition(point)
-          actor.setAppearance(identifier[11..-1])
-        window.Game.onAppearancePlaced(@)
+        actor = @actorsAtPosition(point)[0]
+        window.Game.onAppearancePlaced(actor, @, identifier[11..-1]) if actor
 
   onscreen: () ->
     @widthTarget > 0 || @widthCurrent > 0
@@ -109,9 +108,9 @@ class GameStage extends Stage
     console.log('Updating Recording Extent', @recordingExtent)
     @recordingExtent = extent
 
-    for obj in @recordingMasks
-      @removeChild(obj)
-    @recordingMasks = []
+    # for obj in @recordingMasks
+    #   @removeChild(obj)
+    # @recordingMasks = []
 
     for key, obj of @recordingHandles
       @removeChild(obj)
@@ -120,14 +119,26 @@ class GameStage extends Stage
     return unless extent
 
     # Add gray mask outside of the recording region
+    usedMasks = 0
     for x in [0..@width]
       for y in [0..@height]
         if (x < extent.left || x > extent.right) || (y < extent.top || y > extent.bottom)
-          sprite = new SquareMaskSprite(@recordingMaskStyle)
+          if usedMasks < @recordingMasks.length
+            sprite = @recordingMasks[usedMasks]
+          else
+            sprite = new SquareMaskSprite(@recordingMaskStyle)
+            @addChild(sprite)
+            @recordingMasks.push(sprite)
+
           sprite.x = x * Tile.WIDTH
           sprite.y = y * Tile.HEIGHT
-          @addChild(sprite)
-          @recordingMasks.push(sprite)
+          usedMasks += 1
+
+    if usedMasks < @recordingMasks.length
+      for i in [usedMasks..@recordingMasks.length - 1]
+        @removeChild(@recordingMasks[i])
+    @recordingMasks = @recordingMasks[0..usedMasks - 1]
+
 
     # Add the handles
     for side in ['top', 'left', 'right', 'bottom']
@@ -151,7 +162,7 @@ class GameStage extends Stage
 
   centerOnRecordingRegion: () ->
     @offsetTarget.x = (4.5 - @recordingExtent.left - (@recordingExtent.right - @recordingExtent.left) / 2) * Tile.WIDTH
-    @offsetTarget.y = (5 - @recordingExtent.top - (@recordingExtent.bottom - @recordingExtent.top) / 2) * Tile.HEIGHT
+    @offsetTarget.y = (4 - @recordingExtent.top - (@recordingExtent.bottom - @recordingExtent.top) / 2) * Tile.HEIGHT
 
 
   centerOnEntireCanvas: () ->
@@ -179,7 +190,7 @@ class GameStage extends Stage
   # -- Managing Actors on the Stage -- #
 
   addActor: (descriptor) ->
-    actor = window.Game.library.instantiateActorFromDescriptor(descriptor, @)
+    actor = window.Game.library.instantiateActorFromDescriptor(descriptor, null, @)
     return console.log('Could not read descriptor:', descriptor) if !actor
 
     actor.addEventListener 'click', (e) =>
@@ -191,6 +202,7 @@ class GameStage extends Stage
 
     @actors.push(actor)
     @addChild(actor)
+    actor
 
 
   isDescriptorValid: (descriptor) ->

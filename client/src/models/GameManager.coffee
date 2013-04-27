@@ -5,8 +5,6 @@ class GameManager
     @library = new LibraryManager('default', @loadStatusChanged)
     @content = new ContentManager(@loadStatusChanged)
     @selectedActor = null
-
-    @recordingActor = null
     @recordingRule = null
 
     @tool = 'pointer'
@@ -210,16 +208,25 @@ class GameManager
     window.rootScope.$digest()
 
 
-  onActorDragged: (actor) ->
-    @save()
+  onActorDragged: (actor, stage, point) ->
+    if @recordingRule
+      return unless point.isInside(@mainStage.recordingExtent)
+      @recordingRule.incorporate(actor, 'move', point)
+    actor.worldPos = actor.nextPos = point
+    if stage == @mainStage
+      @save()
 
 
-  onAppearancePlaced: (stage) ->
+  onAppearancePlaced: (actor, stage, appearance) ->
+    @recordingRule.incorporate(actor, 'appearance', appearance) if @recordingRule
+    actor.setAppearance(appearance)
     @update()
     if stage == @mainStage
       @save()
 
-  onActorPlaced: (stage) ->
+
+  onActorPlaced: (actor, stage) ->
+    @recordingRule.incorporate(actor, 'create') if @recordingRule
     @update()
     if stage == @mainStage
       @save()
@@ -231,11 +238,13 @@ class GameManager
     return unless actor
     window.rootScope.$broadcast('start_compose_rule')
     initialExtent = {left: actor.worldPos.x, right: actor.worldPos.x, top: actor.worldPos.y, bottom: actor.worldPos.y}
+
+    @recordingRule = new Rule(actor)
+    @recordingRule.updateScenario(@mainStage, initialExtent)
+
     @mainStage.setRecordingMaskStyle('masked')
     @mainStage.setRecordingExtent(initialExtent)
     @mainStage.setRecordingCentered(false)
-    @recordingActor = actor
-    @recordingRule = @computeRecordedRule()
     @selectActor(actor)
 
 
@@ -251,9 +260,8 @@ class GameManager
       @stagePane1.setWidth(@stageTotalWidth / 2 - 2)
       @stagePane2.setWidth(@stageTotalWidth / 2 - 2)
 
-      # select the recording actor on the right side so the user
-      # can jump into changing variables
-      @selectActor(@stagePane2.actorMatchingDescriptor(@recordingActor.descriptor()))
+      @selectActor(@stagePane2.actorMatchingDescriptor(@selectedActor.descriptor()))
+      @recordingRule.editing = true
 
 
   exitRecordingMode: () ->
@@ -265,85 +273,38 @@ class GameManager
     @stagePane1.setWidth(@stageTotalWidth)
     @stagePane2.setWidth(0)
 
-    @selectActor(@recordingActor)
-    @recordingActor = null
+    @selectActor(@recordingRule.actor)
+    @recordingRule = null
 
 
   recordingHandleDragged: (handle, finished = false) =>
-    @extent = @mainStage.recordingExtent
-    @extent.left = Math.min(@recordingActor.worldPos.x, handle.worldPos.x + 1, @extent.right) if handle.side == 'left'
-    @extent.right = Math.max(@recordingActor.worldPos.x, @extent.left, handle.worldPos.x - 1) if handle.side == 'right'
-    @extent.top = Math.min(@recordingActor.worldPos.y, handle.worldPos.y + 1, @extent.bottom) if handle.side == 'top'
-    @extent.bottom = Math.max(@recordingActor.worldPos.y, @extent.top, handle.worldPos.y - 1) if handle.side == 'bottom'
-    @stagePane1.setRecordingExtent(@extent)
-    @stagePane2.setRecordingExtent(@extent)
+    actor = @recordingRule.actor
 
+    extent = @mainStage.recordingExtent
+    extent.left = Math.min(actor.worldPos.x, handle.worldPos.x + 1, extent.right) if handle.side == 'left'
+    extent.right = Math.max(actor.worldPos.x, extent.left, handle.worldPos.x - 1) if handle.side == 'right'
+    extent.top = Math.min(actor.worldPos.y, handle.worldPos.y + 1, extent.bottom) if handle.side == 'top'
+    extent.bottom = Math.max(actor.worldPos.y, extent.top, handle.worldPos.y - 1) if handle.side == 'bottom'
 
-  computeRecordedRule: () ->
-    rule =
-      _id: Math.createUUID()
-      name: 'Untitled Rule',
-      scenario: []
-
-    extent = @stagePane1.recordingExtent
-    relX = @recordingActor.worldPos.x
-    relY = @recordingActor.worldPos.y
-    afterActors = []
-    coordStructs = {}
-
-    for x in [extent.left..extent.right]
-      for y in [extent.top..extent.bottom]
-        afterActors = afterActors.concat(@stagePane2.actorsAtPosition(new Point(x,y)) || [])
-
-    for x in [extent.left..extent.right]
-      for y in [extent.top..extent.bottom]
-        coord = "#{x - relX},#{y - relY}"
-        actors = @stagePane1.actorsAtPosition(new Point(x,y))
-        descriptors = []
-        for before in actors
-          struct = before.descriptor()
-          delete struct.position
-          delete struct._id
-
-          # find the matching actor in the after scene
-          after = _.find afterActors, (a) -> a._id == before._id
-
-          # determine changes and push them onto the descriptor
-          struct.actions = before.computeActionsToBecome(after)
-          descriptors.push(struct)
-
-          # remove the after actor so it can no longer be referenced.
-          # this helsp us determine what has been added in the end
-          afterActors = _.reject afterActors, (a) -> a._id == before._id
-
-        coordStructs[coord] = {coord:coord, descriptors: descriptors}
-        rule.scenario.push(coordStructs[coord])
-
-    for newActor in afterActors
-      coord = "#{newActor.worldPos.x - relX},#{newActor.worldPos.y - relY}"
-      coordStructs[coord].added ||= []
-      coordStructs[coord].added.push(newActor.descriptor())
-
-    rule
+    @recordingRule.updateScenario(@mainStage, extent)
+    @stagePane1.setRecordingExtent(extent)
+    @stagePane2.setRecordingExtent(extent)
 
 
   saveRecording: () ->
-    # first, identify changes to each actor we started with
-    rule = @computeRecordedRule()
-
     # okay cool - now add the rule to the actor definition
-    @recordingActor.definition.addRule(rule)
+    @recordingRule.save();
     @exitRecordingMode()
 
 
   # -- Helper Methods -- #
 
-  renderRuleScenario: (scenario, applyActions = false) ->
+  renderRule: (rule, applyActions = false) ->
     # Creating a random background based on the 3 layers available in 3 versions
     @renderingStage.addChild(new Bitmap(@content.imageNamed('Layer0_0')))
 
     xmin = xmax = ymin = ymax = 0
-    for block in scenario
+    for block in rule.scenario
       coord = Point.fromString(block.coord)
       xmin = Math.min(xmin, coord.x)
       xmax = Math.max(xmax, coord.x)
@@ -353,24 +314,31 @@ class GameManager
     @renderingStage.canvas.width = (xmax - xmin + 1) * Tile.WIDTH
     @renderingStage.canvas.height = (ymax - ymin + 1) * Tile.HEIGHT
 
-    for block in scenario
-      coord = Point.fromString(block.coord)
-      for descriptor in block.descriptors
-        actor = window.Game.library.instantiateActorFromDescriptor(descriptor)
-        actor.nextPos = new Point(-xmin + coord.x, -ymin + coord.y)
-        actor.tick()
-        actor.applyActions(descriptor.actions) if applyActions
-        actor.tick()
+    # lay out the before state and apply any rules that apply to
+    # the actors currently on the board
+
+    for block in rule.scenario
+      descriptors = _.map block.refs, (ref) -> rule.descriptors[ref]
+      c = Point.fromString(block.coord)
+
+      for descriptor in descriptors
+        actor = window.Game.library.instantiateActorFromDescriptor(descriptor, new Point(-xmin + c.x, -ymin + c.y))
         @renderingStage.addChild(actor)
 
-      continue unless block.added
-      for descriptor in block.added
-        descriptor = JSON.parse(JSON.stringify(descriptor))
-        descriptor.position = new Point(-xmin + coord.x, -ymin + coord.y)
-        actor = window.Game.library.instantiateActorFromDescriptor(descriptor)
-        actor.tick()
-        @renderingStage.addChild(actor)
+        if applyActions && rule.actions
+          for action in rule.actions
+            console.log(rule, action)
+            if action.coord == block.coord && actor.matchesDescriptor(rule.descriptors[action.ref])
+              actor.applyRuleAction(action)
+              actor.tick()
 
+    # apply any non-actor actions
+    if applyActions && rule.actions
+      for action in rule.actions
+        if action.type == 'create'
+          c = Point.fromString(action.coord)
+          actor = window.Game.library.instantiateActorFromDescriptor(descriptor, new Point(-xmin + c.x, -ymin + c.y))
+          @renderingStage.addChild(actor)
 
 
     @renderingStage.update()

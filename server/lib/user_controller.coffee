@@ -72,17 +72,20 @@ class UserController
                     name: 'Move Left',
                     scenario: [{
                       coord:"-1,0",
-                      descriptors: false
+                      refs: []
                     },{
                       coord:"0,0",
-                      descriptors: [{
-                        identifier: 'dude'
-                        actions: [{
-                          type:"move",
-                          delta:"-1,0"
-                        }]
-                      }]
+                      refs: ['a']
+                    }],
+                    actions: [{
+                      coord:"0,0",
+                      ref: "a",
+                      type:"move",
+                      delta:"-1,0"
                     }]
+                    descriptors: {
+                      'a': { identifier: 'dude' }
+                    }
                   }
                 ]
               }
@@ -96,71 +99,25 @@ class UserController
             code:39,
             rules: [
               {
-                _id: '666'
-                name: 'Move Right',
-                scenario: [{
-                  coord:"1,0",
-                  descriptors: false
-                },{
-                  coord:"0,0",
-                  descriptors: [{
-                    identifier: 'dude'
-                    actions: [{
-                      type:"move",
-                      delta:"1,0"
-                    }]
-                  }]
-                }]
-              }
-            ]
-          },
-          {
-            _id: '444'
-            type: 'group-event'
-            event: 'idle',
-            rules: [
-              {
-                _id: '555'
-                type: 'group-flow',
-                behavior: 'random',
-                name: 'Wander Up & Down',
-                rules: [
-                  {
-                    _id: '777'
-                    name: 'Move Up',
-                    scenario: [{
-                      coord:"0,-1",
-                      descriptors: false
-                    },{
-                      coord:"0,0",
-                      descriptors: [{
-                        identifier: 'dude'
-                        actions: [{
-                          type:"move",
-                          delta:"0,-1"
-                        }]
-                      }]
-                    }]
-                  },
-                  {
-                    _id: '999'
-                    name: 'Move Down',
-                    scenario: [{
-                      coord:"0,1",
-                      descriptors: false
-                    },{
-                      coord:"0,0",
-                      descriptors: [{
-                        identifier: 'dude'
-                        actions: [{
-                          type:"move",
-                          delta:"0,1"
-                        }]
-                      }]
-                    }]
+                  _id: '002'
+                  name: 'Move Right',
+                  scenario: [{
+                    coord:"1,0",
+                    refs: []
+                  },{
+                    coord:"0,0",
+                    refs: ['a']
+                  }],
+                  actions: [{
+                    coord:"0,0",
+                    ref: "a",
+                    type:"move",
+                    delta:"1,0"
+                  }],
+                  descriptors: {
+                    'a': { identifier: 'dude' }
                   }
-                ]
-              }
+                }
             ]
           }
         ]
@@ -222,8 +179,11 @@ class UserController
   getActor: (identifier, callback) ->
     return callback(new Error('Permission Denied')) if !@username
     rdb.get "u:#{@username}-a:#{identifier}", (err, result) =>
-      result = JSON.parse(result) if result
-      result = {identifier: identifier} if !result || Object.keys(result).length == 0
+      if result
+        result = JSON.parse(result)
+      else
+        result = {identifier: identifier} if !result || Object.keys(result).length == 0
+        result = UserController.DEFAULT_ACTORS[identifier] if UserController.DEFAULT_ACTORS[identifier]
       callback(err, result)
 
 

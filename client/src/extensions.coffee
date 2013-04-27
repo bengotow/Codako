@@ -39,6 +39,9 @@ Point.sum = (a,b) ->
 Point.dif = (a,b) ->
   new Point(a.x - b.x, a.y - b.y)
 
+Point::isInside = (rect) ->
+  rect.left <= @x && rect.top <= @y && rect.right >= @x && rect.bottom >= @y
+
 Point::isEqual = (coord) ->
   coord.x == @x && coord.y == @y
 
@@ -79,3 +82,11 @@ window.hsvToRgb = (h, s, v) ->
     return [r * 255, g * 255, b * 255]
 
 
+window.withTempCanvas = (w, h, func) ->
+  canvas = document.createElement("canvas")
+  canvas.width = w
+  canvas.height = h
+  document.body.appendChild(canvas)
+  ret = func(canvas, canvas.getContext("2d"))
+  document.body.removeChild(canvas)
+  ret

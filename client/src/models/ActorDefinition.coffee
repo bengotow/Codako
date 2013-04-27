@@ -10,6 +10,7 @@ class ActorDefinition
       animations: { idle: [0,0] }
       animation_names: { idle: 'Idle' }
     @spritesheetObj = null
+    @spritesheetIconCache = {}
     @img = null
 
     @rules = []
@@ -36,9 +37,23 @@ class ActorDefinition
     @spritesheetObj
 
 
+  iconForAppearance: (appearance, width, height) ->
+    key = "#{appearance}:#{width}:#{height}"
+    return @spritesheetIconCache[key] if @spritesheetIconCache[key]
+
+    window.withTempCanvas width, height, (canvas, context) =>
+      spritesheet = @spritesheetInstance()
+      frame = spritesheet.getFrame(spritesheet.getAnimation(appearance).frames[0])
+      context.drawImage(frame.image, frame.rect.x, frame.rect.y, frame.rect.width, frame.rect.height, 0, 0, width, height)
+      @spritesheetIconCache[key] = canvas.toDataURL()
+
+    @spritesheetIconCache[key]
+
+
   rebuildSpritesheetInstance: () ->
     old = @spritesheetObj
     @spritesheetObj = null
+    @spritesheetIconCache = {}
     @spritesheetInstance()
     for key, value of @spritesheetObj
       old[key] = value

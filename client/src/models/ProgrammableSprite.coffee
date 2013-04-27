@@ -87,7 +87,7 @@ class ProgrammableSprite extends Sprite
 
     else if @checkScenario(rule.scenario)
       @applied[rule._id] = true
-      @applyScenario(rule.scenario)
+      @applyRule(rule)
 
     else
       @applied[rule._id] = false
@@ -98,7 +98,7 @@ class ProgrammableSprite extends Sprite
   checkScenario: (scenario) ->
     for block in scenario
       pos = Point.sum(@worldPos, Point.fromString(block.coord))
-      descriptors = block.descriptors
+      descriptors = _.map block.refs, (ref) -> block.descriptors[ref]
       return false unless window.Game.actorsAtPositionMatchDescriptors(pos, descriptors)
     true
 
@@ -114,42 +114,36 @@ class ProgrammableSprite extends Sprite
     false
 
 
-  applyScenario: (scenario) ->
-    for block in scenario
-      pos = Point.sum(@worldPos, Point.fromString(block.coord))
-      if block.descriptors
-        for descriptor in block.descriptors
-          continue unless descriptor.actions
-          actor = window.Game.actorMatchingDescriptor(descriptor, window.Game.actorsAtPosition(pos))
-          actor.applyActions(descriptor.actions) if actor
-
-      if block.added
-        for descriptor in block.added
-          descriptor = JSON.parse(JSON.stringify(descriptor))
-          pos = @stage.wrappedPosition(pos) if @stage
-          descriptor.position = pos
-          actor = window.Game.addActor(descriptor)
+  applyRule: (rule) ->
+    for action in rule.actions
+      descriptor = rule.descriptors[action.ref]
+      pos = Point.sum(@worldPos, Point.fromString(action.coord))
+      actor = window.Game.actorMatchingDescriptor(descriptor, window.Game.actorsAtPosition(pos))
+      if actor
+        actor.applyRuleAction(descriptor.actions)
+      else
+        pos = @stage.wrappedPosition(pos) if @stage
+        actor = window.Game.addActor(descriptor, pos)
 
 
-  applyActions: (actions) ->
-    return unless actions
-    for action in actions
-      if action.type == 'move'
-        @nextPos = Point.sum(@nextPos, Point.fromString(action.delta))
-        @nextPos = @stage.wrappedPosition(@nextPos) if @stage
+  applyRuleAction: (action) ->
+    return unless action
+    if action.type == 'move'
+      @nextPos = Point.sum(@nextPos, Point.fromString(action.delta))
+      @nextPos = @stage.wrappedPosition(@nextPos) if @stage
 
-      if action.type == 'deleted'
-        @stage.removeActor(@) if @stage
-        @nextPos = new Point(-100,-100)
+    if action.type == 'deleted'
+      @stage.removeActor(@) if @stage
+      @nextPos = new Point(-100,-100)
 
-      if action.type == 'appearance'
-        @setAppearance(action.after)
+    if action.type == 'appearance'
+      @setAppearance(action.after)
 
-      if action.type == 'variable-incr'
-        @variableValues[action.id] = @variableValue(action.id) + action.increment / 1
+    if action.type == 'variable-incr'
+      @variableValues[action.id] = @variableValue(action.id) + action.increment / 1
 
-      if action.type == 'variable-set'
-        @variableValues[action.id] = action.after / 1
+    if action.type == 'variable-set'
+      @variableValues[action.id] = action.after / 1
 
 
   computeActionsToBecome: (after) =>
@@ -202,10 +196,9 @@ class ProgrammableSprite extends Sprite
 
   dropped: (point) ->
     # overridden to add other drop behavior
-    @worldPos = @nextPos = point
     @dragging = false
     @alpha = 1
-    window.Game.onActorDragged(@)
+    window.Game.onActorDragged(@, @stage, point)
 
 
 window.ProgrammableSprite = ProgrammableSprite

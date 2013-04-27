@@ -421,14 +421,26 @@ h4 {
 
 .controls {
   .panel {
-    width:396px;
-    height:120px;
+    width:386px;
+    padding:5px;
+    height:150px;
     display:inline-block;
     background-color:#eee;
     position:relative;
     border:1px solid #ccc;
-    top:-120px;
+    top:-160px;
+    text-align:left;
+    overflow:scroll;
 
+    ul {
+      list-style-type:none;
+      margin-left:5px;
+      border-top:1px solid #ccc;
+      li {
+        border-bottom:1px solid #ccc;
+        line-height:40px;
+      }
+    }
     .slot {
       width:100px;
       display:inline-block;

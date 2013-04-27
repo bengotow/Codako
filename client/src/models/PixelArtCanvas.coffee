@@ -586,8 +586,7 @@ class PixelArtCanvas
     totalHeight = Math.max(@image.height, y + Tile.HEIGHT)
 
     url = false
-    @_withTempCanvas totalWidth, totalHeight, (canvas) =>
-      context = canvas.getContext("2d")
+    window.withTempCanvas totalWidth, totalHeight, (canvas, context) =>
       context.drawImage(@image, 0, 0) if @image
       context.putImageData(@imageData, x, y)
       url = canvas.toDataURL()
@@ -595,15 +594,15 @@ class PixelArtCanvas
     {data: url, width: totalWidth}
 
   prepareDataForDisplayedFrame: () ->
-    @_withTempCanvas Tile.WIDTH, Tile.HEIGHT, (canvas) =>
+    window.withTempCanvas Tile.WIDTH, Tile.HEIGHT, (canvas, context) =>
       [x, y] = @coordsForFrame(@imageDisplayedFrame)
-      context = canvas.getContext("2d")
       context.imageSmoothingEnabled = false
       context.clearRect(0,0, @width, @height)
       context.drawImage(@image, -x, -y) if @image
       @imageData = context.getImageData(0, 0, canvas.width, canvas.height)
     @_extendImageData(@imageData)
     @imageData
+
 
     # this just restores all persistent stuff to its default values... FUN :D
   cleanup: () =>
@@ -627,15 +626,6 @@ class PixelArtCanvas
       for x in [startX..endX-1]
         for y in [startY..endY-1]
           @fillPixel( x, y, 'rgba(0,0,0,0)' )
-
-
-  _withTempCanvas: (w, h, func) ->
-    canvas = document.createElement("canvas")
-    canvas.width = w
-    canvas.height = h
-    document.body.appendChild(canvas)
-    func(canvas)
-    document.body.removeChild(canvas)
 
 
 

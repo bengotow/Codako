@@ -26,7 +26,6 @@ class LibraryManager
     return callback(null) if @definitions[identifier]
     @outstanding += 1
     @definitionReadyCallbacks[identifier] = callback
-    console.log(@definitionReadyCallbacks)
     window.Socket.emit 'get-actor', {identifier: identifier}
 
 
@@ -50,13 +49,14 @@ class LibraryManager
 
   # -- Using Actor Descriptors to Reference Actors ---#
 
-  instantiateActorFromDescriptor: (descriptor, level = null) ->
+  instantiateActorFromDescriptor: (descriptor, initial_position = null, level = null) ->
     ident = descriptor.identifier
     def = @definitions[ident]
     return false unless def
 
     pos = new Point(-1,-1)
     pos = Point.fromHash(descriptor.position) if descriptor.position
+    pos = initial_position if initial_position
 
     model = new ProgrammableSprite(ident, pos, def.size, level)
     model.setSpriteSheet(def.spritesheetInstance())
