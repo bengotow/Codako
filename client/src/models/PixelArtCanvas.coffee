@@ -341,6 +341,16 @@ class PixelArtCanvas
     if ev.keyCode == 86 and ev.metaKey
       @paste()
 
+    #horizontal flips on drag buffer.
+    if ev.keyCode == 72# and ev.metaKey
+      return unless @dragData
+      @flipPixelsHorizontal( @dragData.data )
+
+    #vertically flip drag buffer.
+    if ev.keyCode == 74# and ev.metaKey
+      return unless @dragData
+      @flipPixelsVertical( @dragData.data )
+
     if ev.keyCode == 90 and ev.metaKey and ev.shiftKey
       @redo()
       window.rootScope.$apply() unless window.rootScope.$$phase
@@ -492,6 +502,36 @@ class PixelArtCanvas
         a = data[(y * dataWidth + x) * 4 + 3]
         target.fillPixel(x+offsetX,y+offsetY,"rgba(#{r},#{g},#{b},#{a})") if a > 0
 
+  flipPixelsHorizontal: (data, startX=0, startY=0, endX=Tile.WIDTH, endY=Tile.HEIGHT) ->
+    #iterate through all pixels, and swap the values of each.
+    #debugger
+    width = (endX - startX)
+    for x in [startX..startX+(width/2)]
+      for y in [startY..endY]
+        #Determine the indicies for both the current, and swapped pixels
+        indexA = (y*width + x) * 4
+        indexB = (y*width + (width-x)) * 4
+        for channel in [0..3]
+          #Get the pixel color of the original pixel
+          valueA = data[indexA+channel]
+          data[indexA+channel] = data[indexB+channel]
+          data[indexB+channel] = valueA
+
+  flipPixelsVertical: (data, startX=0, startY=0, endX=Tile.WIDTH, endY=Tile.HEIGHT) ->
+    #iterate through all pixels, and swap the values of each.
+    #debugger
+    width = (endX - startX)
+    height = (endY - startY)
+    for x in [startX..endX]
+      for y in [startY..startY+(height/2)]
+        #Determine the indicies for both the current, and swapped pixels
+        indexA = (y*width + x) * 4
+        indexB = ((height-y)*width + x) * 4
+        for channel in [0..3]
+          #Get the pixel color of the original pixel
+          valueA = data[indexA+channel]
+          data[indexA+channel] = data[indexB+channel]
+          data[indexB+channel] = valueA
 
   copyPixelsFromData: (data, target, startX=0, startY=0, endX=Tile.WIDTH, endY=Tile.HEIGHT, dataWidth=Tile.WIDTH) ->
     # CONSIDER REVISION
