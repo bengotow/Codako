@@ -145,15 +145,15 @@
           <ul>
             <li class="condition" ng-repeat="check in recording_checks()">
               <div droppable='{"scope":"variable"}' class="slot">{{check.variable}}</div>
-
               <div class="btn-group">
                 <button ng-click="set_speed(1000)" class="{{class_for_btn(1000==speed())}}"> > </button>
                 <button ng-click="set_speed(500)" class="{{class_for_btn(500==speed())}}"> = </button>
                 <button ng-click="set_speed(200)" class="{{class_for_btn(200==speed())}}"> < </button>
               </div>
-
               <input class="slot" value="{{check.value}}"/>
-
+            </li>
+            <li class="condition" droppable='{"scope":"variable"}' >
+              <div>Drag and drop a variable here to add a check</div>
             </li>
           </ul>
         </div>
@@ -169,6 +169,23 @@
               <div ng-switch-when="appearance">
                 Change Appearance of <code><img src="{{icon_for_referenced_actor(action.ref)}}" width="26" height="26">{{name_for_referenced_actor(action.ref)}}</code> to <code><img src="{{icon_for_referenced_actor(action.ref,action.to)}}" width="26" height="26">{{name_for_appearance(action.to)}}</code>
               </div>
+              <div ng-switch-when="variable">
+                <select ng-model="action.operation"><option value="add">Add</option><option value="subtract">Subtract</option><option value="set">Set</option></select>
+                <ng-switch on="action.operation">
+                  <span ng-switch-when="set">
+                     <code>{{name_for_variable(action.variable)}}</code> of <code><img src="{{icon_for_referenced_actor(action.ref)}}" width="26" height="26">{{name_for_referenced_actor(action.ref)}}</code> to <input type="text" ng-model="action.value"/>
+
+                  </span>
+                  <span ng-switch-when="add">
+                     <input type="text" ng-model="action.value"/> to <code>{{name_for_variable(action.variable)}}</code> of <code><img src="{{icon_for_referenced_actor(action.ref)}}" width="26" height="26">{{name_for_referenced_actor(action.ref)}}</code>
+                  </span>
+
+                  <span ng-switch-when="subtract">
+                     <input type="text" ng-model="action.value"/> from <code>{{name_for_variable(action.variable)}}</code> of <code><img src="{{icon_for_referenced_actor(action.ref)}}" width="26" height="26">{{name_for_referenced_actor(action.ref)}}</code>
+                  </span>
+                </ng-switch>
+              </div>
+
               <div ng-switch-when="create">
                 Create a new <code><img src="{{icon_for_referenced_actor(action.ref)}}" width="26" height="26">{{name_for_referenced_actor(action.ref)}}</code>
               </div>
@@ -293,7 +310,7 @@
             Select an actor in your library or on the stage to define it's variables.
           </div>
 
-          <div draggable='{"revert":"invalid","scope":"variable"}' class="variable-box" ng-repeat="(id, variable) in variables()" data-identifier="{{id}}" style="{{css_for_variable(variable)}}" ng-click="variable_clicked(variable)">
+          <div draggable='{"revert":"invalid","scope":"variable"}' class="variable-box" ng-repeat="(id, variable) in variables()" data-identifier="variable:{{id}}" style="{{css_for_variable(variable)}}" ng-click="variable_clicked(variable)">
             <div class="name" ng-dblclick="edit_variable_attr($event, 'name')">{{variable.name}}</div>
             <input class="name" style="display:none;" ng-blur="save_variable_attr($event, 'name')" value="{{variable.name}}">
 

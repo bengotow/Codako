@@ -43,6 +43,10 @@ App.directive('draggable', function() {
         args = { opacity: 0.7, helper: "clone" };
       else
         args = JSON.parse(args);
+
+      args['start'] = function(){
+        $(this).data("origPosition",$(this).position());
+      }
       element.draggable(args);
     }
   };
@@ -64,7 +68,9 @@ App.directive('droppable', function($compile) {
       args['drop'] = function(event,ui) {
         dropScope = angular.element(event.target).scope()
         if (dropScope.ondrop)
-          dropScope.ondrop(event,ui)
+          if (!dropScope.ondrop(event,ui))
+            ui.draggable.animate(ui.draggable.data("origPosition"),0);
+
         dropScope.$apply();
       }
 

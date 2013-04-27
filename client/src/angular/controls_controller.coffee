@@ -63,7 +63,7 @@ ControlsCtrl = ($scope) ->
     $scope.control_set = 'testing'
 
   $scope.recording_checks = () ->
-    [{variable: ''}];# + window.Game?.recordingRule?.checks
+    window.Game?.recordingRule?.checks
 
   $scope.recording_actions = () ->
     window.Game?.recordingRule?.actions
@@ -117,11 +117,19 @@ ControlsCtrl = ($scope) ->
         return definition.nameForAppearance(id)
     return "Unknown"
 
+  $scope.name_for_variable = (id) ->
+    for key,definition of window.Game.library.definitions
+      entry = definition.variables()[id]
+      continue unless entry
+      return entry.name
+
   $scope.save_recording_check_value = (id) ->
 
   $scope.ondrop = (event, ui) ->
     variableID = ui.draggable.data('identifier')
-    return unless variableID[0..7] == 'variable'
+    return unless variableID[0..8] == 'variable:'
+
+    variableID = variableID[9..-1]
     variable = window.Game.selectedDefinition.variables()[variableID]
     variableValue = window.Game.selectedActor.variableValue(variableID)
 

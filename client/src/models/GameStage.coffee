@@ -61,6 +61,8 @@ class GameStage extends Stage
 
   prepareWithData: (json, callback) ->
     @removeAllChildren()
+    @recordingMasks = []
+    @recordingHandles = {}
     @actors = []
 
     @width = json['width']
@@ -103,26 +105,22 @@ class GameStage extends Stage
       @statusMessage = null
 
 
-  setRecordingExtent: (extent) ->
-    # Remove existing elements
-    console.log('Updating Recording Extent', @recordingExtent)
-    @recordingExtent = extent
+  setRecordingExtent: (extent, maskStyle = @recordingMaskStyle) ->
+    styleChanged = (maskStyle != @recordingMaskStyle)
+    @setRecordingExtent(null) if styleChanged
 
-    # for obj in @recordingMasks
-    #   @removeChild(obj)
-    # @recordingMasks = []
+    @recordingMaskStyle = maskStyle
+    @recordingExtent = extent
 
     for key, obj of @recordingHandles
       @removeChild(obj)
     @recordingHandles = {}
 
-    return unless extent
-
     # Add gray mask outside of the recording region
     usedMasks = 0
     for x in [0..@width]
       for y in [0..@height]
-        if (x < extent.left || x > extent.right) || (y < extent.top || y > extent.bottom)
+        if extent && ((x < extent.left || x > extent.right) || (y < extent.top || y > extent.bottom))
           if usedMasks < @recordingMasks.length
             sprite = @recordingMasks[usedMasks]
           else
@@ -137,8 +135,10 @@ class GameStage extends Stage
     if usedMasks < @recordingMasks.length
       for i in [usedMasks..@recordingMasks.length - 1]
         @removeChild(@recordingMasks[i])
-    @recordingMasks = @recordingMasks[0..usedMasks - 1]
 
+    @recordingMasks = @recordingMasks.slice(0, usedMasks)
+
+    return unless extent
 
     # Add the handles
     for side in ['top', 'left', 'right', 'bottom']
@@ -149,10 +149,6 @@ class GameStage extends Stage
     @centerOnRecordingRegion() if @recordingCentered
 
 
-  setRecordingMaskStyle: (type) ->
-    @recordingMaskStyle = type
-    @setRecordingExtent(@recordingExtent)
-
 
   setRecordingCentered: (centered) ->
     @recordingCentered = centered
@@ -161,8 +157,9 @@ class GameStage extends Stage
 
 
   centerOnRecordingRegion: () ->
-    @offsetTarget.x = (4.5 - @recordingExtent.left - (@recordingExtent.right - @recordingExtent.left) / 2) * Tile.WIDTH
-    @offsetTarget.y = (4 - @recordingExtent.top - (@recordingExtent.bottom - @recordingExtent.top) / 2) * Tile.HEIGHT
+    if @recordingExtent
+      @offsetTarget.x = (4.5 - @recordingExtent.left - (@recordingExtent.right - @recordingExtent.left) / 2) * Tile.WIDTH
+      @offsetTarget.y = (4 - @recordingExtent.top - (@recordingExtent.bottom - @recordingExtent.top) / 2) * Tile.HEIGHT
 
 
   centerOnEntireCanvas: () ->

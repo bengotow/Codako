@@ -29,13 +29,13 @@ VariablesCtrl = ($scope) ->
 
   $scope.save_variable_attr = (event, attr) ->
     variableEl = $(event.target).parent()
-    id = variableEl.data('identifier')
+    id = variableEl.data('identifier')['variable:'.length..-1]
     value = $(event.target).val()
 
     value = 'Untitled' if value?.length == 0 && attr = 'name'
 
     if attr == 'value' && window.Game.selectedActor
-      window.Game.selectedActor.variableValues[id] = value
+      window.Game.onActorVariableValueEdited(window.Game.selectedActor, id, value)
     else
       definition = window.Game.selectedDefinition
       definition.variables()[id][attr] = value
@@ -64,7 +64,7 @@ VariablesCtrl = ($scope) ->
     ui.draggable.css('left', "#{left * $scope.var_width}px");
     ui.draggable.css('top', "#{top * $scope.var_height}px");
 
-    id = ui.draggable.data('identifier')
+    id = ui.draggable.data('identifier')['variable:'.length..-1]
     variable = window.Game.selectedDefinition.variables()[id]
     variable.x = left
     variable.y = top

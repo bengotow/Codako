@@ -202,6 +202,9 @@ class GameManager
 
     @resetToolAfterAction()
 
+  onActorVariableValueEdited: (actor, varName, val) ->
+    @recordingRule.incorporate(actor, 'variable', {variable: varName, value: val}) if @recordingRule
+    actor.variableValues[varName] = val
 
   onActorDoubleClicked: (actor) ->
     @selectActor(actor)
@@ -242,8 +245,7 @@ class GameManager
     @recordingRule = new Rule(actor)
     @recordingRule.updateScenario(@mainStage, initialExtent)
 
-    @mainStage.setRecordingMaskStyle('masked')
-    @mainStage.setRecordingExtent(initialExtent)
+    @mainStage.setRecordingExtent(initialExtent, 'masked')
     @mainStage.setRecordingCentered(false)
     @selectActor(actor)
 
@@ -251,11 +253,9 @@ class GameManager
   focusAndStartRecording: () ->
     @stagePane1.draggingEnabled = false
     @stagePane2.prepareWithData @mainStage.saveData(), () =>
-      @stagePane2.setRecordingExtent(@stagePane1.recordingExtent)
-
       for stage in [@stagePane1, @stagePane2]
+        stage.setRecordingExtent(@stagePane1.recordingExtent, 'white')
         stage.setRecordingCentered(true)
-        stage.setRecordingMaskStyle('white')
 
       @stagePane1.setWidth(@stageTotalWidth / 2 - 2)
       @stagePane2.setWidth(@stageTotalWidth / 2 - 2)
