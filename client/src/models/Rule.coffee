@@ -8,7 +8,6 @@ class Rule
     @actor = actor
     @actions = []
     @editing = false
-    @checks = []
 
 
   prepareForEditing: () ->
@@ -30,8 +29,15 @@ class Rule
     struct = actor.descriptor()
     struct.actor_id_during_recording = actor._id
     struct.offset = "#{actor.worldPos.x - @actor.worldPos.x},#{actor.worldPos.y - @actor.worldPos.y}"
-    uuid = Math.createUUID()
+    struct.variableConstraints = {}
+    for variable, value of struct.variableValues
+      struct.variableConstraints[variable] = {value: value, comparator: "="}
+
     delete struct._id
+    delete struct.position
+    delete struct.variableValues
+
+    uuid = Math.createUUID()
     @descriptors[uuid] = struct
     return uuid
 

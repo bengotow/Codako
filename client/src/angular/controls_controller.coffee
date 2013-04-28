@@ -62,11 +62,19 @@ ControlsCtrl = ($scope) ->
     window.Game.saveRecording()
     $scope.control_set = 'testing'
 
-  $scope.recording_checks = () ->
-    window.Game?.recordingRule?.checks
+  $scope.recording_descriptors = () ->
+    window.Game?.recordingRule?.descriptors
 
   $scope.recording_actions = () ->
     window.Game?.recordingRule?.actions
+
+  $scope.html_for_actor = (ref, possessive) ->
+    name = $scope.name_for_referenced_actor(ref)
+    name += "'s" if possessive
+    "<code><img src=\"" + $scope.icon_for_referenced_actor(ref) + "\">" + name + "</code>"
+
+  $scope.html_for_appearance = (ref, appearance) ->
+    "<code><img src=\"" + $scope.icon_for_referenced_actor(ref,appearance) + "\">" + $scope.name_for_appearance(appearance) + "</code>"
 
   $scope.icon_for_referenced_actor = (ref, appearance_id = null) ->
     descriptor = window.Game?.recordingRule?.descriptors[ref]

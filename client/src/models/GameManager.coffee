@@ -289,6 +289,7 @@ class GameManager
     @recordingRule.updateScenario(@mainStage, extent)
     @stagePane1.setRecordingExtent(extent)
     @stagePane2.setRecordingExtent(extent)
+    window.rootScope.$apply() unless window.rootScope.$$phase
 
 
   saveRecording: () ->

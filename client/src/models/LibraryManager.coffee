@@ -63,6 +63,7 @@ class LibraryManager
     model._id = descriptor._id || Math.createUUID()
     model.definition = def
     model.variableValues = _.clone(descriptor.variableValues)
+    model.variableValues ||= {}
     model.setAppearance(descriptor.appearance)
     model
 

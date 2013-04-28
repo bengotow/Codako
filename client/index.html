@@ -141,9 +141,15 @@
     <div class="controls" ng-show="control_set == 'recording'" style="text-align:center;">
       <div style="position:absolute; height:0;">
         <div class="panel conditions">
-          <h4>And Check:</h4>
+          <h4>When the picture matches and:</h4>
           <ul>
-            <li class="condition" ng-repeat="check in recording_checks()">
+            <div ng-repeat="(ref,descriptor) in recording_descriptors()">
+              <li class="condition" ng-show="descriptor.appearance"><span ng-bind-html-unsafe="html_for_actor(ref,true)"></span> appearance is <span ng-bind-html-unsafe="html_for_appearance(ref)"></span></li>
+              <li class="condition" ng-repeat="(variable, constraint) in descriptor.variableConstraints">
+                <span ng-bind-html-unsafe="html_for_actor(ref,true)"></span> variable <code>{{name_for_variable(variable)}}</code> is <select style="width:40px; font-weight:bold;" ng-model="constraint.comparator"><option value="=">=</option><option value="<"><</option><option value=">">></option></select> {{constraint.value}}
+              </li>
+            </div>
+<!--             <li class="condition" ng-repeat="check in recording_checks()">
               <div droppable='{"scope":"variable"}' class="slot">{{check.variable}}</div>
               <div class="btn-group">
                 <button ng-click="set_speed(1000)" class="{{class_for_btn(1000==speed())}}"> > </button>
@@ -155,33 +161,31 @@
             <li class="condition" droppable='{"scope":"variable"}' >
               <div>Drag and drop a variable here to add a check</div>
             </li>
-          </ul>
+ -->          </ul>
         </div>
         <div class="panel actions">
-          <h4>Actions</h4>
-
+          <h4>It Should...</h4>
           <ul>
             <li class="action" ng-repeat="action in recording_actions()" ng-switch="action.type">
               <div ng-switch-when="move">
-                Move <code><img src="{{icon_for_referenced_actor(action.ref)}}" width="26" height="26">{{name_for_referenced_actor(action.ref)}}</code> to
-                <img src="{{icon_for_move(action.delta)}}" style="max-width:50px; max-height: 50px;">
+                Move <span ng-bind-html-unsafe="html_for_actor(action.ref)"></span> to <img src="{{icon_for_move(action.delta)}}">
               </div>
+
               <div ng-switch-when="appearance">
-                Change Appearance of <code><img src="{{icon_for_referenced_actor(action.ref)}}" width="26" height="26">{{name_for_referenced_actor(action.ref)}}</code> to <code><img src="{{icon_for_referenced_actor(action.ref,action.to)}}" width="26" height="26">{{name_for_appearance(action.to)}}</code>
+                Change Appearance of <span ng-bind-html-unsafe="html_for_actor(action.ref)"></span> to <span ng-bind-html-unsafe="html_for_appearance(action.ref, action.to)"></span>
               </div>
+
               <div ng-switch-when="variable">
-                <select ng-model="action.operation"><option value="add">Add</option><option value="subtract">Subtract</option><option value="set">Set</option></select>
+                <select style="width:80px;" ng-model="action.operation"><option value="add">Add</option><option value="subtract">Subtract</option><option value="set">Set</option></select>
                 <ng-switch on="action.operation">
                   <span ng-switch-when="set">
-                     <code>{{name_for_variable(action.variable)}}</code> of <code><img src="{{icon_for_referenced_actor(action.ref)}}" width="26" height="26">{{name_for_referenced_actor(action.ref)}}</code> to <input type="text" ng-model="action.value"/>
-
+                     <code>{{name_for_variable(action.variable)}}</code> of <span ng-bind-html-unsafe="html_for_actor(action.ref)"></span> to <input type="text" ng-model="action.value"/>
                   </span>
                   <span ng-switch-when="add">
-                     <input type="text" ng-model="action.value"/> to <code>{{name_for_variable(action.variable)}}</code> of <code><img src="{{icon_for_referenced_actor(action.ref)}}" width="26" height="26">{{name_for_referenced_actor(action.ref)}}</code>
+                     <input type="text" ng-model="action.value"/> to <code>{{name_for_variable(action.variable)}}</code> of <span ng-bind-html-unsafe="html_for_actor(action.ref)"></span>
                   </span>
-
                   <span ng-switch-when="subtract">
-                     <input type="text" ng-model="action.value"/> from <code>{{name_for_variable(action.variable)}}</code> of <code><img src="{{icon_for_referenced_actor(action.ref)}}" width="26" height="26">{{name_for_referenced_actor(action.ref)}}</code>
+                     <input type="text" ng-model="action.value"/> from <code>{{name_for_variable(action.variable)}}</code> of <span ng-bind-html-unsafe="html_for_actor(action.ref)"></span>
                   </span>
                 </ng-switch>
               </div>

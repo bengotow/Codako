@@ -179,6 +179,9 @@ class ActorDefinition
   variables: () ->
     @variableDefaults
 
+  variableIDs: () ->
+    _.map @variableDefaults, (item) -> item._id
+
   addVariable: () ->
     newID = Math.createUUID()
     @variableDefaults[newID] =
