@@ -215,7 +215,7 @@ class GameManager
     if @recordingRule
       return unless point.isInside(@mainStage.recordingExtent)
       @recordingRule.incorporate(actor, 'move', point)
-    actor.worldPos = actor.nextPos = point
+    actor.setWorldPos(point)
     if stage == @mainStage
       @save()
 

@@ -3,7 +3,7 @@ class Sprite extends BitmapAnimation
 
   constructor: (position, size) ->
     @worldPos = position
-    @nextPos = position
+    @previousPos = position
     @worldSize = size
     @elapsed = 0
     @selected = false
@@ -32,11 +32,17 @@ class Sprite extends BitmapAnimation
 
 
   tick: (elapsed) ->
-    if @nextPos
-      @worldPos = @nextPos
-      @x = @worldPos.x * Tile.WIDTH
-      @y = @worldPos.y * Tile.HEIGHT
+    @previousPos = null
+    @x = @worldPos.x * Tile.WIDTH
+    @y = @worldPos.y * Tile.HEIGHT
     @
+
+  setWorldPos: (p_or_x, y) ->
+    @previousPos ||= @worldPos
+    if y
+      @worldPos = new Point(p_or_x, y)
+    else
+      @worldPos = new Point(p_or_x.x, p_or_x.y)
 
 
   setSelected: (sel) ->

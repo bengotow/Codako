@@ -129,12 +129,13 @@ class ProgrammableSprite extends Sprite
   applyRuleAction: (action) ->
     return unless action
     if action.type == 'move'
-      @nextPos = Point.sum(@nextPos, Point.fromString(action.delta))
-      @nextPos = @stage.wrappedPosition(@nextPos) if @stage
+      p = Point.sum(@worldPos, Point.fromString(action.delta))
+      p = @stage.wrappedPosition(p) if @stage
+      @setWorldPos(p)
 
     if action.type == 'deleted'
       @stage.removeActor(@) if @stage
-      @nextPos = new Point(-100,-100)
+      @setWorldPos(-100,-100)
 
     if action.type == 'appearance'
       @setAppearance(action.after)

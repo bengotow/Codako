@@ -72,7 +72,7 @@ ComposeRuleCtrl = ($scope) ->
 
   $scope.actorFromScenarioDescriptor = (descriptor, x, y) ->
     actor = window.Game.library.instantiateActorFromDescriptor(descriptor)
-    actor.worldPos = actor.nextPos = new Point(x - $scope.extent.left, y - $scope.extent.top)
+    actor.setWorldPos(x - $scope.extent.left, y - $scope.extent.top)
     actor.tick()
     actor
 
