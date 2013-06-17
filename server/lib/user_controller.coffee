@@ -78,13 +78,12 @@ class UserController
                       refs: ['a']
                     }],
                     actions: [{
-                      coord:"0,0",
                       ref: "a",
                       type:"move",
                       delta:"-1,0"
                     }]
                     descriptors: {
-                      'a': { identifier: 'dude' }
+                      'a': { identifier: 'dude', offset:"0,0" }
                     }
                   }
                 ]
@@ -109,13 +108,12 @@ class UserController
                     refs: ['a']
                   }],
                   actions: [{
-                    coord:"0,0",
                     ref: "a",
                     type:"move",
                     delta:"1,0"
                   }],
                   descriptors: {
-                    'a': { identifier: 'dude' }
+                    'a': { identifier: 'dude', offset:"0,0" }
                   }
                 }
             ]

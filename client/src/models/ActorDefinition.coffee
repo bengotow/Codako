@@ -13,12 +13,20 @@ class ActorDefinition
     @spritesheetIconCache = {}
     @img = null
 
-    @rules = []
-    @ruleRenderCache = {}
-
     @[key] = value for key, value of json
     @spritesheet.width ||= Tile.WIDTH
     @spritesheet.animation_names ||= {}
+
+    @rules = []
+    @ruleRenderCache = {}
+
+    for ruleJSON in json['rules']
+      if ruleJSON['type'] == "group-flow"
+        @rules.push(new FlowGroupRule(@, ruleJSON))
+      if ruleJSON['type'] == "group-event"
+        @rules.push(new EventGroupRule(@, ruleJSON))
+      else
+        @rules.push(new Rule(@, ruleJSON))
 
     @
 
@@ -66,9 +74,12 @@ class ActorDefinition
       name: @name
       spritesheet: @spritesheet
       variableDefaults: @variableDefaults
-      rules: @rules
+      rules: []
 
-    console.log 'Saving Actor ', json
+    for rule in @rules
+      json.rules.push(rule.jsonRepresentation())
+
+    console.log 'Saving Actor ', json, JSON.stringify(json)
     window.Socket.emit 'put-actor', {identifier: @identifier, definition: json}
 
 

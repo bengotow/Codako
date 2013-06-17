@@ -294,7 +294,9 @@ class GameManager
 
   saveRecording: () ->
     # okay cool - now add the rule to the actor definition
-    @recordingRule.save();
+    actor = @recordingRule.actor
+    actor.definition.addRule(@recordingRule)
+
     @exitRecordingMode()
 
 
@@ -305,6 +307,8 @@ class GameManager
     @renderingStage.addChild(new Bitmap(@content.imageNamed('Layer0_0')))
 
     xmin = xmax = ymin = ymax = 0
+    created_actors = {}
+
     for block in rule.scenario
       coord = Point.fromString(block.coord)
       xmin = Math.min(xmin, coord.x)
@@ -317,29 +321,29 @@ class GameManager
 
     # lay out the before state and apply any rules that apply to
     # the actors currently on the board
+    @renderingStage.addActor = (ref) =>
+      descriptor = rule.descriptors[ref]
+      actor = window.Game.library.instantiateActorFromDescriptor(descriptor, new Point(-xmin + c.x, -ymin + c.y))
+      actor.tick()
+      @renderingStage.addChild(actor)
+      created_actors[ref] = actor
+
 
     for block in rule.scenario
-      descriptors = _.map block.refs, (ref) -> rule.descriptors[ref]
       c = Point.fromString(block.coord)
 
-      for descriptor in descriptors
-        actor = window.Game.library.instantiateActorFromDescriptor(descriptor, new Point(-xmin + c.x, -ymin + c.y))
-        @renderingStage.addChild(actor)
+      for ref in block.refs
+        @renderingStage.addActor(ref)
 
-        if applyActions && rule.actions
-          for action in rule.actions
-            console.log(rule, action)
-            if action.coord == block.coord && actor.matchesDescriptor(rule.descriptors[action.ref])
-              actor.applyRuleAction(action)
-              actor.tick()
-
-    # apply any non-actor actions
+    # apply any actions
     if applyActions && rule.actions
       for action in rule.actions
         if action.type == 'create'
-          c = Point.fromString(action.coord)
-          actor = window.Game.library.instantiateActorFromDescriptor(descriptor, new Point(-xmin + c.x, -ymin + c.y))
-          @renderingStage.addChild(actor)
+          @renderingStage.addActor(action.ref)
+        else
+          actor = created_actors[action.ref]
+          actor.applyRuleAction(action)
+          actor.tick()
 
 
     @renderingStage.update()

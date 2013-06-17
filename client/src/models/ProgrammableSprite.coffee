@@ -85,7 +85,7 @@ class ProgrammableSprite extends Sprite
     else if rule.type == 'group-flow'
       @applied[rule._id] = @tickRules(rule, rule.behavior)
 
-    else if @checkScenario(rule.scenario)
+    else if @checkRuleScenario(rule)
       @applied[rule._id] = true
       @applyRule(rule)
 
@@ -95,10 +95,10 @@ class ProgrammableSprite extends Sprite
     @applied[rule._id]
 
 
-  checkScenario: (scenario) ->
-    for block in scenario
+  checkRuleScenario: (rule) ->
+    for block in rule.scenario
       pos = Point.sum(@worldPos, Point.fromString(block.coord))
-      descriptors = _.map block.refs, (ref) -> block.descriptors[ref]
+      descriptors = _.map block.refs, (ref) -> rule.descriptors[ref]
       return false unless window.Game.actorsAtPositionMatchDescriptors(pos, descriptors)
     true
 
@@ -117,12 +117,12 @@ class ProgrammableSprite extends Sprite
   applyRule: (rule) ->
     for action in rule.actions
       descriptor = rule.descriptors[action.ref]
-      pos = Point.sum(@worldPos, Point.fromString(action.coord))
+      pos = Point.sum(@worldPos, Point.fromString(descriptor.offset))
+      pos = @stage.wrappedPosition(pos) if @stage
       actor = window.Game.actorMatchingDescriptor(descriptor, window.Game.actorsAtPosition(pos))
       if actor
-        actor.applyRuleAction(descriptor.actions)
+        actor.applyRuleAction(action)
       else
-        pos = @stage.wrappedPosition(pos) if @stage
         actor = window.Game.addActor(descriptor, pos)
 
 

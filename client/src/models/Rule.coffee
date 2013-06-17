@@ -1,6 +1,6 @@
 class Rule
 
-  constructor: (actor) ->
+  constructor: (actor, json) ->
     @_id = Math.createUUID()
     @name = 'Untitled Rule'
     @scenario = []
@@ -8,6 +8,7 @@ class Rule
     @actor = actor
     @actions = []
     @editing = false
+    @[key] = value for key, value of json
 
 
   prepareForEditing: () ->
@@ -64,10 +65,17 @@ class Rule
     delete @descriptors[uuid] for uuid,value of unusedDescriptors
 
 
-  save:() =>
-    @actor.definition.addRule(@)
+  jsonRepresentation: () =>
+    {
+      _id: @_id
+      name: @name
+      scenario: @scenario
+      descriptors: @descriptors
+      actions: @actions
+    }
 
-  actionMatching:(uuid, type, extras = null) =>
+
+  actionMatching: (uuid, type, extras = null) =>
     existing = _.find @actions, (action) ->
       action.ref == uuid && action.type == type && (!extras || extras(action))
     existing || {ref: uuid, type: type, unsaved: true}
