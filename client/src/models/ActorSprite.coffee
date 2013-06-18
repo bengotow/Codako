@@ -31,7 +31,14 @@ class ActorSprite extends Sprite
   matchesDescriptor: (descriptor) ->
     id_match = @identifier == descriptor.identifier
     appearance_match = @appearance == descriptor.appearance
-    return id_match && (appearance_match || !descriptor.appearance)
+    variable_failed = false
+    for id, constraint of descriptor.variableConstraints
+      value = @variableValue(id)
+      variable_failed = true if constraint.comparator == '=' && value != constraint.value
+      variable_failed = true if constraint.comparator == '>' && value <= constraint.value
+      variable_failed = true if constraint.comparator == '<' && value >= constraint.value
+
+    return id_match && !variable_failed && (appearance_match || !descriptor.appearance)
 
 
   setAppearance: (identifier = 'idle') ->
@@ -133,18 +140,21 @@ class ActorSprite extends Sprite
       p = @stage.wrappedPosition(p) if @stage
       @setWorldPos(p)
 
-    if action.type == 'deleted'
+    else if action.type == 'deleted'
       @stage.removeActor(@) if @stage
       @setWorldPos(-100,-100)
 
-    if action.type == 'appearance'
+    else if action.type == 'appearance'
       @setAppearance(action.after)
 
-    if action.type == 'variable-incr'
-      @variableValues[action.id] = @variableValue(action.id) + action.increment / 1
+    else if action.type == 'variable'
+      current = @variableValues[action.variable]
+      @variableValues[action.variable] = current/1 + action.value/1 if action.operation == 'add'
+      @variableValues[action.variable] = current/1 - action.value/1 if action.operation == 'subtract'
+      @variableValues[action.variable] = action.value/1 if action.operation == 'set'
 
-    if action.type == 'variable-set'
-      @variableValues[action.id] = action.after / 1
+    else
+      console.log('Not sure how to apply action', action)
 
 
   computeActionsToBecome: (after) =>
