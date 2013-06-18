@@ -14,6 +14,7 @@ LibraryCtrl = ($scope) ->
     window.Game.library.addActorDefinition actor, () ->
       window.Game.selectDefinition(actor)
       $scope.$apply()
+      $scope.$root.$broadcast('edit_appearance', {actor_definition: actor, identifier: 'idle'})
 
   $scope.select_definition = (def) ->
     if window.Game.tool == 'delete'

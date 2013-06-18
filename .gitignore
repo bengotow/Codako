@@ -9,7 +9,7 @@
 /client/src/models/XNARectangle.js
 /client/src/models/SquareMaskSprite.js
 /client/src/models/Sprite.js
-/client/src/models/ProgrammableSprite.js
+/client/src/models/ActorSprite.js
 /client/src/models/PixelArtCanvas.js
 /client/src/models/LibraryManager.js
 /client/src/models/HandleSprite.js

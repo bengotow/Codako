@@ -1,4 +1,4 @@
-class ProgrammableSprite extends Sprite
+class ActorSprite extends Sprite
 
   constructor: (identifier, position, size) ->
     @identifier = identifier
@@ -202,4 +202,4 @@ class ProgrammableSprite extends Sprite
     window.Game.onActorDragged(@, @stage, point)
 
 
-window.ProgrammableSprite = ProgrammableSprite
+window.ActorSprite = ActorSprite

@@ -58,7 +58,7 @@ class LibraryManager
     pos = Point.fromHash(descriptor.position) if descriptor.position
     pos = initial_position if initial_position
 
-    model = new ProgrammableSprite(ident, pos, def.size, level)
+    model = new ActorSprite(ident, pos, def.size, level)
     model.setSpriteSheet(def.spritesheetInstance())
     model._id = descriptor._id || Math.createUUID()
     model.definition = def
