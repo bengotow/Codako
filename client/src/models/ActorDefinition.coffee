@@ -151,7 +151,7 @@ class ActorDefinition
     # existing rules into an "idle" event group
     if !has_events
       idle_group = new EventGroupRule()
-      idle_group.rules.concat(@rules)
+      idle_group.rules = idle_group.rules.concat(@rules)
       @rules = [idle_group]
 
     new_group = new EventGroupRule()
