@@ -1,17 +1,17 @@
 class Rule
 
-  constructor: (actor, json) ->
+  constructor: (json) ->
     @_id = Math.createUUID()
     @name = 'Untitled Rule'
     @scenario = []
     @descriptors = {}
-    @actor = actor
     @actions = []
     @editing = false
     @[key] = value for key, value of json
 
 
-  prepareForEditing: () ->
+  prepareForEditing: (actor) ->
+    @actor = actor
     # this code needs to iterate through the blocks in the scenario, find
     # actor instances on the game stage that match the descriptors for that block,
     # and bind them together using actor_id_during_recording.
@@ -65,7 +65,7 @@ class Rule
     delete @descriptors[uuid] for uuid,value of unusedDescriptors
 
 
-  jsonRepresentation: () =>
+  descriptor: () =>
     {
       _id: @_id
       name: @name
@@ -134,4 +134,27 @@ class Rule
       @actions.push(action)
 
 
+Rule.inflateRules = (arr) ->
+  rules = []
+  return rules unless arr && arr instanceof Array
+
+  for json in arr
+    if json['type'] == "group-flow"
+      rules.push(new FlowGroupRule(json))
+    else if json['type'] == "group-event"
+      rules.push(new EventGroupRule(json))
+    else
+      rules.push(new Rule(json))
+
+  rules
+
+Rule.deflateRules = (arr) ->
+  rules = []
+  return rules unless arr && arr instanceof Array
+
+  for rule in arr
+    rules.push(rule.descriptor())
+  rules
+
 window.Rule = Rule
+

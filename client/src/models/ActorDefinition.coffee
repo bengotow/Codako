@@ -17,17 +17,8 @@ class ActorDefinition
     @spritesheet.width ||= Tile.WIDTH
     @spritesheet.animation_names ||= {}
 
-    @rules = []
+    @rules = Rule.inflateRules(json['rules'])
     @ruleRenderCache = {}
-
-    for ruleJSON in json['rules']
-      if ruleJSON['type'] == "group-flow"
-        @rules.push(new FlowGroupRule(@, ruleJSON))
-      if ruleJSON['type'] == "group-event"
-        @rules.push(new EventGroupRule(@, ruleJSON))
-      else
-        @rules.push(new Rule(@, ruleJSON))
-
     @
 
   spritesheetInstance: () ->
@@ -74,10 +65,7 @@ class ActorDefinition
       name: @name
       spritesheet: @spritesheet
       variableDefaults: @variableDefaults
-      rules: []
-
-    for rule in @rules
-      json.rules.push(rule.jsonRepresentation())
+      rules: Rule.deflateRules(@rules)
 
     console.log 'Saving Actor ', json, JSON.stringify(json)
     window.Socket.emit 'put-actor', {identifier: @identifier, definition: json}
@@ -132,6 +120,7 @@ class ActorDefinition
   # Rule Management
 
   addRule: (rule) ->
+    console.log "Adding Rule #{rule._id}"
     idle_group = false
     for existing in @rules
       idle_group = existing if existing.type == 'group-event' && existing.event == 'idle'
@@ -144,7 +133,7 @@ class ActorDefinition
     @save()
 
   removeRule: (rule, searchRoot = @rules) ->
-    for ii in [0..searchRoot.length-1]
+    for ii in [0..searchRoot.length-1] by 1
       if searchRoot[ii]._id == rule._id
         searchRoot.splice(ii, 1)
         @save()
@@ -153,7 +142,7 @@ class ActorDefinition
         @removeRule(rule, searchRoot[ii].rules)
 
 
-  addEventGroup: (rule = {event:'key', code:'36'}) ->
+  addEventGroup: (config = {event:'key', code:'36'}) ->
     has_events = false
     for existing in @rules
       has_events = true if existing.type == 'group-event'
@@ -161,29 +150,20 @@ class ActorDefinition
     # if no events have been added yet, move the
     # existing rules into an "idle" event group
     if !has_events
-      idle =
-        _id: Math.createUUID()
-        type: 'group-event'
-        event: 'idle'
-        rules: [].concat(@rules)
-      @rules = [idle]
+      idle_group = new EventGroupRule()
+      idle_group.rules.concat(@rules)
+      @rules = [idle_group]
 
-    rule._id = Math.createUUID()
-    rule.type = 'group-event'
-    rule.rules = []
-
-    @rules.splice(0, 0, rule)
+    new_group = new EventGroupRule()
+    new_group.event = config.event
+    new_group.code = config.code
+    @rules.splice(0, 0, new_group)
     @save()
 
 
   addFlowGroup: () ->
-    @addRule
-      _id: Math.createUUID()
-      type: 'group-flow',
-      name: 'Untitled Group',
-      behavior: 'all',
-      rules: []
-
+    @addRule(new FlowGroupRule())
+    @save()
 
   # Variable Management
 

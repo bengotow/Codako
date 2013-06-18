@@ -68,6 +68,7 @@ io.sockets.on "connection", (socket) ->
 
 
   socket.on 'get-level', (args = {identifier: 'untitled'}) ->
+    console.log "Request for Level #{args.identifier}"
     socket.user.getLevel args.identifier, (err, data) ->
       socket.emit 'level', data
 

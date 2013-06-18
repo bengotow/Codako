@@ -24,8 +24,7 @@
   <script src="./src/models/ContentManager.js"></script>
   <script src="./src/models/Sprite.js"></script>
   <script src="./src/models/Rule.js"></script>
-  <script src="./src/models/FlowGroupRule.js"></script>
-  <script src="./src/models/EventGroupRule.js"></script>
+  <script src="./src/models/GroupRule.js"></script>
   <script src="./src/models/ActorDefinition.js"></script>
   <script src="./src/models/ProgrammableSprite.js"></script>
   <script src="./src/models/SquareMaskSprite.js"></script>
@@ -60,7 +59,7 @@
     window.Socket.on('connect', function () {
         console.log('Socket.io Connection Established.');
         window.Socket.emit('auth', { username: 'default', password: '' })
-        window.Game.load('level1')
+        window.Game.load('level2')
     });
     window.Socket.on('disconnect', function () {
         console.log('Socket.io Connection Lost. Trying to reconnect...');

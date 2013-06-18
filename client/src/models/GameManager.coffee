@@ -242,7 +242,8 @@ class GameManager
     window.rootScope.$broadcast('start_compose_rule')
     initialExtent = {left: actor.worldPos.x, right: actor.worldPos.x, top: actor.worldPos.y, bottom: actor.worldPos.y}
 
-    @recordingRule = new Rule(actor)
+    @recordingRule = new Rule()
+    @recordingRule.prepareForEditing(actor)
     @recordingRule.updateScenario(@mainStage, initialExtent)
 
     @mainStage.setRecordingExtent(initialExtent, 'masked')
