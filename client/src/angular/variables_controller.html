@@ -1,11 +1,17 @@
-<div style="position:absolute;z-index:1000;">
-  <a style="position:relative;left:212px;top:-37px;" class="btn" ng-click="add_variable()" ng-show="variables()">
-    <i class="icon-inbox"></i> Add</span>
-  </a></div>
+<a style="position:absolute;z-index:1000;left:209px;top:-37px; width:45px;" class="btn" ng-click="add_variable()" ng-show="variables()">
+  <i class="icon-inbox"></i> Add</span>
+</a>
+<div class="tab-pane-inner">
   <div class="variables-container">
-    <div ng-show="variables().length == 0" class="empty-message">
-      Select an actor in your library or on the stage to define it's variables.
+    <div ng-show="variables() == undefined" class="empty-message">
+      Select an actor in your library or on the stage to view variables.
     </div>
+
+    <div ng-show="variables_empty()" class="empty-message">
+      This type of actor doesn't have any variables. Create 
+      a new variable by tapping 'Add' above!
+    </div>
+
 
     <div draggable='{"revert":"invalid","scope":"variable"}' class="variable-box" ng-repeat="(id, variable) in variables()" data-identifier="variable:{{id}}" style="{{css_for_variable(variable)}}" ng-click="variable_clicked(variable)">
       <div class="name" ng-dblclick="edit_variable_attr($event, 'name')">{{variable.name}}</div>

@@ -8,6 +8,9 @@ VariablesCtrl = ($scope) ->
   $scope.variables = () ->
     window.Game?.selectedDefinition?.variables()
 
+  $scope.variables_empty = () ->
+    $scope.variables() && $.isEmptyObject($scope.variables())
+
   $scope.add_variable = () ->
     window.Game?.selectedDefinition.addVariable()
     window.Game?.selectedDefinition.save()

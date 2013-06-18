@@ -55,31 +55,31 @@
 
 </script>
 
-<div style="position:absolute;z-index:1000;">
-  <div style="position:relative;left:200px;top:-37px;" class="btn-group" ng-show="definition_name()">
-    <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-    	<i class="icon-tasks"></i> Add <span class="caret"></span>
-    </a>
-    <ul id="rules-dropdown" class="dropdown-menu">
-    	<li><a href="#" ng-click="add_rule()"><span class="badge"></span> Add New Rule</a></li>
-    	<li class="divider"></li>
-    	<li><a href="#" ng-click="add_rule_group_flow('key')"><span class="badge badge-info"></span> Add Flow Container</a></li>
-    	<li class="divider"></li>
-    	<li><a href="#" ng-click="add_rule_group_event('key')"><span class="badge badge-success"></span> When a Key is Pressed...</a></li>
-    	<li><a href="#" ng-click="add_rule_group_event('click')"><span class="badge badge-success"></span> When I'm Clicked...</a></li>
-    </ul>
+<div style="position:absolute;z-index:1000;top:-37px; left:200px;" class="btn-group" ng-show="definition_name()">
+  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+  	<i class="icon-tasks"></i> Add <span class="caret"></span>
+  </a>
+  <ul id="rules-dropdown" class="dropdown-menu">
+  	<li><a href="#" ng-click="add_rule()"><span class="badge"></span> Add New Rule</a></li>
+  	<li class="divider"></li>
+  	<li><a href="#" ng-click="add_rule_group_flow('key')"><span class="badge badge-info"></span> Add Flow Container</a></li>
+  	<li class="divider"></li>
+  	<li><a href="#" ng-click="add_rule_group_event('key')"><span class="badge badge-success"></span> When a Key is Pressed...</a></li>
+  	<li><a href="#" ng-click="add_rule_group_event('click')"><span class="badge badge-success"></span> When I'm Clicked...</a></li>
+  </ul>
+</div>
+
+<div class="tab-pane-inner">
+  <div ng-show="rules() == undefined" class="empty-message">
+    Select an actor to view rules.
   </div>
-</div>
 
-<div ng-show="rules() == undefined" class="empty-message">
-  Select an actor to view rules.
-</div>
+  <div ng-show="rules().length == 0" class="empty-message">
+    This actor doesn't have any rules. Create<br>
+    a new rule by tapping the 'Record' icon.
+  </div>
 
-<div ng-show="rules().length == 0" class="empty-message">
-  This actor doesn't have any rules. Create<br>
-  a new rule by tapping the 'Record' icon.
+  <ul class="unstyled rules-list" sortable="{{sortable_attributes_for_rules_root()}}">
+    <li ng-repeat="struct in rules()"  ng-click="rule_clicked(struct)" ng-include="'rule_template.html'" data-id="{{struct._id}}"></li>
+  </ul>
 </div>
-
-<ul class="unstyled rules-list" sortable="{{sortable_attributes_for_rules_root()}}">
-  <li ng-repeat="struct in rules()"  ng-click="rule_clicked(struct)" ng-include="'rule_template.html'" data-id="{{struct._id}}"></li>
-</ul>
