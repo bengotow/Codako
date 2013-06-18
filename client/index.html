@@ -73,399 +73,103 @@
 
 <body onload="start()" ng-app="App">
 
-<div class="navbar navbar-inverse navbar-static-top">
-  <div class="navbar-inner">
-    <div class="container" style="width:1180px;margin:auto;">
-      <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="brand" href="#">Kodako</a>
-      <div class="nav-collapse collapse">
-        <ul class="nav">
-          <li class="dropdown">
-            <a id="drop1" href="#" role="button" class="dropdown-toggle" data-toggle="dropdown">My World <b class="caret"></b></a>
-            <ul class="dropdown-menu" role="menu" aria-labelledby="drop1">
-              <li role="presentation"><a role="menuitem" tabindex="-1" href="http://google.com">Stage Settings</a></li>
-            </ul>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="container" style="width:1180px; margin:auto;" ng-controller="ControlsCtrl" ng-cloak>
-  <div class="white-box" style="float:left;line-height:0;width:40px;">
-    <div class="{{class_for_btn(tool() == 'pointer')}} btn-tool-first" ng-click="set_tool('pointer')"><img src="img/sidebar_pointer.png"></div>
-    <div class="{{class_for_btn(tool() == 'paint')}} btn-tool" ng-click="set_tool('paint')"><img src="img/sidebar_paint.png"></div>
-    <div class="{{class_for_btn(tool() == 'record')}} btn-tool" ng-click="set_tool('record')"><img src="img/sidebar_record.png"></div>
-    <div class="{{class_for_btn(tool() == 'delete')}} btn-tool" ng-click="set_tool('delete')"><img src="img/sidebar_trash.png"></div>
-  </div>
-
-  <div class="white-box" style="float:left;line-height:0;">
-
-    <div style="overflow:hidden; width:800px; height:520px;">
-    <div style="width:1605px; height:520px;">
-      <canvas droppable id="platformerCanvasPane1" width="800" height="520" class="stage">
-        Your browser doesn't support HTML5 Canvas!
-      </canvas>
-      <canvas droppable id="platformerCanvasPane2" width="0" height="520" class="stage">
-      </canvas>
-    </div>
-    </div>
-
-    <div class="controls" ng-show="control_set == 'testing'" style="text-align:center;">
-      <button ng-click="reset()" class="btn" style="float:left; margin-top:12px;"><i class="icon-repeat"></i> Reset</button>
-
-      <div class="center">
-        <button ng-click="step_back()" class="btn btn-mini" style="margin-right:4px; margin-top:1px;"><i class="icon-step-backward"></i> Back</button>
-        <button ng-click="set_running(false)" class="{{class_for_btn(!running())}}"><i class="icon-stop"></i> Stop</button>
-        <button ng-click="set_running(true)" class="{{class_for_btn(running())}}"><i class="icon-play"></i> Run</button>
-        <button ng-click="step()" class="btn btn-mini"  style="margin-left:4px; margin-top:1px;"><i class="icon-step-forward"></i> Forward</button>
-      </div>
-
-      <div class="btn-group right">
-        <button ng-click="set_speed(1000)" class="{{class_for_btn(1000==speed())}}">Slow</button>
-        <button ng-click="set_speed(500)" class="{{class_for_btn(500==speed())}}">Med.</button>
-        <button ng-click="set_speed(200)" class="{{class_for_btn(200==speed())}}">Fast</button>
-      </div>
-    </div>
-
-    <div class="controls" ng-show="control_set == 'record-preflight'" style="text-align:center;">
-      <label>Set the stage! Highlight the area around the {{definition_name()}} you want to record in.</label>
-      <button ng-click="start_recording()" class="btn btn-success right"><i class="icon-facetime-video"></i> Start Recording</button>
-      <button ng-click="cancel_recording()" class="btn right"><i class="icon-remove"></i> Cancel</button>
-    </div>
-
-    <div class="controls" ng-show="control_set == 'recording'" style="text-align:center;">
-      <div style="position:absolute; height:0;">
-        <div class="panel conditions">
-          <h4>When the picture matches and:</h4>
-          <ul>
-            <div ng-repeat="(ref,descriptor) in recording_descriptors()">
-              <li class="condition" ng-show="descriptor.appearance"><span ng-bind-html-unsafe="html_for_actor(ref,true)"></span> appearance is <span ng-bind-html-unsafe="html_for_appearance(ref)"></span></li>
-              <li class="condition" ng-repeat="(variable, constraint) in descriptor.variableConstraints">
-                <span ng-bind-html-unsafe="html_for_actor(ref,true)"></span> variable <code>{{name_for_variable(variable)}}</code> is <select style="width:40px; font-weight:bold;" ng-model="constraint.comparator"><option value="=">=</option><option value="<"><</option><option value=">">></option></select> {{constraint.value}}
-              </li>
-            </div>
-<!--             <li class="condition" ng-repeat="check in recording_checks()">
-              <div droppable='{"scope":"variable"}' class="slot">{{check.variable}}</div>
-              <div class="btn-group">
-                <button ng-click="set_speed(1000)" class="{{class_for_btn(1000==speed())}}"> > </button>
-                <button ng-click="set_speed(500)" class="{{class_for_btn(500==speed())}}"> = </button>
-                <button ng-click="set_speed(200)" class="{{class_for_btn(200==speed())}}"> < </button>
-              </div>
-              <input class="slot" value="{{check.value}}"/>
-            </li>
-            <li class="condition" droppable='{"scope":"variable"}' >
-              <div>Drag and drop a variable here to add a check</div>
-            </li>
- -->          </ul>
-        </div>
-        <div class="panel actions">
-          <h4>It Should...</h4>
-          <ul>
-            <li class="action" ng-repeat="action in recording_actions()" ng-switch="action.type">
-              <div ng-switch-when="move">
-                Move <span ng-bind-html-unsafe="html_for_actor(action.ref)"></span> to <img src="{{icon_for_move(action.delta)}}">
-              </div>
-
-              <div ng-switch-when="appearance">
-                Change Appearance of <span ng-bind-html-unsafe="html_for_actor(action.ref)"></span> to <span ng-bind-html-unsafe="html_for_appearance(action.ref, action.to)"></span>
-              </div>
-
-              <div ng-switch-when="variable">
-                <select style="width:80px;" ng-model="action.operation"><option value="add">Add</option><option value="subtract">Subtract</option><option value="set">Set</option></select>
-                <ng-switch on="action.operation">
-                  <span ng-switch-when="set">
-                     <code>{{name_for_variable(action.variable)}}</code> of <span ng-bind-html-unsafe="html_for_actor(action.ref)"></span> to <input type="text" ng-model="action.value"/>
-                  </span>
-                  <span ng-switch-when="add">
-                     <input type="text" ng-model="action.value"/> to <code>{{name_for_variable(action.variable)}}</code> of <span ng-bind-html-unsafe="html_for_actor(action.ref)"></span>
-                  </span>
-                  <span ng-switch-when="subtract">
-                     <input type="text" ng-model="action.value"/> from <code>{{name_for_variable(action.variable)}}</code> of <span ng-bind-html-unsafe="html_for_actor(action.ref)"></span>
-                  </span>
-                </ng-switch>
-              </div>
-
-              <div ng-switch-when="create">
-                Create a new <code><img src="{{icon_for_referenced_actor(action.ref)}}" width="26" height="26">{{name_for_referenced_actor(action.ref)}}</code>
-              </div>
-
+  <div class="navbar navbar-inverse navbar-static-top">
+    <div class="navbar-inner">
+      <div class="container" style="width:1180px;margin:auto;">
+        <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="brand" href="#">Kodako</a>
+        <div class="nav-collapse collapse">
+          <ul class="nav">
+            <li class="dropdown">
+              <a id="drop1" href="#" role="button" class="dropdown-toggle" data-toggle="dropdown">My World <b class="caret"></b></a>
+              <ul class="dropdown-menu" role="menu" aria-labelledby="drop1">
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="http://google.com">Stage Settings</a></li>
+              </ul>
             </li>
           </ul>
-
-
         </div>
       </div>
-
-      <label>Act out what you want to happen in the picture on the right.</label>
-      <button ng-click="save_recording()" class="btn btn-success right"><i class="icon-check"></i> Save Recording</button>
-      <button ng-click="cancel_recording()" class="btn right"><i class="icon-remove"></i> Cancel</button>
     </div>
   </div>
 
-  <!-- Begin Rules Controller -->
-  <script type="text/ng-template" id="rule_template.html">
-
-    <ng-switch on="struct.type">
-
-    <div ng-switch-when="group-event" class="rule-container event" >
-
-      <div class="header">
-        <div style="float:left; width:20px;">
-          <div ng-class="circle_for_rule(struct)"></div>
-          <div ng-click="toggle_disclosed(struct)" class="triangle {{struct.disclosed}}"></div>
-        </div>
-
-        <img class="icon" ng-src="/img/icon_event_{{struct.event}}.png"/>
-        <div class="name">{{name_for_event_group(struct)}}</div>
-      </div>
-      <ul class="unstyled rules-list" ng-hide="struct.disclosed" sortable='{"connectWith":".rules-list"}'>
-        <li ng-repeat="struct in struct.rules"  ng-click="rule_clicked(struct)" ng-include="'rule_template.html'" data-id="{{struct._id}}"></li>
-      </ul>
+  <div class="container" style="width:1180px; margin:auto;" ng-controller="ControlsCtrl" ng-cloak>
+    <div id="tool-box" class="white-box" style="float:left;line-height:0;width:40px;">
+      <div class="{{class_for_btn(tool() == 'pointer')}} btn-tool-first" ng-click="set_tool('pointer')"><img src="img/sidebar_pointer.png"></div>
+      <div class="{{class_for_btn(tool() == 'paint')}} btn-tool" ng-click="set_tool('paint')"><img src="img/sidebar_paint.png"></div>
+      <div class="{{class_for_btn(tool() == 'record')}} btn-tool" ng-click="set_tool('record')"><img src="img/sidebar_record.png"></div>
+      <div class="{{class_for_btn(tool() == 'delete')}} btn-tool" ng-click="set_tool('delete')"><img src="img/sidebar_trash.png"></div>
     </div>
 
-    <div ng-switch-when="group-flow" class="rule-container group">
-      <div class="header">
-        <div style="float:left; width:20px;">
-          <div ng-class="circle_for_rule(struct)"></div>
-          <div ng-click="toggle_disclosed(struct)" class="triangle {{struct.disclosed}}"></div>
-        </div>
-        <select ng-model="struct.behavior" ng-options="key for (key,value) in flow_types" ng-change="save_rules()">
-        </select>
-        <input class="name" ng-model="struct.name" ng-blur="save_rules()"/>
-      </div>
-      <ul class="unstyled rules-list" ng-hide="struct.disclosed" sortable='{"connectWith":".rules-list"}'>
-        <li ng-repeat="struct in struct.rules" ng-click="rule_clicked(struct)" ng-include="'rule_template.html'" data-id="{{struct._id}}"></li>
-      </ul>
-    </div>
-
-    <div ng-switch-default class="rule-container rule" ng-show="!struct.type">
-      <div class="zerospace"><div ng-class="circle_for_rule(struct)" style="position:relative;z-index:4;"></div></div>
-      <div class="scenario">
-        <img ng-src="{{scenario_before_url(struct)}}"/>
-        <div class="arrow">-></div>
-        <img ng-src="{{scenario_after_url(struct)}}"/>
-      </div>
-
-      <div ng-click="toggle_disclosed(struct)" class="triangle {{struct.disclosed}}"></div>
-      <input class="name" ng-model="struct.name" ng-blur="save_rules()"/>
-
-      <ul class="unstyled" ng-show="!struct.disclosed && actions_for_rule(struct).length">
-        <li ng-repeat="action in actions_for_rule(struct)" class="action">
-          <span class="condition-value">{{action}}</span>
-        </li>
-      </ul>
-    </div>
-
-    </ng-switch>
-
-  </script>
-
-
-  <div id="actor-box" class="white-box" style="float:right; width:280px;" ng-cloak>
-    <ul class="nav nav-tabs">
-      <li class="active"><a href="#rules" data-toggle="tab">Rules</a></li>
-      <li><a href="#variables" data-toggle="tab">Variables</a></li>
-    </ul>
-
-    <div class="tab-content">
-      <div class="tab-pane active" id="rules" ng-controller="RulesCtrl">
-
-        <div style="position:absolute;z-index:1000;">
-        <div style="position:relative;left:200px;top:-37px;" class="btn-group" ng-show="definition_name()">
-          <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-            <i class="icon-tasks"></i> Add <span class="caret"></span>
-          </a>
-          <ul id="rules-dropdown" class="dropdown-menu">
-            <li><a href="#" ng-click="add_rule()"><span class="badge"></span> Add New Rule</a></li>
-            <li class="divider"></li>
-            <li><a href="#" ng-click="add_rule_group_flow('key')"><span class="badge badge-info"></span> Add Flow Container</a></li>
-            <li class="divider"></li>
-            <li><a href="#" ng-click="add_rule_group_event('key')"><span class="badge badge-success"></span> When a Key is Pressed...</a></li>
-            <li><a href="#" ng-click="add_rule_group_event('click')"><span class="badge badge-success"></span> When I'm Clicked...</a></li>
-          </ul>
-        </div>
-      </div>
-
-        <div ng-show="rules() == undefined" class="empty-message">
-          Select an actor to view rules.
-        </div>
-
-        <div ng-show="rules().length == 0" class="empty-message">
-          This actor doesn't have any rules. Create<br>
-          a new rule by tapping the 'Record' icon.
-        </div>
-        <ul class="unstyled rules-list" sortable="{{sortable_attributes_for_rules_root()}}">
-          <li ng-repeat="struct in rules()"  ng-click="rule_clicked(struct)" ng-include="'rule_template.html'" data-id="{{struct._id}}"></li>
-        </ul>
-      </div>
-
-      <div droppable='{"scope":"variable"}' class="tab-pane" id="variables" ng-controller="VariablesCtrl">
-        <div style="position:absolute;z-index:1000;">
-        <a style="position:relative;left:212px;top:-37px;" class="btn" ng-click="add_variable()" ng-show="variables()">
-          <i class="icon-inbox"></i> Add</span>
-        </a></div>
-        <div class="variables-container">
-          <div ng-show="variables().length == 0" class="empty-message">
-            Select an actor in your library or on the stage to define it's variables.
-          </div>
-
-          <div draggable='{"revert":"invalid","scope":"variable"}' class="variable-box" ng-repeat="(id, variable) in variables()" data-identifier="variable:{{id}}" style="{{css_for_variable(variable)}}" ng-click="variable_clicked(variable)">
-            <div class="name" ng-dblclick="edit_variable_attr($event, 'name')">{{variable.name}}</div>
-            <input class="name" style="display:none;" ng-blur="save_variable_attr($event, 'name')" value="{{variable.name}}">
-
-            <div class="value" ng-dblclick="edit_variable_attr($event, 'value')">{{value_for_variable(id)}}</div>
-            <input class="value" style="display:none;" ng-blur="save_variable_attr($event, 'value')" value="{{value_for_variable(id)}}">
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- End Rules Controller -->
-  </div>
-
-  <!-- Begin Library Controller -->
-  <div id="library" ng-controller="LibraryCtrl" ng-cloak>
-    <div id="definitions" class="white-box" style="width:490px; float:left;">
-
-      <div class="btn btn-mini" style="float:right;" ng-click="add_definition()"><i class="icon-plus"></i></div>
-      <h4>{{library_name}}</h4>
-
-      <div ng-show="definitions().length == 0" class="empty-message">
-        You haven't defined any actors yet! Create a new actor by clicking the '+' icon.
-      </div>
-      <div ng-repeat="def in definitions()" ng-click="select_definition(def)" class="item {{class_for_definition(def)}}">
-        <i draggable data-identifier="actor:{{def.identifier}}" style="{{css_for_sprite_frame(def)}}"></i>
-        <input class="name" ng-model="def.name" ng-blur="save_definition(def)" />
-      </div>
-
-    </div>
-
-    <div id="appearances" class="white-box" style="width:290px; float:left;">
-
-      <div ng-show="selected_definition()" class="btn btn-mini" style="float:right;" ng-click="add_appearance()"><i class="icon-plus"></i></div>
-      <h4>Appearances</h4>
-      <div ng-show="appearances().length == 0" class="empty-message">
-        Select an actor in your library to view it's appearances.
-      </div>
-      <div ng-repeat="(id,frames) in appearances()" class="item">
-        <i draggable data-identifier="appearance:{{id}}" style="{{css_for_sprite_frame(selected_definition(), frames[0])}}" ng-click="select_appearance(id)" ng-dblclick="edit_appearance(id, frames[0])"></i>
-        <input class="name" ng-blur="save_appearance_name($event)" data-identifier="{{id}}" value="{{name_for_appearance(id)}}" />
-      </div>
-    </div>
-
-    <div style="clear:both;"></div>
-
-  </div>
-  <!-- End Library Controller -->
-</div>
-
-
-  <!-- Begin Compose Rule Controller -->
-  <div ng-controller="ComposeRuleCtrl" id="composeRuleModal" class="modal hide fade" tabindex="-1" role="dialog" aria-hidden="true" style="width:671px;" data-backdrop="static" ng-cloak>
-    <div class="modal-header">
-      <h3>Edit Rule</h3>
-    </div>
-    <div class="modal-body" style="max-height:585px;">
-
-      <div class="scenario">
-        <div class="before">
-          <h4>Before</h4>
-          <canvas id="beforeCanvas" width="360" height="360">
+    <div id="viewport-box" class="white-box" style="float:left;line-height:0;">
+      <div style="overflow:hidden; width:800px; height:520px;">
+        <div style="width:1605px; height:520px;">
+          <canvas droppable id="platformerCanvasPane1" width="800" height="520" class="stage">
+            Your browser doesn't support HTML5 Canvas!
           </canvas>
-        </div>
-
-        <div class="arrow">-></div>
-
-        <div class="after">
-          <h4>After</h4>
-          <canvas id="afterCanvas" width="360" height="360">
+          <canvas droppable id="platformerCanvasPane2" width="0" height="520" class="stage">
           </canvas>
         </div>
       </div>
 
+      <div class="controls"
+           ng-include="'/src/angular/controls_controller/'+control_set+'.html'"
+           style="text-align:center;">
+      </div>
     </div>
-    <div class="modal-footer">
-      <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-      <button class="btn btn-primary" data-dismiss="modal" ng-click="save_editor()">Save</button>
+
+
+    <div id="sidebar-box" class="white-box" style="float:right; width:280px;" ng-cloak>
+      <ul class="nav nav-tabs">
+        <li class="active"><a href="#rules" data-toggle="tab">Rules</a></li>
+        <li><a href="#variables" data-toggle="tab">Variables</a></li>
+      </ul>
+
+      <div class="tab-content">
+        <div id="rules"
+             ng-controller="RulesCtrl"
+             ng-include="'/src/angular/rules_controller.html'"
+             class="tab-pane active" >
+        </div>
+
+        <div id="variables"
+             ng-controller="VariablesCtrl"
+             ng-include="'/src/angular/variables_controller.html'"
+             class="tab-pane"
+             droppable='{"scope":"variable"}'>
+        </div>
+      </div>
     </div>
+
+    <div id="library"
+         ng-controller="LibraryCtrl"
+         ng-include="'/src/angular/library_controller.html'" ng-cloak>
+    </div>
+
   </div>
-</div>
-<!-- End Pixel Art Controller -->
 
 
-
-<!-- Begin Pixel Art Controller -->
-  <div ng-controller="PixelArtCtrl" id="pixelArtModal" class="modal hide fade" tabindex="-1" role="dialog" aria-hidden="true" style="width:671px;" data-backdrop="static" ng-cloak>
-    <div class="modal-header">
-      <div style="float:left;">
-        <h3>Edit Appearance</h3>
-      </div>
-      <div align="right">
-        <!--Undo, Redo buttons-->
-        <div class="btn icon" ng-disabled="!canvas.canUndo()" ng-click="canvas.undo()"><img src="/img/icon_undo.png"></div>
-        <div class="btn icon" ng-disabled="!canvas.canRedo()" ng-click="canvas.redo()"><img src="/img/icon_redo.png"></div>
-        <!--Copy, Paste Buttons-->
-        <div class="btn icon" ng-disabled="!canvas.canCopy()" ng-click="copy()"><img src="/img/icon_copy.png"></div>
-        <div class="btn icon" ng-disabled="!canvas.canPaste()" ng-click="paste()"><img src="/img/icon_paste.png"></div>
-      </div>
-
-    </div>
-    <div class="modal-body" style="max-height:585px;">
-
-      <div class="sidebar">
-
-        <!-- Colors -->
-        <div class="btn color color-preview" style="background-color: {{canvas.toolColor}}" data-color="{{canvas.toolColor}}" data-color-format="rgb" id="cp1">
-            <span class="add-on"><i></i></span>
-        </div>
-        <div ng-repeat="color in colors" class="btn color" data-color="{{color}}" ng-click="set_tool_color(color)">
-          <i style="background-color: {{color}}"></i>
-        </div>
-
-        <div class="divider"></div>
-
-        <!-- Tools -->
-        <div ng-repeat="tool in canvas.tools" class="{{css_for_tool(tool)}}" ng-click="set_tool(tool)">
-          <img ng-src="/img/tool_{{tool.name}}.png"/>
-        </div>
-
-        <!--
-        <div class="btn icon" ng-click="copy()"><img src="/img/icon_copy.png"></div>
-        <div class="btn icon" ng-click="paste()"><img src="/img/icon_paste.png"></div>
-        -->
-        <!-- Undo / Redo -->
-
-        <!--
-        <div class="btn icon" ng-disabled="!canvas.canUndo()" ng-click="canvas.undo()"><img src="/img/icon_undo.png"></div><div class="btn icon" ng-disabled="!canvas.canRedo()" ng-click="canvas.redo()"><img src="/img/icon_redo.png"></div>
-        -->
-      </div>
-      <div style="float:left; width:521px;">
-        <canvas id="pixelArtCanvas" width="521" height="521">
-        </canvas>
-      </div>
-
-    </div>
-    <div class="modal-footer">
-      <button class="btn" data-dismiss="modal" aria-hidden="true" ng-click="close_editor()">Close</button>
-      <button class="btn btn-primary" data-dismiss="modal" ng-click="save_editor()">Save Changes</button>
-    </div>
+  <div id="composeRuleModal"
+       ng-controller="ComposeRuleCtrl"
+       ng-include="'/src/angular/compose_rule_controller.html'"
+       class="modal hide fade" tabindex="-1" role="dialog" aria-hidden="true" style="width:671px;" data-backdrop="static" ng-cloak>
   </div>
-</div>
-<!-- End Pixel Art Controller -->
 
+  <div id="pixelArtModal"
+       ng-controller="PixelArtCtrl"
+       ng-include="'/src/angular/pixel_art_controller.html'"
+       class="modal hide fade" tabindex="-1" role="dialog" aria-hidden="true" style="width:671px;" data-backdrop="static" ng-cloak>
+  </div>
 
-<!-- Offscreen Resources for Rendering / Debugging -->
-<div style="display:none;">
-  <canvas id="renderingCanvas" width="300" height="300" style="background-color:black">
-    Your browser doesn't support HTML5 Canvas!
-  </canvas>
-</div>
-
+  <!-- Offscreen Resources for Rendering / Debugging -->
+  <div style="display:none;">
+    <canvas id="renderingCanvas" width="300" height="300" style="background-color:black">
+      Your browser doesn't support HTML5 Canvas!
+    </canvas>
+  </div>
 
 </body>
 </html>

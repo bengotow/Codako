@@ -1,0 +1,26 @@
+<div class="modal-header">
+  <h3>Edit Rule</h3>
+</div>
+<div class="modal-body" style="max-height:585px;">
+
+  <div class="scenario">
+    <div class="before">
+      <h4>Before</h4>
+      <canvas id="beforeCanvas" width="360" height="360">
+      </canvas>
+    </div>
+
+    <div class="arrow">-></div>
+
+    <div class="after">
+      <h4>After</h4>
+      <canvas id="afterCanvas" width="360" height="360">
+      </canvas>
+    </div>
+  </div>
+
+</div>
+<div class="modal-footer">
+  <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+  <button class="btn btn-primary" data-dismiss="modal" ng-click="save_editor()">Save</button>
+</div>

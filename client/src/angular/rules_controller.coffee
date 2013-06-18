@@ -19,8 +19,7 @@ RulesCtrl = ($scope) ->
 
 
   $scope.add_rule = () ->
-    actor = window.Game.selectedActor
-    window.Game.enterRecordingModeForActor(actor)
+    window.Game.enterRecordingModeForActor(window.Game.selectedActor)
 
 
   $scope.rule_clicked = (rule) ->
@@ -30,6 +29,12 @@ RulesCtrl = ($scope) ->
       else if confirm('Are you sure you want to delete this rule? You can\'t undo this action.')
         window.Game.selectedDefinition.removeRule(rule)
     window.Game.resetToolAfterAction()
+
+
+  $scope.rule_dbl_clicked = (rule) ->
+    debugger
+    actor = window.Game.selectedActor
+    window.Game.enterRecordingModeForActor(actor)
 
 
   $scope.add_rule_group_event = (type) ->

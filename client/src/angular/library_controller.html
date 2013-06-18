@@ -1,0 +1,31 @@
+<div id="definitions" class="white-box" style="width:490px; float:left;">
+
+  <div class="btn btn-mini" style="float:right;" ng-click="add_definition()"><i class="icon-plus"></i></div>
+  <h4>{{library_name}}</h4>
+
+  <div ng-show="definitions().length == 0" class="empty-message">
+    You haven't defined any actors yet! Create a new actor by clicking the '+' icon.
+  </div>
+  <div ng-repeat="def in definitions()" ng-click="select_definition(def)" class="item {{class_for_definition(def)}}">
+    <i draggable data-identifier="actor:{{def.identifier}}" style="{{css_for_sprite_frame(def)}}"></i>
+    <input class="name" ng-model="def.name" ng-blur="save_definition(def)" />
+  </div>
+
+</div>
+
+<div id="appearances" class="white-box" style="width:290px; float:left;">
+
+  <div ng-show="selected_definition()" class="btn btn-mini" style="float:right;" ng-click="add_appearance()"><i class="icon-plus"></i></div>
+  <h4>Appearances</h4>
+  <div ng-show="appearances().length == 0" class="empty-message">
+    Select an actor in your library to view it's appearances.
+  </div>
+  <div ng-repeat="(id,frames) in appearances()" class="item">
+    <i draggable data-identifier="appearance:{{id}}" style="{{css_for_sprite_frame(selected_definition(), frames[0])}}" ng-click="select_appearance(id)" ng-dblclick="edit_appearance(id, frames[0])"></i>
+    <input class="name" ng-blur="save_appearance_name($event)" data-identifier="{{id}}" value="{{name_for_appearance(id)}}" />
+  </div>
+
+</div>
+
+<div style="clear:both;"></div>
+

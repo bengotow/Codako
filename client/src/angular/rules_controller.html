@@ -1,0 +1,85 @@
+<script type="text/ng-template" id="rule_template.html">
+
+  <ng-switch on="struct.type">
+
+  <div ng-switch-when="group-event" class="rule-container event" >
+
+    <div class="header">
+      <div style="float:left; width:20px;">
+        <div ng-class="circle_for_rule(struct)"></div>
+        <div ng-click="toggle_disclosed(struct)" class="triangle {{struct.disclosed}}"></div>
+      </div>
+
+      <img class="icon" ng-src="/img/icon_event_{{struct.event}}.png"/>
+      <div class="name">{{name_for_event_group(struct)}}</div>
+    </div>
+    <ul class="unstyled rules-list" ng-hide="struct.disclosed" sortable='{"connectWith":".rules-list"}'>
+      <li ng-repeat="struct in struct.rules"  ng-click="rule_clicked(struct)" ng-include="'rule_template.html'" data-id="{{struct._id}}"></li>
+    </ul>
+  </div>
+
+  <div ng-switch-when="group-flow" class="rule-container group">
+    <div class="header">
+      <div style="float:left; width:20px;">
+        <div ng-class="circle_for_rule(struct)"></div>
+        <div ng-click="toggle_disclosed(struct)" class="triangle {{struct.disclosed}}"></div>
+      </div>
+      <select ng-model="struct.behavior" ng-options="key for (key,value) in flow_types" ng-change="save_rules()">
+      </select>
+      <input class="name" ng-model="struct.name" ng-blur="save_rules()"/>
+    </div>
+    <ul class="unstyled rules-list" ng-hide="struct.disclosed" sortable='{"connectWith":".rules-list"}'>
+      <li ng-repeat="struct in struct.rules" ng-click="rule_clicked(struct)" ng-include="'rule_template.html'" data-id="{{struct._id}}"></li>
+    </ul>
+  </div>
+
+  <div ng-switch-default class="rule-container rule" ng-show="!struct.type" ng-dblclick="rule_dbl_clicked(struct)">
+    <div class="zerospace"><div ng-class="circle_for_rule(struct)" style="position:relative;z-index:4;"></div></div>
+    <div class="scenario">
+      <img ng-src="{{scenario_before_url(struct)}}"/>
+      <div class="arrow">-></div>
+      <img ng-src="{{scenario_after_url(struct)}}"/>
+    </div>
+
+    <div ng-click="toggle_disclosed(struct)" class="triangle {{struct.disclosed}}"></div>
+    <input class="name" ng-model="struct.name" ng-blur="save_rules()"/>
+
+    <ul class="unstyled" ng-show="!struct.disclosed && actions_for_rule(struct).length">
+      <li ng-repeat="action in actions_for_rule(struct)" class="action">
+        <span class="condition-value">{{action}}</span>
+      </li>
+    </ul>
+  </div>
+
+  </ng-switch>
+
+</script>
+
+<div style="position:absolute;z-index:1000;">
+  <div style="position:relative;left:200px;top:-37px;" class="btn-group" ng-show="definition_name()">
+    <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+    	<i class="icon-tasks"></i> Add <span class="caret"></span>
+    </a>
+    <ul id="rules-dropdown" class="dropdown-menu">
+    	<li><a href="#" ng-click="add_rule()"><span class="badge"></span> Add New Rule</a></li>
+    	<li class="divider"></li>
+    	<li><a href="#" ng-click="add_rule_group_flow('key')"><span class="badge badge-info"></span> Add Flow Container</a></li>
+    	<li class="divider"></li>
+    	<li><a href="#" ng-click="add_rule_group_event('key')"><span class="badge badge-success"></span> When a Key is Pressed...</a></li>
+    	<li><a href="#" ng-click="add_rule_group_event('click')"><span class="badge badge-success"></span> When I'm Clicked...</a></li>
+    </ul>
+  </div>
+</div>
+
+<div ng-show="rules() == undefined" class="empty-message">
+  Select an actor to view rules.
+</div>
+
+<div ng-show="rules().length == 0" class="empty-message">
+  This actor doesn't have any rules. Create<br>
+  a new rule by tapping the 'Record' icon.
+</div>
+
+<ul class="unstyled rules-list" sortable="{{sortable_attributes_for_rules_root()}}">
+  <li ng-repeat="struct in rules()"  ng-click="rule_clicked(struct)" ng-include="'rule_template.html'" data-id="{{struct._id}}"></li>
+</ul>

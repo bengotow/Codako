@@ -1,0 +1,54 @@
+<div style="position:absolute; height:0;">
+	<div class="panel conditions">
+	  <h4>When the picture matches and:</h4>
+	  <ul>
+		<div ng-repeat="(ref,descriptor) in recording_descriptors()">
+		  <li class="condition" ng-show="descriptor.appearance"><span ng-bind-html-unsafe="html_for_actor(ref,true)"></span> appearance is <span ng-bind-html-unsafe="html_for_appearance(ref)"></span></li>
+		  <li class="condition" ng-repeat="(variable, constraint) in descriptor.variableConstraints">
+				<span ng-bind-html-unsafe="html_for_actor(ref,true)"></span> variable <code>{{name_for_variable(variable)}}</code> is <select style="width:40px; font-weight:bold;" ng-model="constraint.comparator"><option value="=">=</option><option value="<"><</option><option value=">">></option></select> {{constraint.value}}
+		  </li>
+		</div>
+	  </ul>
+	</div>
+	<div class="panel actions">
+	  <h4>It Should...</h4>
+	  <ul>
+		<li class="action" ng-repeat="action in recording_actions()" ng-switch="action.type">
+		  <div ng-switch-when="move">
+			Move <span ng-bind-html-unsafe="html_for_actor(action.ref)"></span> to <img src="{{icon_for_move(action.delta)}}">
+		  </div>
+
+		  <div ng-switch-when="appearance">
+			Change Appearance of <span ng-bind-html-unsafe="html_for_actor(action.ref)"></span> to <span ng-bind-html-unsafe="html_for_appearance(action.ref, action.to)"></span>
+		  </div>
+
+		  <div ng-switch-when="variable">
+			<select style="width:80px;" ng-model="action.operation"><option value="add">Add</option><option value="subtract">Subtract</option><option value="set">Set</option></select>
+			<ng-switch on="action.operation">
+			  <span ng-switch-when="set">
+				 <code>{{name_for_variable(action.variable)}}</code> of <span ng-bind-html-unsafe="html_for_actor(action.ref)"></span> to <input type="text" ng-model="action.value"/>
+			  </span>
+			  <span ng-switch-when="add">
+				 <input type="text" ng-model="action.value"/> to <code>{{name_for_variable(action.variable)}}</code> of <span ng-bind-html-unsafe="html_for_actor(action.ref)"></span>
+			  </span>
+			  <span ng-switch-when="subtract">
+				 <input type="text" ng-model="action.value"/> from <code>{{name_for_variable(action.variable)}}</code> of <span ng-bind-html-unsafe="html_for_actor(action.ref)"></span>
+			  </span>
+			</ng-switch>
+		  </div>
+
+		  <div ng-switch-when="create">
+				Create a new <code><img src="{{icon_for_referenced_actor(action.ref)}}" width="26" height="26">{{name_for_referenced_actor(action.ref)}}</code>
+		  </div>
+
+		</li>
+	  </ul>
+
+
+	</div>
+</div>
+
+<label>Act out what you want to happen in the picture on the right.</label>
+<button ng-click="save_recording()" class="btn btn-success right"><i class="icon-check"></i> Save Recording</button>
+<button ng-click="cancel_recording()" class="btn right"><i class="icon-remove"></i> Cancel</button>
+</div>
