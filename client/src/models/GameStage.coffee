@@ -60,10 +60,7 @@ class GameStage extends Stage
 
 
   prepareWithData: (json, callback) ->
-    @removeAllChildren()
-    @recordingMasks = []
-    @recordingHandles = {}
-    @actors = []
+    @dispose()
 
     @width = json['width']
     @height = json['height']
@@ -72,6 +69,9 @@ class GameStage extends Stage
 
     # Creating a random background based on the 3 layers available in 3 versions
     background = new Bitmap(window.Game.content.imageNamed('Layer0_0'))
+    background.scaleX = ((@width * Tile.WIDTH) / background.image.width)
+    background.scaleY = ((@height * Tile.HEIGHT) / background.image.height)
+
     background.addEventListener 'click', (e) =>
       window.Game.onActorClicked(null)
     background.addEventListener 'dblclick', (e) =>
@@ -79,14 +79,24 @@ class GameStage extends Stage
     @addChild(background)
 
     # make sure all of the actors on the stage are in the library
+    library = json.actor_library || []
     for actor in json.actor_descriptors
-      json.actor_library.push(actor.identifier) if json.actor_library.indexOf(actor.identifier) == -1
+      library.push(actor.identifier) if library.indexOf(actor.identifier) == -1
 
     # fetch the actor definitions (which include base64 image data, etc...)
-    window.Game.library.loadActorDefinitions json.actor_library, (err) =>
+    window.Game.library.loadActorDefinitions library, (err) =>
       for descriptor in json.actor_descriptors
         @addActor(descriptor)
+      @update()
       callback(null) if callback
+
+
+  dispose: () =>
+    @actors = []
+    @recordingMasks = []
+    @recordingHandles = {}
+    @removeAllChildren()
+    @update()
 
 
   setStatusMessage: (message) =>
@@ -186,8 +196,8 @@ class GameStage extends Stage
 
   # -- Managing Actors on the Stage -- #
 
-  addActor: (descriptor) ->
-    actor = window.Game.library.instantiateActorFromDescriptor(descriptor, null, @)
+  addActor: (descriptor, pointIfNotInDescriptor = null) ->
+    actor = window.Game.library.instantiateActorFromDescriptor(descriptor, pointIfNotInDescriptor, @)
     return console.log('Could not read descriptor:', descriptor) if !actor
 
     actor.addEventListener 'click', (e) =>

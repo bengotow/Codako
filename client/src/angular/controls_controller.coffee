@@ -8,6 +8,9 @@ ControlsCtrl = ($scope) ->
   $scope.$root.$on 'start_compose_rule', (msg, args) ->
     $scope.control_set = 'record-preflight'
 
+  $scope.$root.$on 'start_edit_rule', (msg, args) ->
+    $scope.control_set = 'recording'
+
   $scope.$root.$on 'set_tool', (msg, args) ->
     $scope.$apply() unless $scope.$$phase
 

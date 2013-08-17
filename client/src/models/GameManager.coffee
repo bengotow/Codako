@@ -116,13 +116,9 @@ class GameManager
 
   dispose: ->
     @selectedActor = null
-    @stagePane1.actors = []
-    @stagePane1.removeAllChildren()
-    @stagePane1.update()
-    @stagePane2.actors = []
-    @stagePane2.removeAllChildren()
-    @stagePane2.update()
-    try
+    @stagePane1.dispose()
+    @stagePane2.dispose()
+   try
       @content.pauseSound('globalMusic')
 
 
@@ -242,6 +238,8 @@ class GameManager
     window.rootScope.$broadcast('start_compose_rule')
     initialExtent = {left: actor.worldPos.x, right: actor.worldPos.x, top: actor.worldPos.y, bottom: actor.worldPos.y}
 
+    @previousGameState = @mainStage.saveData()
+
     @recordingRule = new Rule()
     @recordingRule.prepareForEditing(actor)
     @recordingRule.updateScenario(@mainStage, initialExtent)
@@ -251,15 +249,37 @@ class GameManager
     @selectActor(actor)
 
 
+  enterRecordingModeForEditingRule: (rule, actor) ->
+    return unless rule && actor
+    window.rootScope.$broadcast('start_edit_rule')
+
+    @previousGameState = @mainStage.saveData()
+    
+    @recordingRule = rule
+    @recordingRule.prepareForEditing(actor)
+    @recordingRule.editing = true
+
+    recordingData = rule.beforeSaveData(10, 10)
+
+    for stage in [@stagePane1, @stagePane2]
+      stage.prepareWithData recordingData, () =>
+        stage.setRecordingExtent(recordingData.extent, 'white')
+        stage.setRecordingCentered(true)
+        stage.setWidth(@stageTotalWidth / 2 - 2)
+
+        if stage == @stagePane2
+          afterActor = @stagePane2.actorMatchingDescriptor(@selectedActor.descriptor())
+          @selectActor(afterActor)
+          afterActor.applyRule(rule)
+
+
   focusAndStartRecording: () ->
     @stagePane1.draggingEnabled = false
     @stagePane2.prepareWithData @mainStage.saveData(), () =>
       for stage in [@stagePane1, @stagePane2]
         stage.setRecordingExtent(@stagePane1.recordingExtent, 'white')
         stage.setRecordingCentered(true)
-
-      @stagePane1.setWidth(@stageTotalWidth / 2 - 2)
-      @stagePane2.setWidth(@stageTotalWidth / 2 - 2)
+        stage.setWidth(@stageTotalWidth / 2 - 2)
 
       @selectActor(@stagePane2.actorMatchingDescriptor(@selectedActor.descriptor()))
       @recordingRule.editing = true
@@ -274,7 +294,9 @@ class GameManager
     @stagePane1.setWidth(@stageTotalWidth)
     @stagePane2.setWidth(0)
 
-    @selectActor(@recordingRule.actor)
+    @stagePane1.prepareWithData @previousGameState, () =>
+      @selectActor(@stagePane1.actorMatchingDescriptor(@recordingRule.actor.descriptor()))
+
     @recordingRule = null
 
 

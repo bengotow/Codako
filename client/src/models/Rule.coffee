@@ -21,6 +21,25 @@ class Rule
     # and the actors don't keep their pre-change state.
 
 
+  beforeSaveData: (worldPadX, worldPadY) ->
+    extent = @extent()
+    data = {
+      identifier: 'before-rule'
+      width: (extent.right - extent.left) + worldPadX*2,
+      height: (extent.bottom - extent.top) + worldPadY*2,
+      wrapX: true,
+      wrapY: true,
+      extent: {top: extent.top + worldPadY, left: extent.left + worldPadX, right: extent.right + worldPadX, bottom: extent.bottom + worldPadY}
+      actor_descriptors: []
+    }
+    for key,obj of @descriptors
+      obj = JSON.parse(JSON.stringify(obj))
+      offset = Point.fromHash(obj.offset)
+      obj.position = {x: worldPadX + offset.x, y: worldPadY + offset.y}
+      data.actor_descriptors.push(obj)
+
+    data
+
   findActorReference: (actor) ->
     _.find Object.keys(@descriptors), (key) =>
       @descriptors[key].actor_id_during_recording == actor._id
@@ -63,6 +82,19 @@ class Rule
         @scenario.push(block)
 
     delete @descriptors[uuid] for uuid,value of unusedDescriptors
+
+
+  extent: () =>
+    extent = {left: 10000, top: 10000, right: 0, bottom: 0}
+
+    # read the scenario definition
+    for block in @scenario
+      [x,y] = block.coord.split(',')
+      extent.left = Math.min(x, extent.left)
+      extent.right = Math.max(x, extent.right)
+      extent.top = Math.min(y, extent.top)
+      extent.bottom = Math.max(y, extent.bottom)
+    extent
 
 
   descriptor: () =>
