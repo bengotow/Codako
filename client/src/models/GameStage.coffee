@@ -197,7 +197,7 @@ class GameStage extends Stage
   # -- Managing Actors on the Stage -- #
 
   addActor: (descriptor, pointIfNotInDescriptor = null) ->
-    actor = window.Game.library.instantiateActorFromDescriptor(descriptor, pointIfNotInDescriptor, @)
+    actor = window.Game.library.instantiateActorFromDescriptor(descriptor, pointIfNotInDescriptor)
     return console.log('Could not read descriptor:', descriptor) if !actor
 
     actor.addEventListener 'click', (e) =>

@@ -106,7 +106,7 @@ class ActorSprite extends Sprite
     for block in rule.scenario
       pos = Point.sum(@worldPos, Point.fromString(block.coord))
       descriptors = _.map block.refs, (ref) -> rule.descriptors[ref]
-      return false unless window.Game.actorsAtPositionMatchDescriptors(pos, descriptors)
+      return false unless @stage.actorsAtPositionMatchDescriptors(pos, descriptors)
     true
 
 
@@ -126,11 +126,11 @@ class ActorSprite extends Sprite
       descriptor = rule.descriptors[action.ref]
       pos = Point.sum(@worldPos, Point.fromString(descriptor.offset))
       pos = @stage.wrappedPosition(pos) if @stage
-      actor = window.Game.actorMatchingDescriptor(descriptor, window.Game.actorsAtPosition(pos))
+      actor = @stage.actorMatchingDescriptor(descriptor, @stage.actorsAtPosition(pos))
       if actor
         actor.applyRuleAction(action)
       else
-        actor = window.Game.addActor(descriptor, pos)
+        actor = @stage.addActor(descriptor, pos)
 
 
   applyRuleAction: (action) ->

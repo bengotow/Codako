@@ -49,7 +49,7 @@ class LibraryManager
 
   # -- Using Actor Descriptors to Reference Actors ---#
 
-  instantiateActorFromDescriptor: (descriptor, initial_position = null, level = null) ->
+  instantiateActorFromDescriptor: (descriptor, initial_position = null) ->
     ident = descriptor.identifier
     def = @definitions[ident]
     return false unless def
@@ -58,7 +58,7 @@ class LibraryManager
     pos = Point.fromHash(descriptor.position) if descriptor.position
     pos = initial_position if initial_position
 
-    model = new ActorSprite(ident, pos, def.size, level)
+    model = new ActorSprite(ident, pos, def.size)
     model.setSpriteSheet(def.spritesheetInstance())
     model._id = descriptor._id || Math.createUUID()
     model.definition = def
