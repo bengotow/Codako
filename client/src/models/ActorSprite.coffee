@@ -148,7 +148,7 @@ class ActorSprite extends Sprite
       @setAppearance(action.after)
 
     else if action.type == 'variable'
-      current = @variableValues[action.variable]
+      current = @variableValue(action.variable)
       @variableValues[action.variable] = current/1 + action.value/1 if action.operation == 'add'
       @variableValues[action.variable] = current/1 - action.value/1 if action.operation == 'subtract'
       @variableValues[action.variable] = action.value/1 if action.operation == 'set'
