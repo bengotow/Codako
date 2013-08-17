@@ -121,6 +121,8 @@ class ActorDefinition
 
   addRule: (rule) ->
     console.log "Adding Rule #{rule._id}"
+    return if @findRule(rule)
+
     idle_group = false
     for existing in @rules
       idle_group = existing if existing.type == 'group-event' && existing.event == 'idle'
@@ -132,14 +134,25 @@ class ActorDefinition
 
     @save()
 
-  removeRule: (rule, searchRoot = @rules) ->
+
+  findRule: (rule, foundCallback = null, searchRoot = @rules) ->
     for ii in [0..searchRoot.length-1] by 1
       if searchRoot[ii]._id == rule._id
-        searchRoot.splice(ii, 1)
-        @save()
-        return
+        foundCallback(searchRoot, ii) if foundCallback
+        return true
       if searchRoot[ii].rules
-        @removeRule(rule, searchRoot[ii].rules)
+        return @findRule(rule, foundCallback, searchRoot[ii].rules)
+    return false
+
+
+  clearCacheForRule: (rule) ->
+    @ruleRenderCache["#{rule._id}-before"] = null
+    @ruleRenderCache["#{rule._id}-after"] = null
+
+  removeRule: (rule) ->
+    @findRule rule, (collection, index) =>
+      collection.splice(index, 1)
+      @save()
 
 
   addEventGroup: (config = {event:'key', code:'36'}) ->

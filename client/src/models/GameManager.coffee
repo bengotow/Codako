@@ -318,10 +318,9 @@ class GameManager
 
 
   saveRecording: () ->
-    # okay cool - now add the rule to the actor definition
     actor = @recordingRule.actor
     actor.definition.addRule(@recordingRule)
-
+    actor.definition.clearCacheForRule(@recordingRule)
     @exitRecordingMode()
 
 
