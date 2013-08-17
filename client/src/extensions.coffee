@@ -28,6 +28,8 @@ Point.fromString = (str) ->
   return new Point(components[0]/1, components[1]/1)
 
 Point.fromHash = (hash) ->
+  if hash.x == undefined
+    throw "Attempt to convert from hash to Point when source is not a hash: #{hash}"
   new Point(hash.x, hash.y)
 
 Point.isZero = (coord) ->

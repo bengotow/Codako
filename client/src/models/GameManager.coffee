@@ -241,7 +241,7 @@ class GameManager
     @previousGameState = @mainStage.saveData()
 
     @recordingRule = new Rule()
-    @recordingRule.prepareForEditing(actor)
+    @recordingRule.actor = actor
     @recordingRule.updateScenario(@mainStage, initialExtent)
 
     @mainStage.setRecordingExtent(initialExtent, 'masked')
@@ -254,21 +254,23 @@ class GameManager
     window.rootScope.$broadcast('start_edit_rule')
 
     @previousGameState = @mainStage.saveData()
-    
+
     @recordingRule = rule
-    @recordingRule.prepareForEditing(actor)
     @recordingRule.editing = true
 
-    recordingData = rule.beforeSaveData(10, 10)
+    ruleData = rule.beforeSaveData(6, 6)
 
     for stage in [@stagePane1, @stagePane2]
-      stage.prepareWithData recordingData, () =>
-        stage.setRecordingExtent(recordingData.extent, 'white')
+      stage.prepareWithData ruleData, (err) =>
+        stage.setRecordingExtent(ruleData.extent, 'white')
         stage.setRecordingCentered(true)
         stage.setWidth(@stageTotalWidth / 2 - 2)
 
+        if stage == @stagePane1
+          rule.actor = stage.actorMatchingDescriptor(@selectedActor.descriptor())
+
         if stage == @stagePane2
-          afterActor = @stagePane2.actorMatchingDescriptor(@selectedActor.descriptor())
+          afterActor = stage.actorMatchingDescriptor(@selectedActor.descriptor())
           @selectActor(afterActor)
           afterActor.applyRule(rule)
 

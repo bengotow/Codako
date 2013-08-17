@@ -60,7 +60,8 @@ class LibraryManager
 
     model = new ActorSprite(ident, pos, def.size)
     model.setSpriteSheet(def.spritesheetInstance())
-    model._id = descriptor._id || Math.createUUID()
+    model._id = descriptor._id || descriptor.actor_id_during_recording || Math.createUUID()
+
     model.definition = def
     model.variableValues = _.clone(descriptor.variableValues)
     model.variableValues ||= {}

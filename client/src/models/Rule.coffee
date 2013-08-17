@@ -10,17 +10,6 @@ class Rule
     @[key] = value for key, value of json
 
 
-  prepareForEditing: (actor) ->
-    @actor = actor
-    # this code needs to iterate through the blocks in the scenario, find
-    # actor instances on the game stage that match the descriptors for that block,
-    # and bind them together using actor_id_during_recording.
-
-    # The actor_id_during_recording property is important because the actor may
-    # be moved arbitrarily so that it no longer matches it's original descriptor,
-    # and the actors don't keep their pre-change state.
-
-
   beforeSaveData: (worldPadX, worldPadY) ->
     extent = @extent()
     data = {
@@ -34,13 +23,16 @@ class Rule
     }
     for key,obj of @descriptors
       obj = JSON.parse(JSON.stringify(obj))
-      offset = Point.fromHash(obj.offset)
-      obj.position = {x: worldPadX + offset.x, y: worldPadY + offset.y}
+      [offsetX, offsetY] = obj.offset.split(',')
+      obj.position = {x: worldPadX + offsetX/1, y: worldPadY + offsetY/1}
       data.actor_descriptors.push(obj)
 
     data
 
   findActorReference: (actor) ->
+    # The actor_id_during_recording property is important because the actor may
+    # be moved arbitrarily so that it no longer matches it's original descriptor,
+    # and the actors don't keep their pre-change state.
     _.find Object.keys(@descriptors), (key) =>
       @descriptors[key].actor_id_during_recording == actor._id
 
@@ -149,6 +141,7 @@ class Rule
       # in the coordinate space relative to the root @actor of the Rule
       [refX, refY] = [@actor.worldPos.x, @actor.worldPos.y]
       [offsetX, offsetY] = @descriptors[refUUID].offset.split(',')
+
       action = @actionMatching(refUUID, changeType)
       action['delta'] = "#{newValue.x - (refX/1 + offsetX/1)},#{newValue.y - (refY/1 + offsetY/1)}"
       if action['delta'] == "0,0"

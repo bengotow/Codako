@@ -85,9 +85,9 @@ class GameStage extends Stage
 
     # fetch the actor definitions (which include base64 image data, etc...)
     window.Game.library.loadActorDefinitions library, (err) =>
-      for descriptor in json.actor_descriptors
-        @addActor(descriptor)
+      @addActor(descriptor) for descriptor in json.actor_descriptors
       @update()
+
       callback(null) if callback
 
 
