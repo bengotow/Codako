@@ -145,7 +145,7 @@ class ActorSprite extends Sprite
       @setWorldPos(-100,-100)
 
     else if action.type == 'appearance'
-      @setAppearance(action.after)
+      @setAppearance(action.to)
 
     else if action.type == 'variable'
       current = @variableValue(action.variable)
