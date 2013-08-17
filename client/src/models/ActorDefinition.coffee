@@ -141,7 +141,8 @@ class ActorDefinition
         foundCallback(searchRoot, ii) if foundCallback
         return true
       if searchRoot[ii].rules
-        return @findRule(rule, foundCallback, searchRoot[ii].rules)
+        found = @findRule(rule, foundCallback, searchRoot[ii].rules)
+        return true if found
     return false
 
 
