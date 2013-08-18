@@ -149,9 +149,7 @@ class ActorSprite extends Sprite
 
     else if action.type == 'variable'
       current = @variableValue(action.variable)
-      @variableValues[action.variable] = current/1 + action.value/1 if action.operation == 'add'
-      @variableValues[action.variable] = current/1 - action.value/1 if action.operation == 'subtract'
-      @variableValues[action.variable] = action.value/1 if action.operation == 'set'
+      @variableValues[action.variable] = Math.applyOperation(current, action.operation, action.value)
 
     else
       console.log('Not sure how to apply action', action)

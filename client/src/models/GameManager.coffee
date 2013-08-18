@@ -202,6 +202,7 @@ class GameManager
     @recordingRule.incorporate(actor, 'variable', {variable: varName, value: val}) if @recordingRule
     actor.variableValues[varName] = val
 
+
   onActorDoubleClicked: (actor) ->
     @selectActor(actor)
     window.rootScope.$digest()
@@ -210,23 +211,32 @@ class GameManager
   onActorDragged: (actor, stage, point) ->
     if @recordingRule
       return unless point.isInside(@mainStage.recordingExtent)
-      @recordingRule.incorporate(actor, 'move', point)
-    actor.setWorldPos(point)
-    if stage == @mainStage
-      @save()
+
+    @wrapApplyChangeTo actor, 'move', point, stage, () ->
+      actor.setWorldPos(point)
 
 
   onAppearancePlaced: (actor, stage, appearance) ->
-    @recordingRule.incorporate(actor, 'appearance', appearance) if @recordingRule
-    actor.setAppearance(appearance)
-    @update()
-    if stage == @mainStage
-      @save()
+    @wrapApplyChangeTo actor, 'appearance', appearance, stage, () ->
+      actor.setAppearance(appearance)
+      @update()
 
 
   onActorPlaced: (actor, stage) ->
-    @recordingRule.incorporate(actor, 'create') if @recordingRule
-    @update()
+    @wrapApplyChangeTo actor, 'create', null, stage, () ->
+      @update()
+
+
+  wrapApplyChangeTo: (actor, changeType, changeValue, stage, applyCallback) ->
+    applyCallback()
+
+    if @recordingRule
+      if stage == @stagePane1
+        extent = @recordingRule.extentOnStage()
+        @recordingRule.setMainActor(actor) if actor._id == @recordingRule.actor._id
+        @recordingRule.updateScenario(@stagePane1, extent)
+      @recordingRule.updateActions(@stagePane1, @stagePane2)
+
     if stage == @mainStage
       @save()
 
@@ -241,7 +251,7 @@ class GameManager
     @previousGameState = @mainStage.saveData()
 
     @recordingRule = new Rule()
-    @recordingRule.actor = actor
+    @recordingRule.setMainActor(actor)
     @recordingRule.updateScenario(@mainStage, initialExtent)
 
     @mainStage.setRecordingExtent(initialExtent, 'masked')
@@ -264,10 +274,10 @@ class GameManager
       stage.prepareWithData ruleData, (err) =>
         stage.setRecordingExtent(ruleData.extent, 'white')
         stage.setRecordingCentered(true)
-        stage.setWidth(@stageTotalWidth / 2 - 2)
+        stage.setDisplayWidth(@stageTotalWidth / 2 - 2)
 
         if stage == @stagePane1
-          rule.actor = stage.actorMatchingDescriptor(@selectedActor.descriptor())
+          rule.setMainActor(stage.actorMatchingDescriptor(@selectedActor.descriptor()))
 
         if stage == @stagePane2
           afterActor = stage.actorMatchingDescriptor(@selectedActor.descriptor())
@@ -281,7 +291,7 @@ class GameManager
       for stage in [@stagePane1, @stagePane2]
         stage.setRecordingExtent(@stagePane1.recordingExtent, 'white')
         stage.setRecordingCentered(true)
-        stage.setWidth(@stageTotalWidth / 2 - 2)
+        stage.setDisplayWidth(@stageTotalWidth / 2 - 2)
 
       @selectActor(@stagePane2.actorMatchingDescriptor(@selectedActor.descriptor()))
       @recordingRule.editing = true
@@ -293,8 +303,8 @@ class GameManager
     @stagePane1.centerOnEntireCanvas()
     @stagePane1.draggingEnabled = true
 
-    @stagePane1.setWidth(@stageTotalWidth)
-    @stagePane2.setWidth(0)
+    @stagePane1.setDisplayWidth(@stageTotalWidth)
+    @stagePane2.setDisplayWidth(0)
 
     @stagePane1.prepareWithData @previousGameState, () =>
       @selectActor(@stagePane1.actorMatchingDescriptor(@recordingRule.actor.descriptor()))
@@ -303,13 +313,20 @@ class GameManager
 
 
   recordingHandleDragged: (handle, finished = false) =>
-    actor = @recordingRule.actor
-
     extent = @mainStage.recordingExtent
-    extent.left = Math.min(actor.worldPos.x, handle.worldPos.x + 1, extent.right) if handle.side == 'left'
-    extent.right = Math.max(actor.worldPos.x, extent.left, handle.worldPos.x - 1) if handle.side == 'right'
-    extent.top = Math.min(actor.worldPos.y, handle.worldPos.y + 1, extent.bottom) if handle.side == 'top'
-    extent.bottom = Math.max(actor.worldPos.y, extent.top, handle.worldPos.y - 1) if handle.side == 'bottom'
+    extent.left = Math.min(handle.worldPos.x + 1, extent.right) if handle.side == 'left'
+    extent.right = Math.max(extent.left, handle.worldPos.x - 1) if handle.side == 'right'
+    extent.top = Math.min(handle.worldPos.y + 1, extent.bottom) if handle.side == 'top'
+    extent.bottom = Math.max(extent.top, handle.worldPos.y - 1) if handle.side == 'bottom'
+
+    # ensure that all actors in the scenario are in the extent, both before and after
+    @recordingRule.withEachActor @stagePane1, @stagePane2, (ref, beforeActor, afterActor) ->
+      for actor in [beforeActor, afterActor]
+        continue unless actor
+        extent.left = Math.min(actor.worldPos.x, extent.left)
+        extent.right = Math.max(actor.worldPos.x, extent.right)
+        extent.top = Math.min(actor.worldPos.y, extent.top)
+        extent.bottom = Math.max(actor.worldPos.y, extent.bottom)
 
     @recordingRule.updateScenario(@mainStage, extent)
     @stagePane1.setRecordingExtent(extent)
@@ -321,6 +338,7 @@ class GameManager
     actor = @recordingRule.actor
     actor.definition.addRule(@recordingRule)
     actor.definition.clearCacheForRule(@recordingRule)
+    actor.definition.save()
     @exitRecordingMode()
 
 
@@ -355,7 +373,6 @@ class GameManager
 
     for block in rule.scenario
       c = Point.fromString(block.coord)
-
       for ref in block.refs
         @renderingStage.addActor(ref)
 

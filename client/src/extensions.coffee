@@ -23,6 +23,12 @@ Math.clamp = (value, min, max) ->
   value = (if value < min then min else value)
   value
 
+Math.applyOperation = (existing, operation, value) ->
+  return existing/1 + value/1 if operation == 'add'
+  return current/1 - value/1 if operation == 'subtract'
+  return value/1 if operation == 'set'
+  throw "Don't know how to apply operation #{existing}, #{operation}, #{value}"
+
 Point.fromString = (str) ->
   components = str.split(',')
   return new Point(components[0]/1, components[1]/1)

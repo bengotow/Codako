@@ -40,7 +40,7 @@ class GameStage extends Stage
     @widthTarget > 0 || @widthCurrent > 0
 
 
-  setWidth: (width) ->
+  setDisplayWidth: (width) ->
     @widthTarget = width
 
 
@@ -249,6 +249,11 @@ class GameStage extends Stage
       return false unless matched
 
     true
+
+  actorWithID: (id, set = @actors) ->
+    for actor in set
+      return actor if actor._id == id
+    false
 
 
   actorMatchingDescriptor: (descriptor, set = @actors) ->
