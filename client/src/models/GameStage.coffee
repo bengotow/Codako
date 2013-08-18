@@ -11,6 +11,8 @@ class GameStage extends Stage
     @statusMessage = null
     @draggingEnabled = true
     @actors = []
+    @width = 20
+    @height = 20
     @wrapX = true
     @wrapY = true
 

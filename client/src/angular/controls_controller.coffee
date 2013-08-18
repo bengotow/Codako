@@ -63,6 +63,7 @@ ControlsCtrl = ($scope) ->
 
   $scope.save_recording = () ->
     window.Game.saveRecording()
+    window.Game.exitRecordingMode()
     $scope.control_set = 'testing'
 
   $scope.recording_descriptors = () ->
@@ -92,7 +93,7 @@ ControlsCtrl = ($scope) ->
     descriptor = window.Game?.recordingRule?.descriptors[ref]
     appearance_id ||= descriptor.appearance
     definition = window.Game.library.definitions[descriptor.identifier]
-    definition.iconForAppearance(appearance_id, 26, 26)
+    definition.iconForAppearance(appearance_id, 26, 26) || ""
 
   $scope.icon_for_move = (delta) ->
     size = 10

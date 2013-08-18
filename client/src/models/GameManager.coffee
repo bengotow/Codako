@@ -182,6 +182,7 @@ class GameManager
     canRepeat = @tool == 'delete'
     @setTool('pointer') unless canRepeat && (@keysDown[16] || @keysDown[17] || @keysDown[18])
 
+
   # -- Event Handling from the World and GameStage --- #
 
   onActorClicked: (actor) =>
@@ -248,7 +249,7 @@ class GameManager
     window.rootScope.$broadcast('start_compose_rule')
     initialExtent = {left: actor.worldPos.x, right: actor.worldPos.x, top: actor.worldPos.y, bottom: actor.worldPos.y}
 
-    @previousGameState = @mainStage.saveData()
+    @previousGameState = @mainStage.saveData() unless @previousGameState
 
     @recordingRule = new Rule()
     @recordingRule.setMainActor(actor)
@@ -263,11 +264,11 @@ class GameManager
     return unless rule && actor
     window.rootScope.$broadcast('start_edit_rule')
 
-    @previousGameState = @mainStage.saveData()
-
+    @saveRecording() if @recordingRule
     @recordingRule = rule
     @recordingRule.editing = true
 
+    @previousGameState = @mainStage.saveData() unless @previousGameState
     ruleData = rule.beforeSaveData(6, 6)
 
     for stage in [@stagePane1, @stagePane2]
@@ -281,8 +282,8 @@ class GameManager
 
         if stage == @stagePane2
           afterActor = stage.actorMatchingDescriptor(@selectedActor.descriptor())
-          @selectActor(afterActor)
           afterActor.applyRule(rule)
+          @selectActor(afterActor)
 
 
   focusAndStartRecording: () ->
@@ -308,6 +309,7 @@ class GameManager
 
     @stagePane1.prepareWithData @previousGameState, () =>
       @selectActor(@stagePane1.actorMatchingDescriptor(@recordingRule.actor.descriptor()))
+      @previousGameState = undefined
 
     @recordingRule = null
 
@@ -339,7 +341,6 @@ class GameManager
     actor.definition.addRule(@recordingRule)
     actor.definition.clearCacheForRule(@recordingRule)
     actor.definition.save()
-    @exitRecordingMode()
 
 
   # -- Helper Methods -- #

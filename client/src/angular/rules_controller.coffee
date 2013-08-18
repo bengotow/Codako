@@ -54,13 +54,13 @@ RulesCtrl = ($scope) ->
   $scope.scenario_before_url = (rule) ->
     cache = window.Game.selectedDefinition.ruleRenderCache
     cache["#{rule._id}-before"] ||= window.Game.renderRule(rule)
-    cache["#{rule._id}-before"]
+    cache["#{rule._id}-before"] || ""
 
 
   $scope.scenario_after_url = (rule) ->
     cache = window.Game.selectedDefinition.ruleRenderCache
     cache["#{rule._id}-after"] ||= window.Game.renderRule(rule, true)
-    cache["#{rule._id}-after"]
+    cache["#{rule._id}-after"] || ""
 
 
   $scope.toggle_disclosed = (struct) ->

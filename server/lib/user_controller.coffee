@@ -83,7 +83,7 @@ class UserController
                       delta:"-1,0"
                     }]
                     descriptors: {
-                      'a': { identifier: 'dude', offset:"0,0" }
+                      'a': { identifier: 'dude', offset:"0,0", actor_id_during_recording: "000123" }
                     }
                   }
                 ]
@@ -113,7 +113,7 @@ class UserController
                     delta:"1,0"
                   }],
                   descriptors: {
-                    'a': { identifier: 'dude', offset:"0,0" }
+                    'a': { identifier: 'dude', offset:"0,0",actor_id_during_recording: "000123" }
                   }
                 }
             ]

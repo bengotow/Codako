@@ -164,7 +164,7 @@ class Rule
         resultIndex = x
 
     if !result
-      result = {ref: uuid, type: type, unsaved: true}
+      result = {ref: uuid, type: type}
       resultIndex = @actions.length
       @actions.push(result)
 
@@ -180,7 +180,7 @@ class Rule
     for x in [extent.left..extent.right]
       for y in [extent.top..extent.bottom]
         for beforeActor in beforeStage.actorsAtPosition(new Point(x,y))
-          ref = @findActorReference(beforeActor) || @addActorReference(changeActor)
+          ref = @findActorReference(beforeActor) || @addActorReference(beforeActor)
           afterActor = afterStage.actorWithID(@descriptors[ref].actor_id_during_recording)
           callback(ref, beforeActor, afterActor)
           actorsSeen[ref] = true
@@ -190,7 +190,7 @@ class Rule
     for x in [extent.left..extent.right]
       for y in [extent.top..extent.bottom]
         for afterActor in afterStage.actorsAtPosition(new Point(x,y))
-          ref = @findActorReference(beforeActor) || @addActorReference(changeActor)
+          ref = @findActorReference(afterActor) || @addActorReference(afterActor)
           continue if actorsSeen[ref]
           callback(ref, false, afterActor)
 

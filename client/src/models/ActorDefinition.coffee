@@ -37,6 +37,8 @@ class ActorDefinition
 
 
   iconForAppearance: (appearance, width, height) ->
+    return null unless appearance && width > 0 && height > 0
+
     key = "#{appearance}:#{width}:#{height}"
     return @spritesheetIconCache[key] if @spritesheetIconCache[key]
 
