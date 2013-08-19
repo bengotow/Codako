@@ -79,7 +79,9 @@
     a new rule by tapping the 'Record' icon.
   </div>
 
-  <ul class="unstyled rules-list" sortable="{{sortable_attributes_for_rules_root()}}">
-    <li ng-repeat="struct in rules()"  ng-click="rule_clicked(struct)" ng-include="'rule_template.html'" data-id="{{struct._id}}"></li>
-  </ul>
+  <div data-id="base">
+    <ul class="unstyled rules-list" sortable="{{sortable_attributes_for_rules_root()}}">
+      <li ng-repeat="struct in rules()"  ng-click="rule_clicked(struct)" ng-include="'rule_template.html'" data-id="{{struct._id}}"></li>
+    </ul>
+  </div>
 </div>

@@ -104,6 +104,7 @@ RulesCtrl = ($scope) ->
 
   $scope.sortable_change_start = () ->
     $scope.structs_lookup_table = {}
+    $scope.structs_lookup_table['base'] = {rules: $scope.rules()}
     for struct in $scope.rules()
       $scope.populate_structs_lookup_table(struct)
 
