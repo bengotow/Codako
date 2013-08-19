@@ -33,10 +33,11 @@ class ActorSprite extends Sprite
     appearance_match = @appearance == descriptor.appearance
     variable_failed = false
     for id, constraint of descriptor.variableConstraints
+      continue if constraint.ignored == true
       value = @variableValue(id)
-      variable_failed = true if constraint.comparator == '=' && value != constraint.value
-      variable_failed = true if constraint.comparator == '>' && value <= constraint.value
-      variable_failed = true if constraint.comparator == '<' && value >= constraint.value
+      variable_failed = true if constraint.comparator == '=' && value/1 != constraint.value/1
+      variable_failed = true if constraint.comparator == '>' && value/1 <= constraint.value/1
+      variable_failed = true if constraint.comparator == '<' && value/1 >= constraint.value/1
 
     return id_match && !variable_failed && (appearance_match || !descriptor.appearance)
 
@@ -134,12 +135,13 @@ class ActorSprite extends Sprite
         actor = @stage.addActor(descriptor, pos)
         actor._id = Math.createUUID()
       else if actor
-        actor.applyRuleAction(action)
+        actor.applyRuleAction(action, rule)
       else
+        debugger
         throw "Couldn't find the actor for performing rule: #{rule}"
 
 
-  applyRuleAction: (action) ->
+  applyRuleAction: (action, rule = undefined) ->
     return unless action
     if action.type == 'move'
       p = Point.sum(@worldPos, Point.fromString(action.delta))

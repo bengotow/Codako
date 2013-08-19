@@ -61,10 +61,20 @@ class LibraryManager
     model = new ActorSprite(ident, pos, def.size)
     model.setSpriteSheet(def.spritesheetInstance())
     model._id = descriptor._id || descriptor.actor_id_during_recording || Math.createUUID()
-
     model.definition = def
-    model.variableValues = _.clone(descriptor.variableValues)
-    model.variableValues ||= {}
+
+    if descriptor.variableValues
+      model.variableValues = _.clone(descriptor.variableValues)
+
+    else if descriptor.variableConstraints
+      model.variableValues = {}
+      for variable, constraint of descriptor.variableConstraints
+        model.variableValues[variable] = constraint.value/1 if constraint.comparator == '='
+        model.variableValues[variable] = constraint.value/1-1 if constraint.comparator == '<'
+        model.variableValues[variable] = constraint.value/1+1 if constraint.comparator == '>'
+
+    else
+      model.variableValues ||= {}
     model.setAppearance(descriptor.appearance)
     model
 

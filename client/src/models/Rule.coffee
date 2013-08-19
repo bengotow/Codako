@@ -37,6 +37,7 @@ class Rule
 
     data
 
+
   findActorReference: (actor) ->
     # The actor_id_during_recording property is important because the actor may
     # be moved arbitrarily so that it no longer matches it's original descriptor,
@@ -48,17 +49,30 @@ class Rule
   addActorReference: (actor, options = {}) ->
     struct = actor.descriptor()
     struct.actor_id_during_recording = actor._id
-    struct.variableConstraints = {}
-    for variable, value of struct.variableValues
-      struct.variableConstraints[variable] = {value: value, comparator: "="}
+    @updateActorReference(struct, actor)
+
+    ref = Math.createUUID()
+    @descriptors[ref] = struct
+    return ref
+
+
+  updateActorReference: (struct, actor) ->
+    struct.appearance = actor.appearance
+    struct.variableConstraints ||= {}
+    for variable, value of actor.variableValues
+      constraint = struct.variableConstraints[variable]
+      if constraint
+        constraint.value = value/1 if constraint.comparator == '=' && value != constraint.value
+        constraint.value = value/1-1 if constraint.comparator == '>' && value < constraint.value
+        constraint.value = value/1+1 if constraint.comparator == '<' && value > constraint.value
+      else
+        constraint = {value: value, comparator: "=", ignored: false}
+      struct.variableConstraints[variable] = constraint
 
     delete struct._id
     delete struct.position
     delete struct.variableValues
-
-    uuid = Math.createUUID()
-    @descriptors[uuid] = struct
-    return uuid
+    struct
 
 
   updateScenario: (stage, extent = null) =>
@@ -73,14 +87,18 @@ class Rule
 
         for actor in stage.actorsAtPosition(new Point(x,y))
           ref = @findActorReference(actor)
-          ref = @addActorReference(actor) unless ref
+          if ref
+            @updateActorReference(@descriptors[ref], actor)
+          else
+            ref = @addActorReference(actor)
+
           block.refs.push(ref)
           delete unused[ref]
 
     delete @descriptors[ref] for ref,descriptor of unused
 
 
-  updateActions: (beforeStage, afterStage) =>
+  updateActions: (beforeStage, afterStage, options = {}) =>
     @withEachActorInExtent beforeStage, afterStage, (ref, beforeActor, afterActor) =>
       # okay - so we have the before and after state of this actor. Now we need to
       # review and adjust the actions we have, creating new ones if necessary to reach
@@ -90,54 +108,60 @@ class Rule
       created = !beforeActor
       deleted = !afterActor
 
-      [action, actionIndex] = @actionFor(ref, 'appearance')
-      if created || deleted || beforeActor.appearance == afterActor.appearance
-        @actions.splice(actionIndex, 1)
-      else
-        action['to'] = afterActor.appearance
-
-
-      [action, actionIndex] = @actionFor(ref, 'move')
-      if created || deleted || afterActor.worldPos.isEqual(beforeActor.worldPos)
-        @actions.splice(actionIndex, 1)
-      else
-        action.delta = "#{afterActor.worldPos.x - beforeActor.worldPos.x},#{afterActor.worldPos.y - beforeActor.worldPos.y}"
-
-
-      [action, actionIndex] = @actionFor(ref, 'create')
-      if !created
-        @actions.splice(actionIndex, 1)
-      else
-        action.offset = "#{afterActor.worldPos.x - @extentRoot.x},#{afterActor.worldPos.y - @extentRoot.y}"
-
-
-      [action, actionIndex] = @actionFor(ref, 'delete')
-      @actions.splice(actionIndex, 1) unless deleted
-
-
-      for vID in definition.variableIDs()
-        [action, actionIndex] = @actionFor ref, 'variable', (action) -> action.variable == vID
-
-        if created || deleted
+      unless options.skipAppearance == true
+        [action, actionIndex, actionIsNew] = @actionFor(ref, 'appearance')
+        if created || deleted || beforeActor.appearance == afterActor.appearance || (actionIsNew && options.existingActionsOnly)
           @actions.splice(actionIndex, 1)
-          continue
-
-        before = beforeActor.variableValue(vID)
-        after = afterActor.variableValue(vID)
-
-        action['variable'] = vID
-        if ((after-before == 1) || (action.operation == 'add'))
-          action['operation'] = 'add'
-          action['value'] = after-before
-        else if ((before - after == 1) || (action.operation == 'subtract'))
-          action['operation'] = 'subtract'
-          action['value'] = before-after
         else
-          action['operation'] = 'set'
-          action['value'] = after
+          action['to'] = afterActor.appearance
 
-        if before == after || action['value']/1 == 0
+
+      unless options.skipMove == true
+        [action, actionIndex, actionIsNew] = @actionFor(ref, 'move')
+        if created || deleted || afterActor.worldPos.isEqual(beforeActor.worldPos) || (actionIsNew && options.existingActionsOnly)
           @actions.splice(actionIndex, 1)
+        else
+          action.delta = "#{afterActor.worldPos.x - beforeActor.worldPos.x},#{afterActor.worldPos.y - beforeActor.worldPos.y}"
+
+
+      unless options.skipCreate == true
+        [action, actionIndex, actionIsNew] = @actionFor(ref, 'create')
+        if !created || (actionIsNew && options.existingActionsOnly)
+          @actions.splice(actionIndex, 1)
+        else
+          action.offset = "#{afterActor.worldPos.x - @extentRoot.x},#{afterActor.worldPos.y - @extentRoot.y}"
+
+
+      unless options.skipDelete == true
+        [action, actionIndex, actionIsNew] = @actionFor(ref, 'delete')
+        if !deleted || (actionIsNew && options.existingActionsOnly)
+          @actions.splice(actionIndex, 1)
+
+
+      unless options.skipVariables == true
+        for vID in definition.variableIDs()
+          [action, actionIndex, actionIsNew] = @actionFor ref, 'variable', (action) -> action.variable == vID
+
+          if created || deleted || (actionIsNew && options.existingActionsOnly)
+            @actions.splice(actionIndex, 1)
+            continue
+
+          before = beforeActor.variableValue(vID)
+          after = afterActor.variableValue(vID)
+
+          action['variable'] = vID
+          if ((after-before == 1) || (action.operation == 'add'))
+            action['operation'] = 'add'
+            action['value'] = after-before
+          else if ((before - after == 1) || (action.operation == 'subtract'))
+            action['operation'] = 'subtract'
+            action['value'] = before-after
+          else
+            action['operation'] = 'set'
+            action['value'] = after
+
+          if before == after || action['value']/1 == 0
+            @actions.splice(actionIndex, 1)
 
 
   updateExtent: (beforeStage, afterStage, desiredExtent) ->
@@ -219,6 +243,7 @@ class Rule
 
   actionFor: (uuid, type, extras = null) =>
     resultIndex = null
+    isNew = false
     for x in [@actions.length - 1..0] by -1
       action = @actions[x]
       if action.ref == uuid && action.type == type && (!extras || extras(action))
@@ -226,11 +251,12 @@ class Rule
         resultIndex = x
 
     if !result
+      isNew = true
       result = {ref: uuid, type: type}
       resultIndex = @actions.length
       @actions.push(result)
 
-    return [result, resultIndex]
+    return [result, resultIndex, isNew]
 
 
   withEachActorInExtent: (beforeStage, afterStage, callback) =>

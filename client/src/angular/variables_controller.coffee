@@ -12,8 +12,29 @@ VariablesCtrl = ($scope) ->
     $scope.variables() && $.isEmptyObject($scope.variables())
 
   $scope.add_variable = () ->
-    window.Game?.selectedDefinition.addVariable()
-    window.Game?.selectedDefinition.save()
+    definition = window.Game?.selectedDefinition
+    newVar = definition.addVariable()
+
+    # find next available place in the sidebar to put the variable
+    x = 0
+    y = 0
+    while y < 10
+      taken = false
+      for id, variable of definition.variables()
+        if variable.x == x && variable.y == y
+          taken = true
+          break
+      if taken == false
+        break
+      else
+        x += 1
+        if x > 2
+          x = 0
+          y +=1
+
+    newVar.x = x
+    newVar.y = y
+    definition.save()
 
   $scope.variable_clicked = (variable) ->
     if window.Game.tool == 'delete'

@@ -128,6 +128,7 @@ class GameManager
     data.identifier = @identifier
     window.Socket.emit 'put-level', data
 
+
   isKeyDown: (code) ->
     return @keysDown[code]
 
@@ -139,6 +140,12 @@ class GameManager
 
     @selectedActor.setSelected(false) if @selectedActor
     @selectedDefinition = null
+
+    # applying the changes forces the sidebars and panels to take on the
+    # blank state before they take on another actor's state. This is important
+    # because switching from one hash data source to another isn't noticed
+    # by Angular's change tracking system
+    window.rootScope.$apply()
 
     @selectedActor = actor
     @selectedDefinition = @selectedActor.definition if @selectedActor
@@ -217,11 +224,27 @@ class GameManager
 
     if @selectedRule
       if stage == @stagePane1
+        # make sure that the extent of the recording is not changed by moving the
+        # recording actor.
         extent = @selectedRule.extentOnStage()
         @selectedRule.setMainActor(actor) if actor._id == @selectedRule.actor._id
         @selectedRule.updateScenario(@stagePane1, extent)
 
-      if @stagePane2.onscreen()
+
+        # make sure that any changes to the scenario that are not related to an action
+        # are mirrored onto the "after" scenario. For example if I add a new actor to
+        # the before scenario, that doesn't mean has was deleted in the after scenario.
+        # If I change variable A to 10, and A is not involved in an action, it should be
+        # 10 in the after picture as well.
+        @selectedRule.updateActions(@stagePane1, @stagePane2, {existingActionsOnly: true, skipVariables: true, skipAppearance: true})
+
+        @repopulateAfterStage {}, () =>
+          # If I change variable A and A is tied to an action, update it. Otherwise ignore.
+          # If I change the position of X and X is moved to a new spot in the after picture, update.
+          @selectedRule.updateActions(@stagePane1, @stagePane2, {existingActionsOnly: true, skipMove: true})
+
+
+      if stage == @stagePane2 && @stagePane2.onscreen()
         @selectedRule.updateActions(@stagePane1, @stagePane2)
 
     if stage == @mainStage
@@ -261,33 +284,44 @@ class GameManager
 
     extent = null
 
-    _setDisplaySettings = (stage) =>
-      stage.setRecordingExtent(extent, 'white')
-      stage.setRecordingCentered(true)
-      stage.setDisplayWidth(@stageTotalWidth / 2 - 2)
+    _beforeStageReady = () =>
+      @stagePane1.setRecordingExtent(extent, 'white')
+      @stagePane1.setRecordingCentered(true)
+      @stagePane1.setDisplayWidth(@stageTotalWidth / 2 - 2)
 
-    _stage1Ready = () =>
-      _setDisplaySettings(@stagePane1)
-      @selectedRule.setMainActor(@stagePane1.actorMatchingDescriptor(@selectedActor.descriptor()))
+      # we have to give the rule the correct main actor, or the relative coords on the
+      # scenario won't match! Find the actor in the 0,0 block of the rule that matches
+      # the descriptor of the selected actor
+      extentRelative = @selectedRule.extentRelativeToRoot()
+      rootPosition = new Point(-extentRelative.left + extent.left, -extentRelative.top + extent.top)
+      actor = @stagePane1.actorsAtPositionMatchDescriptors(rootPosition, @selectedActor.descriptor())
+      @selectedRule.setMainActor(actor)
+      @selectActor(actor) if @selectedActor != actor
 
-    _stage2Ready = () =>
-      _setDisplaySettings(@stagePane2)
-      afterActor = @stagePane2.actorMatchingDescriptor(@selectedActor.descriptor())
-      afterActor.applyRule(@selectedRule)
-      @selectActor(afterActor)
+      @repopulateAfterStage({shouldSelect: true})
 
     if demonstrateOnCurrentStage
       extent = @selectedRule.extentOnStage()
       @stagePane1.draggingEnabled = false
-      @stagePane2.prepareWithData @mainStage.saveData(), _stage2Ready
-      _stage1Ready()
+      _beforeStageReady()
     else
       stageData = @selectedRule.beforeSaveData(6, 6)
       extent = stageData.extent
       @stagePane1.draggingEnabled = true
-      @stagePane1.prepareWithData stageData, _stage1Ready
-      @stagePane2.prepareWithData stageData, _stage2Ready
+      @stagePane1.prepareWithData stageData, _beforeStageReady
 
+
+  repopulateAfterStage: (options = {}, callback) ->
+    shouldSelect = options.shouldSelect || @selectedActor.stage == @stagePane2
+
+    @stagePane2.prepareWithData @mainStage.saveData(), () =>
+      @stagePane2.setRecordingExtent(@mainStage.recordingExtent, 'white')
+      @stagePane2.setRecordingCentered(true)
+      @stagePane2.setDisplayWidth(@stageTotalWidth / 2 - 2)
+      afterActor = @stagePane2.actorWithID(@selectedActor._id)
+      afterActor.applyRule(@selectedRule)
+      @selectActor(afterActor) if shouldSelect
+      callback() if callback
 
 
   exitRecordingMode: () ->
@@ -298,12 +332,17 @@ class GameManager
     @stagePane2.clearRecording()
     @stagePane2.setDisplayWidth(0)
 
-    @stagePane1.prepareWithData @previousGameState, () =>
-      @selectActor(@stagePane1.actorMatchingDescriptor(@selectedRule.actor.descriptor()))
-      @previousGameState = undefined
-      @previousRuleState = undefined
+    if @previousGameState
+      @stagePane1.prepareWithData @previousGameState, () =>
+        @selectActor(@stagePane1.actorWithID(@selectedRule.actor._id))
+        @previousGameState = undefined
+        @previousRuleState = undefined
 
     @selectedRule = null
+
+
+  recordingActionModified: () =>
+    @repopulateAfterStage()
 
 
   recordingHandleDragged: (handle, finished = false) =>

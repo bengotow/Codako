@@ -78,6 +78,9 @@ ControlsCtrl = ($scope) ->
   $scope.recording_actions = () ->
     window.Game?.selectedRule?.actions
 
+  $scope.recording_action_modified = () ->
+    window.Game?.recordingActionModified()
+
   $scope.toggle_appearance_constraint = (ref) ->
     descriptor = window.Game?.selectedRule?.descriptors[ref]
     if descriptor.appearance
@@ -85,7 +88,8 @@ ControlsCtrl = ($scope) ->
 
   $scope.toggle_variable_constraint = (ref, variable_id) ->
     descriptor = window.Game?.selectedRule?.descriptors[ref]
-    delete descriptor.variableConstraints[variable_id]
+    constraint = descriptor.variableConstraints[variable_id]
+    constraint.ignored = !constraint.ignored
 
   $scope.html_for_actor = (ref, possessive) ->
     name = $scope.name_for_referenced_actor(ref)

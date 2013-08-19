@@ -25,7 +25,7 @@ Math.clamp = (value, min, max) ->
 
 Math.applyOperation = (existing, operation, value) ->
   return existing/1 + value/1 if operation == 'add'
-  return current/1 - value/1 if operation == 'subtract'
+  return existing/1 - value/1 if operation == 'subtract'
   return value/1 if operation == 'set'
   throw "Don't know how to apply operation #{existing}, #{operation}, #{value}"
 

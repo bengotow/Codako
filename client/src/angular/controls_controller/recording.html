@@ -6,7 +6,7 @@
 		  <li class="condition" ng-show="descriptor.appearance"><span ng-bind-html-unsafe="html_for_actor(ref,true)"></span> appearance is <span ng-bind-html-unsafe="html_for_appearance(ref)"></span><a ng-click="toggle_appearance_constraint(ref)">X</a></li>
 		  <li class="condition" ng-repeat="(variable, constraint) in descriptor.variableConstraints">
 			<span ng-bind-html-unsafe="html_for_actor(ref,true)"></span> variable <code>{{name_for_variable(variable)}}</code> is <select style="width:40px; font-weight:bold;" ng-model="constraint.comparator"><option value="=">=</option><option value="<"><</option><option value=">">></option></select> {{constraint.value}}
-			<a ng-click="toggle_variable_constraint(ref, variable)">X</a>
+			<a ng-click="toggle_variable_constraint(ref, variable)">X {{constraint.ignored}}</a>
 		  </li>
 		</div>
 	  </ul>
@@ -24,16 +24,16 @@
 		  </div>
 
 		  <div ng-switch-when="variable">
-			<select style="width:80px;" ng-model="action.operation"><option value="add">Add</option><option value="subtract">Subtract</option><option value="set">Set</option></select>
+			<select style="width:80px;" ng-model="action.operation" ng-change="recording_action_modified()"><option value="add">Add</option><option value="subtract">Subtract</option><option value="set">Set</option></select>
 			<ng-switch on="action.operation">
 			  <span ng-switch-when="set">
-				 <code>{{name_for_variable(action.variable)}}</code> of <span ng-bind-html-unsafe="html_for_actor(action.ref)"></span> to <input type="text" ng-model="action.value"/>
+				 <code>{{name_for_variable(action.variable)}}</code> of <span ng-bind-html-unsafe="html_for_actor(action.ref)"></span> to <input type="text" ng-model="action.value" ng-blur="recording_action_modified()"/>
 			  </span>
 			  <span ng-switch-when="add">
-				 <input type="text" ng-model="action.value"/> to <code>{{name_for_variable(action.variable)}}</code> of <span ng-bind-html-unsafe="html_for_actor(action.ref)"></span>
+				 <input type="text" ng-model="action.value" ng-blur="recording_action_modified()"/> to <code>{{name_for_variable(action.variable)}}</code> of <span ng-bind-html-unsafe="html_for_actor(action.ref)"></span>
 			  </span>
 			  <span ng-switch-when="subtract">
-				 <input type="text" ng-model="action.value"/> from <code>{{name_for_variable(action.variable)}}</code> of <span ng-bind-html-unsafe="html_for_actor(action.ref)"></span>
+				 <input type="text" ng-model="action.value" ng-blur="recording_action_modified()"/> from <code>{{name_for_variable(action.variable)}}</code> of <span ng-bind-html-unsafe="html_for_actor(action.ref)"></span>
 			  </span>
 			</ng-switch>
 		  </div>
