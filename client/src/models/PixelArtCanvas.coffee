@@ -314,7 +314,7 @@ class PixelArtCanvas
 
 
   handleKeyEvent: (ev) =>
-    if @inDragMode == true 
+    if @inDragMode == true
       if ev.keyCode == 13
           # copy drag data to the canvas.
           @applyPixelsFromDataIgnoreTransparent( @dragData.data, @imageData, 0, 0, Tile.WIDTH, Tile.HEIGHT, Tile.WIDTH, Math.floor(@dragData.offsetX / @pixelSize), Math.floor(@dragData.offsetY / @pixelSize) )
