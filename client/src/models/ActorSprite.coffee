@@ -42,7 +42,6 @@ class ActorSprite extends Sprite
 
 
   setAppearance: (identifier = 'idle') ->
-    console.log 'Set appearance', identifier
     return unless @definition.hasAppearance(identifier)
     @appearance = identifier
     @gotoAndStop(@appearance)

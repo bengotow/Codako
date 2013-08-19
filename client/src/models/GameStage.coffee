@@ -162,6 +162,12 @@ class GameStage extends Stage
     @centerOnRecordingRegion() if @recordingCentered
 
 
+  clearRecording: () ->
+    @setRecordingCentered(false)
+    @setRecordingExtent(null)
+    @centerOnEntireCanvas()
+    @draggingEnabled = true
+
 
   setRecordingCentered: (centered) ->
     @recordingCentered = centered

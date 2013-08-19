@@ -140,6 +140,29 @@ class Rule
           @actions.splice(actionIndex, 1)
 
 
+  updateExtent: (beforeStage, afterStage, desiredExtent) ->
+    # ensure that all actors in the scenario are in the extent, both before and after
+    extent = desiredExtent
+
+    @withEachActorInExtent beforeStage, afterStage, (ref, beforeActor, afterActor) =>
+      for actor in [beforeActor, afterActor]
+        continue unless actor
+
+        actorHasActions = false
+        actorIsPrimary = actor == @actor
+        for action in @actions
+          actorHasActions = true if action.ref == ref
+
+        continue unless actorHasActions || actorIsPrimary
+
+        extent.left = Math.min(actor.worldPos.x, extent.left)
+        extent.right = Math.max(actor.worldPos.x, extent.right)
+        extent.top = Math.min(actor.worldPos.y, extent.top)
+        extent.bottom = Math.max(actor.worldPos.y, extent.bottom)
+
+    @updateScenario(beforeStage, extent)
+    return extent
+
 
   extentRelativeToRoot: () =>
     extent = {left: 10000, top: 10000, right: 0, bottom: 0}

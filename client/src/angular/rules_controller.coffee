@@ -19,7 +19,7 @@ RulesCtrl = ($scope) ->
 
 
   $scope.add_rule = () ->
-    window.Game.enterRecordingModeForActor(window.Game.selectedActor)
+    window.Game.editNewRuleForActor(window.Game.selectedActor)
 
 
   $scope.rule_clicked = (rule) ->
@@ -32,7 +32,7 @@ RulesCtrl = ($scope) ->
 
 
   $scope.rule_dbl_clicked = (rule) ->
-    window.Game.enterRecordingModeForEditingRule(rule, window.Game.selectedActor)
+    window.Game.editRule(rule, window.Game.selectedActor)
 
 
   $scope.add_rule_group_event = (type) ->

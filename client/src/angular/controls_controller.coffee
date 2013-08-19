@@ -11,6 +11,9 @@ ControlsCtrl = ($scope) ->
   $scope.$root.$on 'start_edit_rule', (msg, args) ->
     $scope.control_set = 'recording'
 
+  $scope.$root.$on 'end_edit_rule', (msg, args) ->
+    $scope.control_set = 'testing'
+
   $scope.$root.$on 'set_tool', (msg, args) ->
     $scope.$apply() unless $scope.$$phase
 
@@ -56,31 +59,32 @@ ControlsCtrl = ($scope) ->
   # -- Recording Controls -- #
 
   $scope.start_recording = () ->
-    window.Game.focusAndStartRecording()
-    $scope.control_set = 'recording'
+    window.Game.editRule(window.Game.selectedRule, window.Game.selectedRule.actor, true)
+
 
   $scope.cancel_recording = () ->
+    window.Game.revertRecording()
     window.Game.exitRecordingMode()
-    $scope.control_set = 'testing'
+
 
   $scope.save_recording = () ->
     window.Game.saveRecording()
     window.Game.exitRecordingMode()
-    $scope.control_set = 'testing'
+
 
   $scope.recording_descriptors = () ->
-    window.Game?.recordingRule?.descriptorsInScenario()
+    window.Game?.selectedRule?.descriptorsInScenario()
 
   $scope.recording_actions = () ->
-    window.Game?.recordingRule?.actions
+    window.Game?.selectedRule?.actions
 
   $scope.toggle_appearance_constraint = (ref) ->
-    descriptor = window.Game?.recordingRule?.descriptors[ref]
+    descriptor = window.Game?.selectedRule?.descriptors[ref]
     if descriptor.appearance
       delete descriptor['appearance']
 
   $scope.toggle_variable_constraint = (ref, variable_id) ->
-    descriptor = window.Game?.recordingRule?.descriptors[ref]
+    descriptor = window.Game?.selectedRule?.descriptors[ref]
     delete descriptor.variableConstraints[variable_id]
 
   $scope.html_for_actor = (ref, possessive) ->
@@ -92,7 +96,7 @@ ControlsCtrl = ($scope) ->
     "<code><img src=\"" + $scope.icon_for_referenced_actor(ref,appearance) + "\">" + $scope.name_for_appearance(appearance) + "</code>"
 
   $scope.icon_for_referenced_actor = (ref, appearance_id = null) ->
-    descriptor = window.Game?.recordingRule?.descriptors[ref]
+    descriptor = window.Game?.selectedRule?.descriptors[ref]
     appearance_id ||= descriptor.appearance
     definition = window.Game.library.definitions[descriptor.identifier]
     definition.iconForAppearance(appearance_id, 26, 26) || ""
@@ -131,7 +135,7 @@ ControlsCtrl = ($scope) ->
 
   $scope.name_for_referenced_actor = (ref) ->
     return "Unknown" unless ref
-    descriptor = window.Game?.recordingRule?.descriptors[ref]
+    descriptor = window.Game?.selectedRule?.descriptors[ref]
     return "Unknown" unless descriptor
     definition = window.Game.library.definitions[descriptor.identifier]
     definition.name

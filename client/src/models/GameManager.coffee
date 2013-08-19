@@ -5,7 +5,7 @@ class GameManager
     @library = new LibraryManager('default', @loadStatusChanged)
     @content = new ContentManager(@loadStatusChanged)
     @selectedActor = null
-    @recordingRule = null
+    @selectedRule = null
 
     @tool = 'pointer'
 
@@ -173,13 +173,9 @@ class GameManager
       if @tool == 'delete'
         @onActorDeleted(actor, actor.stage)
       if @tool == 'record'
-        @enterRecordingModeForActor(actor)
+        @editNewRuleForActor(actor)
 
     @resetToolAfterAction()
-
-  onActorVariableValueEdited: (actor, varName, val) ->
-    @recordingRule.incorporate(actor, 'variable', {variable: varName, value: val}) if @recordingRule
-    actor.variableValues[varName] = val
 
 
   onActorDoubleClicked: (actor) ->
@@ -187,8 +183,13 @@ class GameManager
     window.rootScope.$digest()
 
 
+  onActorVariableValueEdited: (actor, varName, val) ->
+    @wrapApplyChangeTo actor, actor.stage, () ->
+      actor.variableValues[varName] = val
+
+
   onActorDragged: (actor, stage, point) ->
-    if @recordingRule
+    if @selectedRule
       return unless point.isInside(@mainStage.recordingExtent)
 
     @wrapApplyChangeTo actor, stage, () ->
@@ -214,14 +215,14 @@ class GameManager
   wrapApplyChangeTo: (actor, stage, applyCallback) ->
     applyCallback()
 
-    if @recordingRule
+    if @selectedRule
       if stage == @stagePane1
-        extent = @recordingRule.extentOnStage()
-        @recordingRule.setMainActor(actor) if actor._id == @recordingRule.actor._id
-        @recordingRule.updateScenario(@stagePane1, extent)
+        extent = @selectedRule.extentOnStage()
+        @selectedRule.setMainActor(actor) if actor._id == @selectedRule.actor._id
+        @selectedRule.updateScenario(@stagePane1, extent)
 
       if @stagePane2.onscreen()
-        @recordingRule.updateActions(@stagePane1, @stagePane2)
+        @selectedRule.updateActions(@stagePane1, @stagePane2)
 
     if stage == @mainStage
       @save()
@@ -229,74 +230,80 @@ class GameManager
 
   # -- Recording Mode -- #
 
-  enterRecordingModeForActor: (actor) ->
+  editNewRuleForActor: (actor) ->
     return unless actor
     window.rootScope.$broadcast('start_compose_rule')
     initialExtent = {left: actor.worldPos.x, right: actor.worldPos.x, top: actor.worldPos.y, bottom: actor.worldPos.y}
 
-    @previousGameState = @mainStage.saveData() unless @previousGameState
-
-    @recordingRule = new Rule()
-    @recordingRule.setMainActor(actor)
-    @recordingRule.updateScenario(@mainStage, initialExtent)
+    @selectedRule = new Rule()
+    @selectedRule.setMainActor(actor)
+    @selectedRule.updateScenario(@mainStage, initialExtent)
 
     @mainStage.setRecordingExtent(initialExtent, 'masked')
     @mainStage.setRecordingCentered(false)
     @selectActor(actor)
 
 
-  enterRecordingModeForEditingRule: (rule, actor) ->
+  editRule: (rule, actor, isNewRule = false) ->
     return unless rule && actor
+    @saveRecording() if @selectedRule && @selectedRule != rule
+    @selectActor(actor) if @selectedActor != actor
+    @selectedRule = rule
+    @enterRecordingMode(isNewRule)
+
+
+  enterRecordingMode: (demonstrateOnCurrentStage = false) ->
     window.rootScope.$broadcast('start_edit_rule')
 
-    @saveRecording() if @recordingRule
-    @recordingRule = rule
-    @recordingRule.editing = true
-
+    @previousRuleState = JSON.parse(JSON.stringify(@selectedRule.descriptor()))
     @previousGameState = @mainStage.saveData() unless @previousGameState
-    ruleData = rule.beforeSaveData(6, 6)
+    @selectedRule.editing = true
 
-    for stage in [@stagePane1, @stagePane2]
-      stage.prepareWithData ruleData, (err) =>
-        stage.setRecordingExtent(ruleData.extent, 'white')
-        stage.setRecordingCentered(true)
-        stage.setDisplayWidth(@stageTotalWidth / 2 - 2)
+    extent = null
 
-        if stage == @stagePane1
-          rule.setMainActor(stage.actorMatchingDescriptor(@selectedActor.descriptor()))
+    _setDisplaySettings = (stage) =>
+      stage.setRecordingExtent(extent, 'white')
+      stage.setRecordingCentered(true)
+      stage.setDisplayWidth(@stageTotalWidth / 2 - 2)
 
-        if stage == @stagePane2
-          afterActor = stage.actorMatchingDescriptor(@selectedActor.descriptor())
-          afterActor.applyRule(rule)
-          @selectActor(afterActor)
+    _stage1Ready = () =>
+      _setDisplaySettings(@stagePane1)
+      @selectedRule.setMainActor(@stagePane1.actorMatchingDescriptor(@selectedActor.descriptor()))
 
+    _stage2Ready = () =>
+      _setDisplaySettings(@stagePane2)
+      afterActor = @stagePane2.actorMatchingDescriptor(@selectedActor.descriptor())
+      afterActor.applyRule(@selectedRule)
+      @selectActor(afterActor)
 
-  focusAndStartRecording: () ->
-    @stagePane1.draggingEnabled = false
-    @stagePane2.prepareWithData @mainStage.saveData(), () =>
-      for stage in [@stagePane1, @stagePane2]
-        stage.setRecordingExtent(@stagePane1.recordingExtent, 'white')
-        stage.setRecordingCentered(true)
-        stage.setDisplayWidth(@stageTotalWidth / 2 - 2)
+    if demonstrateOnCurrentStage
+      extent = @selectedRule.extentOnStage()
+      @stagePane1.draggingEnabled = false
+      @stagePane2.prepareWithData @mainStage.saveData(), _stage2Ready
+      _stage1Ready()
+    else
+      stageData = @selectedRule.beforeSaveData(6, 6)
+      extent = stageData.extent
+      @stagePane1.draggingEnabled = true
+      @stagePane1.prepareWithData stageData, _stage1Ready
+      @stagePane2.prepareWithData stageData, _stage2Ready
 
-      @selectActor(@stagePane2.actorMatchingDescriptor(@selectedActor.descriptor()))
-      @recordingRule.editing = true
 
 
   exitRecordingMode: () ->
-    @stagePane1.setRecordingCentered(false)
-    @stagePane1.setRecordingExtent(null)
-    @stagePane1.centerOnEntireCanvas()
-    @stagePane1.draggingEnabled = true
+    window.rootScope.$broadcast('end_edit_rule')
 
+    @stagePane1.clearRecording()
     @stagePane1.setDisplayWidth(@stageTotalWidth)
+    @stagePane2.clearRecording()
     @stagePane2.setDisplayWidth(0)
 
     @stagePane1.prepareWithData @previousGameState, () =>
-      @selectActor(@stagePane1.actorMatchingDescriptor(@recordingRule.actor.descriptor()))
+      @selectActor(@stagePane1.actorMatchingDescriptor(@selectedRule.actor.descriptor()))
       @previousGameState = undefined
+      @previousRuleState = undefined
 
-    @recordingRule = null
+    @selectedRule = null
 
 
   recordingHandleDragged: (handle, finished = false) =>
@@ -306,33 +313,20 @@ class GameManager
     extent.top = Math.min(handle.worldPos.y + 1, extent.bottom) if handle.side == 'top'
     extent.bottom = Math.max(extent.top, handle.worldPos.y - 1) if handle.side == 'bottom'
 
-    # ensure that all actors in the scenario are in the extent, both before and after
-    @recordingRule.withEachActorInExtent @stagePane1, @stagePane2, (ref, beforeActor, afterActor) =>
-      for actor in [beforeActor, afterActor]
-        continue unless actor
-
-        actorHasActions = false
-        actorIsPrimary = actor == @recordingRule.actor
-        for action in @recordingRule.actions
-          actorHasActions = true if action.ref == ref
-
-        continue unless actorHasActions || actorIsPrimary
-
-        extent.left = Math.min(actor.worldPos.x, extent.left)
-        extent.right = Math.max(actor.worldPos.x, extent.right)
-        extent.top = Math.min(actor.worldPos.y, extent.top)
-        extent.bottom = Math.max(actor.worldPos.y, extent.bottom)
-
-    @recordingRule.updateScenario(@mainStage, extent)
+    extent = @selectedRule.updateExtent(@stagePane1, @stagePane2, extent)
     @stagePane1.setRecordingExtent(extent)
     @stagePane2.setRecordingExtent(extent)
     window.rootScope.$apply() unless window.rootScope.$$phase
 
 
+  revertRecording: () ->
+    @selectedRule[key] = value for key, value of @previousRuleState
+
+
   saveRecording: () ->
-    actor = @recordingRule.actor
-    actor.definition.addRule(@recordingRule)
-    actor.definition.clearCacheForRule(@recordingRule)
+    actor = @selectedRule.actor
+    actor.definition.addRule(@selectedRule)
+    actor.definition.clearCacheForRule(@selectedRule)
     actor.definition.save()
 
 
