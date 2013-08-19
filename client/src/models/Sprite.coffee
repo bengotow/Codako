@@ -37,12 +37,12 @@ class Sprite extends BitmapAnimation
     @y = @worldPos.y * Tile.HEIGHT
     @
 
-  setWorldPos: (p_or_x, y) ->
+  setWorldPos: (p_or_x, y = undefined) ->
     @previousPos ||= @worldPos
-    if y
-      @worldPos = new Point(p_or_x, y)
-    else
+    if y == undefined
       @worldPos = new Point(p_or_x.x, p_or_x.y)
+    else
+      @worldPos = new Point(p_or_x, y)
 
 
   setSelected: (sel) ->

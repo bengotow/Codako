@@ -33,9 +33,9 @@ class HandleSprite extends Sprite
     else if @side == 'right'
       @setWorldPos(extent.right + 1, extent.top + (extent.bottom - extent.top) / 2)
     else if @side == 'top'
-      @setWorldPos(extent.left + (extent.right - extent.left) / 2, extent.top - 1)
+      @setWorldPos((extent.right + extent.left) / 2, extent.top - 1)
     else
-      @setWorldPos(extent.left + (extent.right - extent.left) / 2, extent.bottom + 1)
+      @setWorldPos((extent.right + extent.left) / 2, extent.bottom + 1)
     @tick(0)
 
 
