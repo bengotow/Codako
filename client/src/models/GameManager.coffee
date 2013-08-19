@@ -238,7 +238,7 @@ class GameManager
         # 10 in the after picture as well.
         @selectedRule.updateActions(@stagePane1, @stagePane2, {existingActionsOnly: true, skipVariables: true, skipAppearance: true})
 
-        @repopulateAfterStage {}, () =>
+        @mirrorStage1OntoStage2 {}, () =>
           # If I change variable A and A is tied to an action, update it. Otherwise ignore.
           # If I change the position of X and X is moved to a new spot in the after picture, update.
           @selectedRule.updateActions(@stagePane1, @stagePane2, {existingActionsOnly: true, skipMove: true})
@@ -293,12 +293,13 @@ class GameManager
       # scenario won't match! Find the actor in the 0,0 block of the rule that matches
       # the descriptor of the selected actor
       extentRelative = @selectedRule.extentRelativeToRoot()
-      rootPosition = new Point(-extentRelative.left + extent.left, -extentRelative.top + extent.top)
-      actor = @stagePane1.actorsAtPositionMatchDescriptors(rootPosition, @selectedActor.descriptor())
+      extentRootPos = new Point(-extentRelative.left + extent.left, -extentRelative.top + extent.top)
+
+      actor = @stagePane1.actorMatchingDescriptor(@selectedActor.descriptor(), @stagePane1.actorsAtPosition(extentRootPos))
       @selectedRule.setMainActor(actor)
       @selectActor(actor) if @selectedActor != actor
 
-      @repopulateAfterStage({shouldSelect: true})
+      @mirrorStage1OntoStage2({shouldSelect: true})
 
     if demonstrateOnCurrentStage
       extent = @selectedRule.extentOnStage()
@@ -311,7 +312,7 @@ class GameManager
       @stagePane1.prepareWithData stageData, _beforeStageReady
 
 
-  repopulateAfterStage: (options = {}, callback) ->
+  mirrorStage1OntoStage2: (options = {}, callback) ->
     shouldSelect = options.shouldSelect || @selectedActor.stage == @stagePane2
 
     @stagePane2.prepareWithData @mainStage.saveData(), () =>
@@ -342,7 +343,7 @@ class GameManager
 
 
   recordingActionModified: () =>
-    @repopulateAfterStage()
+    @mirrorStage1OntoStage2()
 
 
   recordingHandleDragged: (handle, finished = false) =>
