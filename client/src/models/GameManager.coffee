@@ -210,26 +210,26 @@ class GameManager
     if @recordingRule
       return unless point.isInside(@mainStage.recordingExtent)
 
-    @wrapApplyChangeTo actor, 'move', point, stage, () ->
+    @wrapApplyChangeTo actor, stage, () ->
       actor.setWorldPos(point)
 
   onActorDeleted: (actor, stage) ->
-    @wrapApplyChangeTo actor, 'delete', null, stage, () ->
+    @wrapApplyChangeTo actor, stage, () ->
       stage.removeActor(actor)
 
 
   onAppearancePlaced: (actor, stage, appearance) ->
-    @wrapApplyChangeTo actor, 'appearance', appearance, stage, () =>
+    @wrapApplyChangeTo actor, stage, () =>
       actor.setAppearance(appearance)
       @update()
 
 
   onActorPlaced: (actor, stage) ->
-    @wrapApplyChangeTo actor, 'create', null, stage, () =>
+    @wrapApplyChangeTo actor, stage, () =>
       @update()
 
 
-  wrapApplyChangeTo: (actor, changeType, changeValue, stage, applyCallback) ->
+  wrapApplyChangeTo: (actor, stage, applyCallback) ->
     applyCallback()
 
     if @recordingRule
@@ -237,7 +237,9 @@ class GameManager
         extent = @recordingRule.extentOnStage()
         @recordingRule.setMainActor(actor) if actor._id == @recordingRule.actor._id
         @recordingRule.updateScenario(@stagePane1, extent)
-      @recordingRule.updateActions(@stagePane1, @stagePane2)
+
+      if @stagePane2.widthCurrent > 1
+        @recordingRule.updateActions(@stagePane1, @stagePane2)
 
     if stage == @mainStage
       @save()
@@ -328,10 +330,11 @@ class GameManager
         continue unless actor
 
         actorHasActions = false
+        actorIsPrimary = actor == @recordingRule.actor
         for action in @recordingRule.actions
           actorHasActions = true if action.ref == ref
 
-        continue unless actorHasActions
+        continue unless actorHasActions || actorIsPrimary
 
         extent.left = Math.min(actor.worldPos.x, extent.left)
         extent.right = Math.max(actor.worldPos.x, extent.right)
