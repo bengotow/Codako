@@ -27,11 +27,13 @@ class Rule
       extent: {top: extent.top + worldPadY, left: extent.left + worldPadX, right: extent.right + worldPadX, bottom: extent.bottom + worldPadY}
       actor_descriptors: []
     }
-    for key,obj of @descriptors
-      obj = JSON.parse(JSON.stringify(obj))
-      [offsetX, offsetY] = obj.offset.split(',')
-      obj.position = {x: worldPadX + offsetX/1, y: worldPadY + offsetY/1}
-      data.actor_descriptors.push(obj)
+
+    for block in @scenario
+      for ref in block.refs
+        [x,y] = block.coord.split(',')
+        descriptor = JSON.parse(JSON.stringify(@descriptors[ref]))
+        descriptor.position = {x: worldPadX + x/1, y: worldPadY + y/1}
+        data.actor_descriptors.push(descriptor)
 
     data
 
@@ -43,10 +45,9 @@ class Rule
       @descriptors[key].actor_id_during_recording == actor._id
 
 
-  addActorReference: (actor) ->
+  addActorReference: (actor, options = {}) ->
     struct = actor.descriptor()
     struct.actor_id_during_recording = actor._id
-    struct.offset = "#{actor.worldPos.x - @extentRoot.x},#{actor.worldPos.y - @extentRoot.y}"
     struct.variableConstraints = {}
     for variable, value of struct.variableValues
       struct.variableConstraints[variable] = {value: value, comparator: "="}
@@ -80,29 +81,49 @@ class Rule
 
 
   updateActions: (beforeStage, afterStage) =>
-    @withEachActor beforeStage, afterStage, (ref, beforeActor, afterActor) =>
+    @withEachActorInExtent beforeStage, afterStage, (ref, beforeActor, afterActor) =>
       # okay - so we have the before and after state of this actor. Now we need to
       # review and adjust the actions we have, creating new ones if necessary to reach
-      # the after state. Yes, the code below actually creates actions for everything
-      # and then destroys the ones it doesn't need. It's simpler to follow that way.
+      # the after state. Yes, the calls to actionFor create actions for everything
+      # and then this destroys the ones it doesn't need. It's simpler to follow that way.
+      definition = beforeActor?.definition || afterActor?.definition
+      created = !beforeActor
+      deleted = !afterActor
 
       [action, actionIndex] = @actionFor(ref, 'appearance')
-      action['to'] = afterActor.appearance
-      if beforeActor.appearance == afterActor.appearance
+      if created || deleted || beforeActor.appearance == afterActor.appearance
         @actions.splice(actionIndex, 1)
+      else
+        action['to'] = afterActor.appearance
 
 
       [action, actionIndex] = @actionFor(ref, 'move')
-      action.delta = "#{afterActor.worldPos.x - beforeActor.worldPos.x},#{afterActor.worldPos.y - beforeActor.worldPos.y}"
-      if action.delta == "0,0"
+      if created || deleted || afterActor.worldPos.isEqual(beforeActor.worldPos)
         @actions.splice(actionIndex, 1)
+      else
+        action.delta = "#{afterActor.worldPos.x - beforeActor.worldPos.x},#{afterActor.worldPos.y - beforeActor.worldPos.y}"
 
 
-      for vID in beforeActor.definition.variableIDs()
+      [action, actionIndex] = @actionFor(ref, 'create')
+      if !created
+        @actions.splice(actionIndex, 1)
+      else
+        action.offset = "#{afterActor.worldPos.x - @extentRoot.x},#{afterActor.worldPos.y - @extentRoot.y}"
+
+
+      [action, actionIndex] = @actionFor(ref, 'delete')
+      @actions.splice(actionIndex, 1) unless deleted
+
+
+      for vID in definition.variableIDs()
+        [action, actionIndex] = @actionFor ref, 'variable', (action) -> action.variable == vID
+
+        if created || deleted
+          @actions.splice(actionIndex, 1)
+          continue
+
         before = beforeActor.variableValue(vID)
         after = afterActor.variableValue(vID)
-
-        [action, actionIndex] = @actionFor ref, 'variable', (action) -> action.variable == vID
 
         action['variable'] = vID
         if ((after-before == 1) || (action.operation == 'add'))
@@ -155,6 +176,24 @@ class Rule
     }
 
 
+  descriptors: () =>
+    @descriptors
+
+
+  descriptorsInScenario: () =>
+    results = {}
+    for block in @scenario
+      for ref in block.refs
+        results[ref] = @descriptors[ref]
+    results
+
+
+  scenarioOffsetOf: (searchRef) =>
+    for block in @scenario
+      for ref in block.refs
+        return block.coord if ref == searchRef
+
+
   actionFor: (uuid, type, extras = null) =>
     resultIndex = null
     for x in [@actions.length - 1..0] by -1
@@ -171,7 +210,7 @@ class Rule
     return [result, resultIndex]
 
 
-  withEachActor: (beforeStage, afterStage, callback) =>
+  withEachActorInExtent: (beforeStage, afterStage, callback) =>
     extent = @extentOnStage()
     actorsSeen = {}
 

@@ -220,6 +220,8 @@ class GameStage extends Stage
 
   actorsAtPosition: (position) ->
     position = @wrappedPosition(position)
+    return null if position.x < 0 || position.y < 0 || position.x >= @width || position.y >= @height
+
     results = []
     for actor in @actors
       if actor.worldPos.isEqual(position)
@@ -236,6 +238,7 @@ class GameStage extends Stage
 
   actorsAtPositionMatchDescriptors: (position, descriptors) ->
     searchSet = @actorsAtPosition(position)
+    return false if searchSet == null
 
     # if the descriptor is empty and no actors are present, we've got a match
     return true if searchSet.length == 0 && (!descriptors || descriptors.length == 0)

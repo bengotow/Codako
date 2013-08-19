@@ -42,6 +42,10 @@
 				Create a new <code><img ng-src="{{icon_for_referenced_actor(action.ref)}}" width="26" height="26">{{name_for_referenced_actor(action.ref)}}</code>
 		  </div>
 
+		  <div ng-switch-when="delete">
+				Delete <code><img ng-src="{{icon_for_referenced_actor(action.ref)}}" width="26" height="26">{{name_for_referenced_actor(action.ref)}}</code>
+		  </div>
+
 		</li>
 	  </ul>
 

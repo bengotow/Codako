@@ -122,15 +122,22 @@ class ActorSprite extends Sprite
 
 
   applyRule: (rule) ->
+    rootPos = new Point(@worldPos.x, @worldPos.y)
+
     for action in rule.actions
       descriptor = rule.descriptors[action.ref]
-      pos = Point.sum(@worldPos, Point.fromString(descriptor.offset))
+      offset = action.offset || rule.scenarioOffsetOf(action.ref)
+      pos = Point.sum(rootPos, Point.fromString(offset))
       pos = @stage.wrappedPosition(pos) if @stage
       actor = @stage.actorMatchingDescriptor(descriptor, @stage.actorsAtPosition(pos))
-      if actor
+
+      if action.type == 'create'
+        actor = @stage.addActor(descriptor, pos)
+        actor._id = Math.createUUID()
+      else if actor
         actor.applyRuleAction(action)
       else
-        actor = @stage.addActor(descriptor, pos)
+        throw "Couldn't find the actor for performing rule: #{rule}"
 
 
   applyRuleAction: (action) ->
@@ -140,7 +147,7 @@ class ActorSprite extends Sprite
       p = @stage.wrappedPosition(p) if @stage
       @setWorldPos(p)
 
-    else if action.type == 'deleted'
+    else if action.type == 'delete'
       @stage.removeActor(@) if @stage
       @setWorldPos(-100,-100)
 
@@ -154,34 +161,6 @@ class ActorSprite extends Sprite
     else
       console.log('Not sure how to apply action', action)
 
-
-  computeActionsToBecome: (after) =>
-    actions = []
-    if !after
-      actions.push({type:'deleted'})
-      return actions
-
-    # if it is, let's declare changes...
-    if @worldPos.x != after.worldPos.x || @worldPos.y != after.worldPos.y
-      dx = after.worldPos.x - @worldPos.x
-      dy = after.worldPos.y - @worldPos.y
-      actions.push({type:'move', delta: "#{dx},#{dy}"})
-
-    if @appearance != after.appearance
-      actions.push({type:'appearance', after: after.appearance})
-
-    for id, variable of @definition.variables()
-      b = @variableValue(id)
-      a = after.variableValue(id)
-      console.log('Rule:', a,b)
-      continue if a == b
-      if Math.abs(a - b) == 1
-        actions.push({type:'variable-incr', id: id, increment: a-b})
-      else
-        actions.push({type:'variable-set', id: id, after: a})
-
-    return undefined if actions.length == 0
-    actions
 
 
   # -- drag and drop --- #

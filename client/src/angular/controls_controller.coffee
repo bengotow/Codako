@@ -45,6 +45,8 @@ ControlsCtrl = ($scope) ->
     window.Game?.tool
 
   $scope.set_tool = (t) ->
+    if t == 'record' && $scope.control_set != 'testing'
+      return alert("You're already recording a rule! Exit the recording mode by clicking 'Cancel' or 'Save Recording' and then try again.")
     window.Game.setTool(t)
 
   $scope.definition_name = () ->
@@ -67,7 +69,7 @@ ControlsCtrl = ($scope) ->
     $scope.control_set = 'testing'
 
   $scope.recording_descriptors = () ->
-    window.Game?.recordingRule?.descriptors
+    window.Game?.recordingRule?.descriptorsInScenario()
 
   $scope.recording_actions = () ->
     window.Game?.recordingRule?.actions
@@ -128,7 +130,9 @@ ControlsCtrl = ($scope) ->
       return canvas.toDataURL()
 
   $scope.name_for_referenced_actor = (ref) ->
+    return "Unknown" unless ref
     descriptor = window.Game?.recordingRule?.descriptors[ref]
+    return "Unknown" unless descriptor
     definition = window.Game.library.definitions[descriptor.identifier]
     definition.name
 

@@ -105,7 +105,8 @@ class GameManager
 
 
   frameAdvance: () ->
-    for actor in @mainStage.actors
+    for x in [@mainStage.actors.length - 1..0] by -1
+      actor = @mainStage.actors[x]
       actor.resetRulesApplied()
       actor.tickRules()
       actor.clickedInCurrentFrame = false
@@ -151,9 +152,6 @@ class GameManager
   actorMatchingDescriptor: (position, descriptor) ->
     @mainStage.actorMatchingDescriptor(position, descriptor)
 
-  removeActor: (index) ->
-    @mainStage.removeActor(index)
-
 
   selectActor: (actor) ->
     return if @selectedActor == actor
@@ -192,8 +190,7 @@ class GameManager
       if @tool == 'paint'
         window.rootScope.$broadcast('edit_appearance', {actor_definition: actor.definition, identifier: actor.appearance})
       if @tool == 'delete'
-        @removeActor(actor)
-        @save()
+        @onActorDeleted(actor, actor.stage)
       if @tool == 'record'
         @enterRecordingModeForActor(actor)
 
@@ -216,15 +213,19 @@ class GameManager
     @wrapApplyChangeTo actor, 'move', point, stage, () ->
       actor.setWorldPos(point)
 
+  onActorDeleted: (actor, stage) ->
+    @wrapApplyChangeTo actor, 'delete', null, stage, () ->
+      stage.removeActor(actor)
+
 
   onAppearancePlaced: (actor, stage, appearance) ->
-    @wrapApplyChangeTo actor, 'appearance', appearance, stage, () ->
+    @wrapApplyChangeTo actor, 'appearance', appearance, stage, () =>
       actor.setAppearance(appearance)
       @update()
 
 
   onActorPlaced: (actor, stage) ->
-    @wrapApplyChangeTo actor, 'create', null, stage, () ->
+    @wrapApplyChangeTo actor, 'create', null, stage, () =>
       @update()
 
 
@@ -322,9 +323,16 @@ class GameManager
     extent.bottom = Math.max(extent.top, handle.worldPos.y - 1) if handle.side == 'bottom'
 
     # ensure that all actors in the scenario are in the extent, both before and after
-    @recordingRule.withEachActor @stagePane1, @stagePane2, (ref, beforeActor, afterActor) ->
+    @recordingRule.withEachActorInExtent @stagePane1, @stagePane2, (ref, beforeActor, afterActor) =>
       for actor in [beforeActor, afterActor]
         continue unless actor
+
+        actorHasActions = false
+        for action in @recordingRule.actions
+          actorHasActions = true if action.ref == ref
+
+        continue unless actorHasActions
+
         extent.left = Math.min(actor.worldPos.x, extent.left)
         extent.right = Math.max(actor.worldPos.x, extent.right)
         extent.top = Math.min(actor.worldPos.y, extent.top)
@@ -364,24 +372,24 @@ class GameManager
 
     # lay out the before state and apply any rules that apply to
     # the actors currently on the board
-    @renderingStage.addActor = (ref) =>
+    @renderingStage.addActor = (ref, offset) =>
       descriptor = rule.descriptors[ref]
-      actor = window.Game.library.instantiateActorFromDescriptor(descriptor, new Point(-xmin + c.x, -ymin + c.y))
+      actor = window.Game.library.instantiateActorFromDescriptor(descriptor, new Point(-xmin + offset.x, -ymin + offset.y))
       actor.tick()
       @renderingStage.addChild(actor)
       created_actors[ref] = actor
 
 
     for block in rule.scenario
-      c = Point.fromString(block.coord)
+      point = Point.fromString(block.coord)
       for ref in block.refs
-        @renderingStage.addActor(ref)
+        @renderingStage.addActor(ref, point)
 
     # apply any actions
     if applyActions && rule.actions
       for action in rule.actions
         if action.type == 'create'
-          @renderingStage.addActor(action.ref)
+          @renderingStage.addActor(action.ref, Point.fromString(action.offset))
         else
           actor = created_actors[action.ref]
           actor.applyRuleAction(action)
