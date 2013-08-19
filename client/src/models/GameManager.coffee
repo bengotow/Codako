@@ -238,7 +238,7 @@ class GameManager
         @recordingRule.setMainActor(actor) if actor._id == @recordingRule.actor._id
         @recordingRule.updateScenario(@stagePane1, extent)
 
-      if @stagePane2.widthCurrent > 1
+      if @stagePane2.onscreen()
         @recordingRule.updateActions(@stagePane1, @stagePane2)
 
     if stage == @mainStage

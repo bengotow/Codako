@@ -38,8 +38,9 @@ class GameStage extends Stage
         actor = @actorsAtPosition(point)[0]
         window.Game.onAppearancePlaced(actor, @, identifier[11..-1]) if actor
 
+
   onscreen: () ->
-    @widthTarget > 0 || @widthCurrent > 0
+    @widthTarget > 1 || @widthCurrent > 1
 
 
   setDisplayWidth: (width) ->
