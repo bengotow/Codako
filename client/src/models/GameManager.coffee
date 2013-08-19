@@ -134,25 +134,6 @@ class GameManager
 
   # -- Selecting Actors in the World -- #
 
-  addActor: (descriptor) ->
-    @mainStage.addActor(descriptor)
-
-  isDescriptorValid: (descriptor) ->
-    @mainStage.isDescriptorValid(descriptor)
-
-  actorsAtPosition: (position) ->
-    @mainStage.actorsAtPosition(position)
-
-  actorIdentifiers: () ->
-    @mainStage.actorIdentifiers()
-
-  actorsAtPositionMatchDescriptors: (position, descriptors) ->
-    @mainStage.actorsAtPositionMatchDescriptors(position,descriptors)
-
-  actorMatchingDescriptor: (position, descriptor) ->
-    @mainStage.actorMatchingDescriptor(position, descriptor)
-
-
   selectActor: (actor) ->
     return if @selectedActor == actor
 
@@ -212,6 +193,7 @@ class GameManager
 
     @wrapApplyChangeTo actor, stage, () ->
       actor.setWorldPos(point)
+
 
   onActorDeleted: (actor, stage) ->
     @wrapApplyChangeTo actor, stage, () ->
