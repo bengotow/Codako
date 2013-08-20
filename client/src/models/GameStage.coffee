@@ -263,9 +263,13 @@ class GameStage extends Stage
     true
 
   actorWithID: (id, set = @actors) ->
+    results = []
     for actor in set
-      return actor if actor._id == id
-    false
+      results.push(actor) if actor._id == id
+
+    if results.length > 1
+      console.log "There are multiple actors with the same ID!", results
+    results[0]
 
 
   actorMatchingDescriptor: (descriptor, set = @actors) ->

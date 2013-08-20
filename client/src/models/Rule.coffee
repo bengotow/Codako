@@ -99,6 +99,7 @@ class Rule
 
 
   updateActions: (beforeStage, afterStage, options = {}) =>
+
     @withEachActorInExtent beforeStage, afterStage, (ref, beforeActor, afterActor) =>
       # okay - so we have the before and after state of this actor. Now we need to
       # review and adjust the actions we have, creating new ones if necessary to reach
@@ -129,6 +130,7 @@ class Rule
         if !created || (actionIsNew && options.existingActionsOnly)
           @actions.splice(actionIndex, 1)
         else
+          @updateActorReference(@descriptors[ref], afterActor)
           action.offset = "#{afterActor.worldPos.x - @extentRoot.x},#{afterActor.worldPos.y - @extentRoot.y}"
 
 
@@ -143,6 +145,7 @@ class Rule
           [action, actionIndex, actionIsNew] = @actionFor ref, 'variable', (action) -> action.variable == vID
 
           if created || deleted || (actionIsNew && options.existingActionsOnly)
+            debugger
             @actions.splice(actionIndex, 1)
             continue
 

@@ -124,16 +124,23 @@ class ActorSprite extends Sprite
   applyRule: (rule) ->
     rootPos = new Point(@worldPos.x, @worldPos.y)
 
+    # cache actors once they're found
+    actorsForRefs = {}
+
     for action in rule.actions
       descriptor = rule.descriptors[action.ref]
       offset = action.offset || rule.scenarioOffsetOf(action.ref)
       pos = Point.sum(rootPos, Point.fromString(offset))
       pos = @stage.wrappedPosition(pos) if @stage
-      actor = @stage.actorMatchingDescriptor(descriptor, @stage.actorsAtPosition(pos))
+
+      actor = actorsForRefs[action.ref]
+      if !actor
+        actor = @stage.actorMatchingDescriptor(descriptor, @stage.actorsAtPosition(pos))
+        actorsForRefs[action.ref] = actor
 
       if action.type == 'create'
         actor = @stage.addActor(descriptor, pos)
-        actor._id = Math.createUUID()
+        actor._id = Math.createUUID() unless rule.editing
       else if actor
         actor.applyRuleAction(action, rule)
       else

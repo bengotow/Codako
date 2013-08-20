@@ -58,7 +58,10 @@
     window.Socket.on('connect', function () {
         console.log('Socket.io Connection Established.');
         window.Socket.emit('auth', { username: 'default', password: '' })
-        window.Game.load('level2')
+        levelIdentifier = window.location.href.split('#')[1].replace('/','');
+        if (levelIdentifier == undefined)
+          return alert('You need to open a level. Please check the url for #levelIdentifier')
+        window.Game.load(levelIdentifier)
     });
     window.Socket.on('disconnect', function () {
         console.log('Socket.io Connection Lost. Trying to reconnect...');

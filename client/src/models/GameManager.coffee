@@ -103,13 +103,19 @@ class GameManager
 
 
   frameSave: () ->
+    if @selectedRule?.editing
+      throw "This shouldn't happen!"
     @prevFrames = @prevFrames[1..-1] if @prevFrames.length > 20
     @prevFrames.push(@mainStage.saveData())
 
 
   frameAdvance: () ->
-    for x in [@mainStage.actors.length - 1..0] by -1
-      actor = @mainStage.actors[x]
+    # if we create new actors during the frame, we don't want to advance
+    # those ones. Existing actors only!
+    actorsPresentBeforeFrame = [].concat(@mainStage.actors)
+
+    for x in [actorsPresentBeforeFrame.length - 1..0] by -1
+      actor = actorsPresentBeforeFrame[x]
       actor.resetRulesApplied()
       actor.tickRules()
       actor.clickedInCurrentFrame = false
@@ -127,6 +133,8 @@ class GameManager
 
 
   save: () ->
+    console.log('Trying to save while editing a rule??')
+    return if @selectedRule && @selectedRule.editing
     data = @mainStage.saveData()
     data.identifier = @identifier
     window.Socket.emit 'put-level', data
@@ -250,8 +258,9 @@ class GameManager
       if stage == @stagePane2 && @stagePane2.onscreen()
         @selectedRule.updateActions(@stagePane1, @stagePane2)
 
-    if stage == @mainStage
-      @save()
+    else
+      if stage == @mainStage
+        @save()
 
 
   # -- Recording Mode -- #

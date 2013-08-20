@@ -285,8 +285,6 @@ class PixelArtCanvas
     @dragData.offsetY = 0
     @dragStart = {x:0, y:0}
     @selectedPixels = []
-    
-
 
     # generate initial image of the workspace
     @setDisplayedFrame(0)
@@ -327,6 +325,7 @@ class PixelArtCanvas
       @render()
 
     if ev.keyCode == 8 or ev.keyCode == 46
+      ev.preventDefault()
       return unless @selectedPixels
       @undoStack.push(new Uint8ClampedArray(@imageData.data))
       @redoStack = []
@@ -352,9 +351,11 @@ class PixelArtCanvas
       @flipPixelsVertical( @dragData.data )
 
     if ev.keyCode == 90 and ev.metaKey and ev.shiftKey
+      ev.preventDefault()
       @redo()
       window.rootScope.$apply() unless window.rootScope.$$phase
     else if ev.keyCode == 90 and ev.metaKey
+      ev.preventDefault()
       @undo()
       window.rootScope.$apply() unless window.rootScope.$$phase
 
