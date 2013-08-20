@@ -95,10 +95,8 @@ RulesCtrl = ($scope) ->
     rules = $scope.rules()
     return undefined unless rules
     if rules.length > 0 && rules[0].type == 'group-event'
-      console.log 'disabled'
       return "disabled"
     else
-      console.log 'valid'
       return {'connectWith':'.rules-list'}
 
 
