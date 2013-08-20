@@ -156,7 +156,7 @@ class GameManager
     # blank state before they take on another actor's state. This is important
     # because switching from one hash data source to another isn't noticed
     # by Angular's change tracking system
-    window.rootScope.$apply()
+    window.rootScope.$apply() unless window.rootScope.$$phase
 
     @selectedActor = actor
     @selectedDefinition = @selectedActor.definition if @selectedActor
@@ -325,15 +325,23 @@ class GameManager
 
 
   mirrorStage1OntoStage2: (options = {}, callback) ->
-    shouldSelect = options.shouldSelect || @selectedActor.stage == @stagePane2
+    options.shouldSelect ||= @selectedActor?.stage == @stagePane2
 
     @stagePane2.prepareWithData @mainStage.saveData(), () =>
+      # make the secondary pane visible and update extent to match
       @stagePane2.setRecordingExtent(@mainStage.recordingExtent, 'white')
       @stagePane2.setRecordingCentered(true)
       @stagePane2.setDisplayWidth(@stageTotalWidth / 2 - 2)
-      afterActor = @stagePane2.actorWithID(@selectedActor._id)
-      afterActor.applyRule(@selectedRule)
-      @selectActor(afterActor) if shouldSelect
+
+      # perform the rule, so the second pane reflects the "After" state
+      ruleActor = @stagePane2.actorWithID(@selectedRule.actor._id)
+      ruleActor.applyRule(@selectedRule)
+
+      # select the actor that was selected before we reloaded the data
+      actorToSelect = @selectedActor || @selectedRule.actor
+      @selectActor(@stagePane2.actorWithID(actorToSelect._id)) if actorToSelect && options.shouldSelect
+
+      # continue on to post-setup
       callback() if callback
 
 

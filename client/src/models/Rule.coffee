@@ -147,7 +147,6 @@ class Rule
           [action, actionIndex, actionIsNew] = @actionFor ref, 'variable', (action) -> action.variable == vID
 
           if created || deleted || (actionIsNew && options.existingActionsOnly)
-            debugger
             @actions.splice(actionIndex, 1)
             continue
 
