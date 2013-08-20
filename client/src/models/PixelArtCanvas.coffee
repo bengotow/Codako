@@ -237,6 +237,7 @@ class PixelArtCanvas
 
   constructor: (image, canvas, controller_scope) ->
     @controller = controller_scope
+    @canvas = canvas
     @width = canvas.width
     @height = canvas.height
     @image = image
@@ -246,13 +247,14 @@ class PixelArtCanvas
     @pixelSize = Math.floor(@width / Tile.WIDTH)
     canvas.width = @width
     canvas.height = @height
-    $(canvas).css('cursor', 'crosshair')
     canvas.addEventListener('mousedown', @handleCanvasEvent, false)
     canvas.addEventListener('mousemove', @handleCanvasEvent, false)
     canvas.addEventListener('mouseup',   @handleCanvasEvent, false)
     canvas.addEventListener('mouseout',  @handleCanvasEvent, false)
     Ticker.addListener(@)
+
     $('body').keydown @handleKeyEvent
+    $(canvas).css('cursor', 'crosshair')
 
     # augment our context object
     @context = canvas.getContext("2d")
@@ -308,7 +310,7 @@ class PixelArtCanvas
 
 
   stagePointToPixel: (x, y) ->
-    new Point( Math.min( Math.round(x / @pixelSize), Tile.WIDTH ) , Math.min( Math.round(y / @pixelSize), Tile.HEIGHT ) ) 
+    new Point( Math.max(0, Math.min( Math.round(x / @pixelSize), Tile.WIDTH )) , Math.max(0, Math.min( Math.round(y / @pixelSize), Tile.HEIGHT ) ) )
 
 
   handleKeyEvent: (ev) =>
@@ -316,6 +318,7 @@ class PixelArtCanvas
       if ev.keyCode == 13
           # copy drag data to the canvas.
           @applyPixelsFromDataIgnoreTransparent( @dragData.data, @imageData, 0, 0, Tile.WIDTH, Tile.HEIGHT, Tile.WIDTH, Math.floor(@dragData.offsetX / @pixelSize), Math.floor(@dragData.offsetY / @pixelSize) )
+          $(@canvas).css('cursor', 'crosshair')
           @inDragMode = false
 
       @dragData.offsetY -= @pixelSize if ev.keyCode == 38
@@ -364,24 +367,39 @@ class PixelArtCanvas
     return unless @tool
 
     type = ev.type
-    type = 'mouseup' if type == 'mouseout'
+    evX = ev.offsetX
+    evY = ev.offsetY
+
+    # if you're dragging and release the mouse outside of the canvas,
+    # we never get a mouse up event. When the mouse re-enters and we get
+    # an event, we detect that the mouse is no loger down and close the previous
+    # tool action.
+    if @tool.down && !window.mouseIsDown
+      type = 'mouseup'
+      evX = @mouseLastOffsetX
+      evY = @mouseLastOffsetY
+
+    @mouseLastOffsetX = evX
+    @mouseLastOffsetY = evY
 
     if @inDragMode == false
-      @tool[type](@stagePointToPixel(ev.offsetX, ev.offsetY), @)
+      type = 'mousemove' if type == 'mouseout' && !@tool[type]
+      @tool[type](@stagePointToPixel(evX, evY), @) if @tool[type]
       @applyTool() if type == 'mouseup' and @tool.autoApplyChanges == true
       @render()
     else
       if type == 'mousedown' and @dragging == false
         @dragging = true
-        @dragStart.x = ev.offsetX - @dragData.offsetX
-        @dragStart.y = ev.offsetY - @dragData.offsetY
+        @dragStart.x = evX - @dragData.offsetX
+        @dragStart.y = evY - @dragData.offsetY
       if type == 'mouseup'
         @dragging = false
       if type == 'mousemove' and @dragging == true
-        @dragData.offsetX = Math.floor((ev.offsetX-@dragStart.x) / @pixelSize) * @pixelSize
-        @dragData.offsetY = Math.floor((ev.offsetY-@dragStart.y) / @pixelSize) * @pixelSize
+        @dragData.offsetX = Math.floor((evX-@dragStart.x) / @pixelSize) * @pixelSize
+        @dragData.offsetY = Math.floor((evY-@dragStart.y) / @pixelSize) * @pixelSize
 
       @render()
+
 
   copy: () =>
     @clipboardData = new Uint8ClampedArray( Tile.WIDTH * Tile.HEIGHT * 4 )
@@ -399,9 +417,11 @@ class PixelArtCanvas
     @clearPixels( @selectedPixels )
 
   paste: () =>
+    return unless @clipboardData
     @undoStack.push(new Uint8ClampedArray(@imageData.data))
     @redoStack = []
-    return unless @clipboardData
+
+    $(@canvas).css('cursor', 'move')
     @dragData.clearRect( 0, 0, Tile.WIDTH, Tile.HEIGHT )
     @applyPixelsFromData( @clipboardData, @dragData, 0, 0, Tile.WIDTH, Tile.HEIGHT )
     @inDragMode = true
@@ -656,6 +676,9 @@ class PixelArtCanvas
 
   _extendImageData: (imgData) ->
     imgData.fillPixel = (xx, yy, color = @toolColor) =>
+      return if xx >= Tile.WIDTH || xx < 0
+      return if yy >= Tile.HEIGHT || yy < 0
+
       components = color[5..-2].split(',')
       for i in [0..components.length-1]
         imgData.data[(yy * Tile.WIDTH + xx) * 4 + i] = components[i]/1

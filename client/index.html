@@ -67,6 +67,13 @@
         console.log('Socket.io Connection Lost. Trying to reconnect...');
     });
 
+    $(document).mousedown(function(e){
+      window.mouseIsDown = true;
+    });
+    $(document).mouseup(function(e){
+      window.mouseIsDown = false;
+    });
+
     window.Game = new GameManager(stagePane1, stagePane2, renderingStage);
     window.rootScope = angular.element('body').scope()
   }
