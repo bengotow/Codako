@@ -1,6 +1,5 @@
 PixelArtCtrl = ($scope) ->
 
-
   $scope.actor_definition = null
   $scope.colors = []
   $scope.colors.push("rgba(255,255,255,255)")
@@ -48,6 +47,7 @@ PixelArtCtrl = ($scope) ->
     $scope.canvas.paste()
 
   $scope.set_tool = (tool) ->
+    $scope.canvas.tool.reset()
     $scope.canvas.tool = tool
 
   $scope.css_for_tool = (tool) ->

@@ -227,10 +227,6 @@ class PixelTranslateTool extends PixelTool
     return unless canvas.selectedPixels.length
     canvas.cut()
     canvas.paste()
-    # if canvas.dragging == false
-    # canvas.dragStart.x = point.x - canvas.dragData.offsetX
-    # canvas.dragStart.y = point.y - canvas.dragData.offsetY
-    # canvas.dragging = true
 
 
 class PixelArtCanvas
@@ -268,10 +264,6 @@ class PixelArtCanvas
 
 
     @context.fillPixel = (x, y, color = @toolColor) =>
-      # if color[-3..-1] != ',1)'
-      #   @context.fillStyle = "rgba(230,230,230,1)"
-      #   @context.fillRect(x * @pixelSize, y * @pixelSize, @pixelSize / 2, @pixelSize / 2)
-      #   @context.fillRect(x * @pixelSize + @pixelSize / 2, y * @pixelSize + @pixelSize / 2, @pixelSize / 2, @pixelSize / 2)
       if color[-3..-1] != ',0)'
         @context.fillStyle = color
         @context.fillRect(x * @pixelSize, y * @pixelSize, @pixelSize, @pixelSize)
@@ -299,6 +291,7 @@ class PixelArtCanvas
   setDisplayedFrame: (index, saveChanges = false) ->
     @undoStack = []
     @redoStack = []
+    @inDragMode = false
 
     @image.onload = () =>
       @prepareDataForDisplayedFrame()
