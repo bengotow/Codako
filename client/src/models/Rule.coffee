@@ -49,6 +49,7 @@ class Rule
   addActorReference: (actor, options = {}) ->
     struct = actor.descriptor()
     struct.actor_id_during_recording = actor._id
+    struct.appearance_ignored = true
     @updateActorReference(struct, actor)
 
     ref = Math.createUUID()
@@ -59,15 +60,16 @@ class Rule
   updateActorReference: (struct, actor) ->
     struct.appearance = actor.appearance
     struct.variableConstraints ||= {}
-    for variable, value of actor.variableValues
-      constraint = struct.variableConstraints[variable]
+    for vID, obj of actor.definition.variables()
+      value = actor.variableValue(vID)
+      constraint = struct.variableConstraints[vID]
       if constraint
         constraint.value = value/1 if constraint.comparator == '=' && value != constraint.value
         constraint.value = value/1-1 if constraint.comparator == '>' && value < constraint.value
         constraint.value = value/1+1 if constraint.comparator == '<' && value > constraint.value
       else
-        constraint = {value: value, comparator: "=", ignored: false}
-      struct.variableConstraints[variable] = constraint
+        constraint = {value: value, comparator: "=", ignored: true}
+      struct.variableConstraints[vID] = constraint
 
     delete struct._id
     delete struct.position

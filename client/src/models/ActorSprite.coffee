@@ -30,7 +30,8 @@ class ActorSprite extends Sprite
 
   matchesDescriptor: (descriptor) ->
     id_match = @identifier == descriptor.identifier
-    appearance_match = @appearance == descriptor.appearance
+    appearance_match = @appearance == descriptor.appearance || !descriptor.appearance
+
     variable_failed = false
     for id, constraint of descriptor.variableConstraints
       continue if constraint.ignored == true
@@ -39,7 +40,7 @@ class ActorSprite extends Sprite
       variable_failed = true if constraint.comparator == '>' && value/1 <= constraint.value/1
       variable_failed = true if constraint.comparator == '<' && value/1 >= constraint.value/1
 
-    return id_match && !variable_failed && (appearance_match || !descriptor.appearance)
+    return id_match && !variable_failed && (appearance_match || descriptor.appearance_ignored)
 
 
   setAppearance: (identifier = 'idle') ->

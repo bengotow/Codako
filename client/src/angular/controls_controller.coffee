@@ -83,8 +83,7 @@ ControlsCtrl = ($scope) ->
 
   $scope.toggle_appearance_constraint = (ref) ->
     descriptor = window.Game?.selectedRule?.descriptors[ref]
-    if descriptor.appearance
-      delete descriptor['appearance']
+    descriptor.appearance_ignored = !descriptor.appearance_ignored
 
   $scope.toggle_variable_constraint = (ref, variable_id) ->
     descriptor = window.Game?.selectedRule?.descriptors[ref]
@@ -155,6 +154,14 @@ ControlsCtrl = ($scope) ->
       entry = definition.variables()[id]
       continue unless entry
       return entry.name
+
+  $scope.class_for_appearance_constraint = (descriptor) ->
+    return 'condition ignored' if descriptor.appearance_ignored
+    return 'condition'
+
+  $scope.class_for_variable_constraint = (constraint) ->
+    return 'condition ignored' if constraint.ignored
+    return 'condition'
 
   $scope.save_recording_check_value = (id) ->
 
