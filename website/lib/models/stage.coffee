@@ -1,11 +1,6 @@
-module.exports = sequelize.define 'Stage', {
+global.StageSchema = new mongoose.Schema
+  content: String
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+  world: { type: mongoose.Schema.Types.ObjectId, ref: 'World' }
 
-  id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true }
-  content: { type: Sequelize.TEXT, allowNull: true }
-
-}, {
-
-  instanceMethods:
-    isOwnedBy: (user) -> return @user_id == user.id
-
-}
+module.exports = mongoose.model('Stage', StageSchema)

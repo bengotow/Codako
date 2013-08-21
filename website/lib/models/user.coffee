@@ -1,11 +1,11 @@
-module.exports = sequelize.define 'User', {
+global.UserSchema = new mongoose.Schema
+  email: String
+  nickname: String
+  password: String
+  type: String
+  createdAt: Date
 
-  id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true}
-  email: { type: Sequelize.STRING, allowNull: false}
-  nickname: { type: Sequelize.STRING, allowNull: false, unique: true}
-  password: { type: Sequelize.STRING, allowNull: false}
-  gender: { type: Sequelize.STRING}
+UserSchema.methods.findWorlds = (callback) ->
+  World.find({user: @_id}, callback)
 
-}, {
-
-}
+module.exports = mongoose.model('User', UserSchema)

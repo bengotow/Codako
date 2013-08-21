@@ -12,7 +12,7 @@
         description: 'A brand new world!'
       };
       return Worlds.create(data, function(world) {
-        return $location.path("/world/" + world.id);
+        return $location.path("/world/" + world._id);
       });
     };
   };

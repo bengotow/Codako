@@ -1,14 +1,5 @@
-module.exports = sequelize.define 'Comment', {
+global.CommentSchema = new mongoose.Schema
+  content: String
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
 
-  id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true }
-  type: { type: Sequelize.STRING, allowNull: false }
-  content: { type: Sequelize.STRING, allowNull: true }
-
-}, {
-
-  classMethods:
-    method1: () -> return 'smth'
-
-  instanceMethods:
-    isOwnedBy: (user) -> return @user_id == user.id
-}
+module.exports = mongoose.model('Comment', CommentSchema)

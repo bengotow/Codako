@@ -10,7 +10,7 @@ App.config(function($routeProvider) {
     when('/community',{controller:CommunityCtrl, templateUrl:'/src/views/community.html'}).
 
     when('/worlds',    {controller:WorldsCtrl, templateUrl:'/src/views/worlds.html'}).
-    when('/world/:id', {controller:WorldCtrl, templateUrl:'/src/views/world.html'}).
+    when('/world/:_id', {controller:WorldCtrl, templateUrl:'/src/views/world.html'}).
 
     when('/home',{controller:AppCtrl, templateUrl:'/src/views/home.html'}).
     when('/parents',{controller:AppCtrl, templateUrl:'/src/views/parents.html'}).

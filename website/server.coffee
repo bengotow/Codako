@@ -67,7 +67,7 @@ handlers =
 setupLocals = (req, res, next) ->
 	req.locals = {}
 	req.withWorld = (callback) ->
-		World.find({where: {id: req.pathArgs[0]/1, user_id: req.user.id}}).success (world) ->
+		World.findById req.pathArgs[0], (err, world) ->
 			return res.endWithError('streams.not_member', 404) unless world
 			callback(world)
 
@@ -159,9 +159,9 @@ handleAPIRequest = (req, res, next) ->
 
 		credentials = new Buffer(parts[1], 'base64').toString().split(':')
 
-		User.find({where: {email: credentials[0], password: credentials[1]}}).success (user) ->
+		User.findOne {email: credentials[0], password: credentials[1]}, (err, user) ->
 			if user
-				req.user_is_self = (req.pathArgs[0]/1 == user.id)
+				req.user_is_self = (req.pathArgs[0] == user._id)
 				req.user = user
 				console.log('Request with user ' + user.email)
 			choices[method](req, res)

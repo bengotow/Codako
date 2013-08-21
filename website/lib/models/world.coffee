@@ -1,13 +1,13 @@
-module.exports = sequelize.define 'World', {
+global.WorldSchema = new mongoose.Schema
+  title: String
+  description: String
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
 
-  id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true }
-  title: { type: Sequelize.STRING, allowNull: false }
-  description: { type: Sequelize.TEXT, allowNull: true }
+WorldSchema.methods.findComments = (callback) ->
+  Comment.find({world: @_id}, callback)
 
-}, {
-
-  instanceMethods:
-    isOwnedBy: (user) -> return @user_id == user.id
+WorldSchema.methods.isOwnedBy = (user) ->
+  user._id.toString() == @user.toString()
 
 
-}
+module.exports = mongoose.model('World', WorldSchema)

@@ -5,17 +5,14 @@
 
 exports.comments_get = (req, res) ->
   req.withWorld (world) ->
-    world.getComments().success (comments) ->
+    world.findComments (comments) ->
       res.endWithJSON(comments)
 
 
 exports.comments_post = (req, res) ->
   req.withWorld (world) ->
-    req.body.id = null
-    req.body.world_id = req.world.id
-    req.body.user_id = req.user.id
-    delete req.body['updated_at']
-    delete req.body['created_at']
+    req.body.world = req.world
+    req.body.user = req.user
 
     Comment.create(req.body).success (comment) ->
       comment = JSON.parse(JSON.stringify(comment))

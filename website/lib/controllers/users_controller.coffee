@@ -9,7 +9,7 @@
 
 exports.user_get = (req, res) ->
   return res.endWithUnauthorized() unless req.user
-  User.find(req.pathArgs[0]).success (user) ->
+  User.findById req.pathArgs[0], (err, user) ->
     res.endWithJSON(user)
 
 
@@ -20,11 +20,11 @@ exports.user_get_me = (req, res) ->
 
 exports.user_put = (req, res) ->
   return res.endWithUnauthorized() unless req.user && req.user_is_self
-  req.user.updateAttributes(req.body).success (user) ->
+  User.findByIdAndUpdate req.body._id, req.body, (err, user) ->
     res.endWithJSON(user)
 
 
 exports.user_delete = (req, res) ->
   return res.endWithUnauthorized() unless req.user && req.user_is_self
-  req.user.destroy()
+  req.user.remove()
   res.endWithJSON({success: true})

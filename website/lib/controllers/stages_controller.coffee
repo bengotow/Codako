@@ -6,15 +6,12 @@
 exports.stages_post = (req, res) ->
   req.withWorld (world) ->
     return res.endWithUnauthorized() unless req.user
-    return res.endWithUnauthorized() unless world.user_id == req.user.id
-    req.body.id = null
-    req.body.world_id = world.id
-    delete req.body['updated_at']
-    delete req.body['created_at']
+    return res.endWithUnauthorized() unless world.isOwnedBy(req.user)
+    req.body.world = world
 
-    Stage.create(req.body).success (stage) ->
-      s3.putStream req, "/user/#{world.user_id}/worlds/#{world.id}/stages/#{stage.id}.json", headers, (err, res) ->
-        res.endWithJSON(stage)
+    stage = new Stage(req.body)
+    stage.save (stage) ->
+      res.endWithJSON(stage)
 
 
 exports.stages_get = (req, res) ->
@@ -29,7 +26,7 @@ exports.stages_get = (req, res) ->
 
 exports.stage_get = (req, res) ->
   req.withWorld (world) ->
-    Stage.find({where: {id: req.pathArgs[1]/1, world_id: world.id}}).success (stage)->
+    Stage.find({where: {id: req.pathArgs[1], world_id: world._id}}).success (stage)->
       res.endWithJSON(stage)
 
 

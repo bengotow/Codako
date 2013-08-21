@@ -11,11 +11,11 @@ App.factory('Users', ['$resource', function($resource) {
 }])
 
 App.factory('Worlds', ['$resource', function($resource) {
-  return $resource('/api/v0/worlds/:id', {}, {
-    get:      { method: 'GET'},
-    mine:     { method: 'GET', params: {id: "mine"}, isArray: true },
-    popular:  { method: 'GET', params: {id: "popular"}, isArray: true },
-    update:   { method: 'PUT', params: {id: "@id"}},
+  return $resource('/api/v0/worlds/:_id', {}, {
+    get:      { method: 'GET'  },
+    mine:     { method: 'GET', params: {_id: "mine"}, isArray: true },
+    popular:  { method: 'GET', params: {_id: "popular"}, isArray: true },
+    update:   { method: 'PUT', params: {_id: "@_id"}},
     create:   { method: 'POST' }
   })
 }])
@@ -23,8 +23,8 @@ App.factory('Worlds', ['$resource', function($resource) {
 App.factory('Stages', ['$resource', function($resource) {
   return $resource('/api/v0/worlds/:world_id/stages/:id', {}, {
     index:    { method: 'GET', params: {world_id: "@world_id"}, isArray: true },
-    get:      { method: 'GET', params: {id: "@id", world_id: "@world_id"}},
-    update:   { method: 'PUT', params: {id: "@id", world_id: "@world_id"}},
+    get:      { method: 'GET', params: {id: "@_id", world_id: "@world_id"}},
+    update:   { method: 'PUT', params: {id: "@_id", world_id: "@world_id"}},
     create:   { method: 'POST', params: {world_id: "@world_id"}}
   })
 }])

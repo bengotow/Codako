@@ -7,6 +7,7 @@ global.knox = require("knox")
 global.async = require("async")
 global.email = require("emailjs")
 global.URI = require('url')
+global.mongoose = require('mongoose')
 global.helpers = require('./helpers')
 global._ = require('underscore')
 en = require ('./lang/en')
@@ -15,20 +16,8 @@ en = require ('./lang/en')
 server = require("./server").start()
 
 # Open a database connection
-global.Sequelize = require("sequelize")
-sequelizePath = URI.parse(process.env['SEQUELIZE_URL'])
-
-[username,password] = sequelizePath.auth.split(':')
-global.sequelize = new Sequelize(sequelizePath.pathname[1..-1], username, password, {
-  host: sequelizePath.hostname
-  port: sequelizePath.port
-  dialect: sequelizePath.protocol[0..-2]
-  define:
-    charset: 'utf8',
-    collate: 'utf8_general_ci',
-    timestamps: true
-    underscored: true
-})
+global.mongo = mongoose.connect process.env['MONGODB_URL'], {}, (err) ->
+  console.log('Mongo Connected', err)
 
 # Load models
 global.User = require('./lib/models/user')
@@ -36,26 +25,12 @@ global.Stage = require('./lib/models/stage')
 global.World = require('./lib/models/world')
 global.Comment = require('./lib/models/Comment')
 
-User.hasMany(World)
-World.belongsTo(User)
-
-World.hasMany(Stage)
-Stage.belongsTo(World)
-
-User.hasMany(Comment)
-Comment.belongsTo(User)
-
-World.hasMany(Comment)
-Comment.belongsTo(World)
-
-
 # Create tables if necessary
-sequelize.sync().success () ->
-  # Create admin account if necessary
-  User.count().success (count) ->
-    if count == 0
-      passwordmd5 = crypto.createHash('md5').update('doggums').digest('hex')
-      User.create({nickname: 'bengotow', email:'bengotow@gmail.com', password: passwordmd5})
+User.findOne {'nickname': 'bengotow'}, (err, user) ->
+  if !user
+    passwordmd5 = crypto.createHash('md5').update('doggums').digest('hex')
+    u = new User({nickname: 'bengotow', email:'bengotow@gmail.com', password: passwordmd5})
+    u.save()
 
 
 # Open an S3 connection

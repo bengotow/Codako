@@ -20,12 +20,9 @@
     "redis":"0.8.2",
     "socket.io":"0.9.13",
     "underscore":"1.4.4",
-    "mysql": "2.0.0-alpha8",
+    "mongoose": "3.6.x",
     "pg": "2.2.0",
-    "sequelize-postgres": "1.7.0-alpha2",
-    "sequelize":  "2.0.X",
     "emailjs": "0.3.4",
-    "socket.io":"0.9.13",
     "debug":"0.7.2"
   }
 }
