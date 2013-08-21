@@ -1,0 +1,46 @@
+<div class="modal-header">
+  <div style="float:left;">
+    <h3>Edit Appearance</h3>
+  </div>
+  <div align="right">
+    <!--Undo, Redo buttons-->
+    <div class="btn icon" ng-disabled="!canvas.canUndo()" ng-click="canvas.undo()"><img src="./img/icon_undo.png"></div>
+    <div class="btn icon" ng-disabled="!canvas.canRedo()" ng-click="canvas.redo()"><img src="./img/icon_redo.png"></div>
+    <!--Copy, Paste Buttons-->
+    <div class="btn icon" ng-disabled="!canvas.canCopy()" ng-click="copy()"><img src="./img/icon_copy.png"></div>
+    <div class="btn icon" ng-disabled="!canvas.canPaste()" ng-click="paste()"><img src="./img/icon_paste.png"></div>
+  </div>
+</div>
+
+<div class="modal-body" style="max-height:585px;">
+
+  <div class="sidebar">
+
+    <!-- Colors -->
+    <div class="btn color color-preview" style="background-color: {{canvas.toolColor}}" data-color="{{canvas.toolColor}}" data-color-format="rgb" id="cp1">
+        <span class="add-on"><i></i></span>
+    </div>
+    <div ng-repeat="color in colors" class="btn color" data-color="{{color}}" ng-click="set_tool_color(color)">
+      <i style="background-color: {{color}}"></i>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Tools -->
+    <div ng-repeat="tool in canvas.tools" class="{{css_for_tool(tool)}}" ng-click="set_tool(tool)">
+      <img ng-src="/img/tool_{{tool.name}}.png"/>
+    </div>
+
+  </div>
+
+  <div style="float:left; width:521px;">
+    <canvas id="pixelArtCanvas" width="521" height="521">
+    </canvas>
+  </div>
+
+</div>
+
+<div class="modal-footer">
+  <button class="btn" data-dismiss="modal" aria-hidden="true" ng-click="close_editor()">Close without Saving</button>
+  <button class="btn btn-primary" data-dismiss="modal" ng-click="save_editor()">Save Changes</button>
+</div>

@@ -139,7 +139,7 @@ class UserController
       relativePath = "#{directory}/#{filename}"
       relativePath = relativePath.withoutExtension() if options.removeExtensions
 
-      if isDirectory
+      if isDirectory && filename != '.DS_Store'
         @assetsInDirectory(relativePath, options, items)
       else
         items[filename.withoutExtension()] = {src: relativePath}

@@ -1,0 +1,65 @@
+
+<div class="row">
+  <div class="whitebox span6 offset3">
+    <h3>Welcome to Codako!</h3>
+    <p>Creating an account allows you to save the worlds you create, and it's completely free.
+      You do not need to provide your real name or any other personal information.
+    </p>
+    <form class="form">
+
+      <div class="control-group">
+        <label class="control-label" for="Email">Email Address</label>
+        <div class="controls">
+          <input ng-model="registration.email" type="text" id="Email Address" />
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label class="control-label" for="Password">Password</label>
+        <div class="controls">
+          <input ng-model="registration.password" type="password" id="Password" />
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label class="control-label" for="PasswordConfirm">Password (Confirm)</label>
+        <div class="controls">
+          <input ng-model="registration.password_confirm" type="password" id="PasswordConfirm" />
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label class="control-label" for="Nickname">Nickname</label>
+        <div class="controls">
+          <input ng-model="registration.nickname" type="text" id="Nickname" />
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label class="control-label" for="accountTypeRadios">I am a</label>
+        <div class="controls">
+          <label class="radio">
+            <input type="radio" name="accountTypeRadios" value="student" ng-model="registration.account_type" checked> Student
+          </label>
+          <label class="radio">
+            <input type="radio" name="accountTypeRadios" value="parent" ng-model="registration.account_type"> Parent / Teacher
+          </label>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <div class="controls">
+          <label class="checkbox">
+            <input type="checkbox" ng-model="registration.terms_agreement"> I agree to Codako's <a href="#">Terms of Service</a> and <a href="#">Acceptable Use Policy.</a>
+          </label>
+        </div>
+      </div>
+
+      <div style="float:right;">
+        <button class="btn btn-primary" ng-click="signUp()">Create Account</button>
+      </div>
+
+    </form>
+
+  </div>
+</div>
