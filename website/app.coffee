@@ -65,37 +65,6 @@ global.s3 = knox.createClient
   bucket: process.env['AWS_BUCKET']
 
 
-# Start a server,
-app = require("http").createServer()
-app.listen(process.env['SOCKET_IO_PORT'])
-io = require("socket.io").listen(app)
-io.sockets.on "connection", (socket) ->
-
-  socket.on 'get-actor', (args = {identifier: 'untitled'}) ->
-    socket.user.getActor args.identifier, (err, data) ->
-      socket.emit 'actor', data
-
-  socket.on 'put-actor', (args = {identifier: 'untitled', definition: {}}) ->
-    socket.user.saveActor(args.identifier, args.definition)
-
-  socket.on 'get-level', (args = {identifier: 'untitled'}) ->
-    console.log "Request for Level #{args.identifier}"
-    socket.user.getLevel args.identifier, (err, data) ->
-      socket.emit 'level', data
-
-  socket.on 'put-level', (data) ->
-    socket.user.saveLevel(data.identifier, data)
-
-  socket.on 'auth', (args) ->
-    socket.username = args.username
-    socket.password = args.password
-    socket.user = new UserController()
-    socket.user.authenticate args.username, args.password, (err) ->
-      socket.emit 'auth-state', {err: err}
-      if !err
-        socket.user.getAssets 'default', (err, data) ->
-          socket.emit "assetlist", data
-
 
 # Prepare some translations and string constants
 global.T8N = (keypath, substitutions = []) ->

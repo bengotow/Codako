@@ -69,8 +69,12 @@ class ActorDefinition
       variableDefaults: @variableDefaults
       rules: Rule.deflateRules(@rules)
 
-    console.log 'Saving Actor ', json, JSON.stringify(json)
-    window.Socket.emit 'put-actor', {identifier: @identifier, definition: json}
+    $.ajax({
+      url: "/worlds/#{window.Game.world_id}/actors/#{@identifier}/data",
+      data: json,
+      type: 'POST'
+    }).done () ->
+      console.log('Actor Saved')
 
 
   updateImageData: (args = {data:null, width: 0}) ->

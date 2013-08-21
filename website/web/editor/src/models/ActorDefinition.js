@@ -103,10 +103,12 @@
         variableDefaults: this.variableDefaults,
         rules: Rule.deflateRules(this.rules)
       };
-      console.log('Saving Actor ', json, JSON.stringify(json));
-      return window.Socket.emit('put-actor', {
-        identifier: this.identifier,
-        definition: json
+      return $.ajax({
+        url: "/worlds/" + window.Game.world_id + "/actors/" + this.identifier + "/data",
+        data: json,
+        type: 'POST'
+      }).done(function() {
+        return console.log('Actor Saved');
       });
     };
 

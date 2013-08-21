@@ -13,7 +13,8 @@ exports.stages_post = (req, res) ->
     delete req.body['created_at']
 
     Stage.create(req.body).success (stage) ->
-      res.endWithJSON(stage)
+      s3.putStream req, "/user/#{world.user_id}/worlds/#{world.id}/stages/#{stage.id}.json", headers, (err, res) ->
+        res.endWithJSON(stage)
 
 
 exports.stages_get = (req, res) ->

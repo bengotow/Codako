@@ -55,28 +55,26 @@
 
     }
 
-    GameManager.prototype.load = function(identifier, callback) {
+    GameManager.prototype.load = function(world_id, stage_id, callback) {
       var _this = this;
       if (callback == null) {
         callback = null;
       }
       this.dispose();
-      this.identifier = identifier;
+      this.world_id = world_id;
+      this.stage_id = stage_id;
       this.loadStatusChanged({
         progress: 0
       });
-      window.Socket.emit('get-level', {
-        identifier: this.identifier
-      });
-      return window.Socket.on('level', function(data) {
-        console.log('Got Level Data', data);
-        if (data.identifier !== _this.identifier) {
-          return;
-        }
-        _this.loadLevelDataReady(data);
-        if (callback) {
-          return callback(null);
-        }
+      return $.ajax({
+        url: "/worlds/" + world_id + "/stages/" + stage_id + "/data"
+      }).done(function(data) {
+        return _this.content.fetchLevelAssets(data.resources, function() {
+          _this.loadLevelDataReady(data);
+          if (callback) {
+            return callback(null);
+          }
+        });
       });
     };
 
@@ -88,10 +86,9 @@
       }
     };
 
-    GameManager.prototype.loadLevelDataReady = function(json) {
+    GameManager.prototype.loadLevelDataReady = function(data) {
       var _this = this;
-      console.log('loadLevelDataReady');
-      return this.mainStage.prepareWithData(json, function(err) {
+      return this.mainStage.prepareWithData(data, function(err) {
         _this.loadStatusChanged({
           progress: 100
         });
@@ -177,14 +174,17 @@
     } catch (_error) {}
 
     GameManager.prototype.save = function() {
-      var data;
-      console.log('Trying to save while editing a rule??');
       if (this.selectedRule && this.selectedRule.editing) {
+        console.log('Trying to save while editing a rule??');
         return;
       }
-      data = this.mainStage.saveData();
-      data.identifier = this.identifier;
-      return window.Socket.emit('put-level', data);
+      return $.ajax({
+        url: "/worlds/" + this.world_id + "/stages/" + this.stage_id + "/data",
+        data: this.mainStage.saveData(),
+        type: 'POST'
+      }).done(function() {
+        return console.log('Stage Saved');
+      });
     };
 
     GameManager.prototype.isKeyDown = function(code) {

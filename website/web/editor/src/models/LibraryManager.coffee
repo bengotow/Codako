@@ -8,10 +8,6 @@ class LibraryManager
     @definitions = {}
     @definitionReadyCallbacks = {}
 
-    window.Socket.on 'actor', (actor_json) =>
-      actor = new ActorDefinition(actor_json)
-      @addActorDefinition(actor)
-
     @
 
 
@@ -26,7 +22,13 @@ class LibraryManager
     return callback(null) if @definitions[identifier]
     @outstanding += 1
     @definitionReadyCallbacks[identifier] = callback
-    window.Socket.emit 'get-actor', {identifier: identifier}
+
+    $.ajax({
+      url: "/worlds/#{window.Game.world_id}/actors/#{identifier}/data"
+    }).done (data) ->
+      actor = new ActorDefinition(actor_json)
+      @addActorDefinition(actor)
+
 
 
   addActorDefinition: (actor, readyCallback = null) =>

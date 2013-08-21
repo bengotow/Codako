@@ -5,21 +5,24 @@ class ContentManager
     @numElementsQueued = 0
     @numElementsLoaded = 0
     @contentStatusCallback = statusCallback
+    @contentFinishedCallback = null
     @elements =
       images: {}
       sounds: {}
 
-    window.Socket.on 'assetlist', (resources) =>
-      # If the browser supports either MP3 or OGG
-      @soundFormat = @_soundFormatForBrowser()
-      @contentStatusCallback({progress: 0})
+    Ticker.addListener(@)
+    Ticker.setInterval(50)
 
-      if @soundFormat != '.none'
-        @downloadSound(key, info, @soundFormat) for key, info of resources.sounds
-      @downloadImage(key, info) for key, info of resources.images
 
-      Ticker.addListener(@)
-      Ticker.setInterval(50)
+  fetchLevelAssets: (resources, finishCallback) =>
+    # If the browser supports either MP3 or OGG
+    @soundFormat = @_soundFormatForBrowser()
+    @contentStatusCallback({progress: 0})
+    @contentFinishedCallback = finishCallback
+
+    if @soundFormat != '.none'
+      @downloadSound(key, info, @soundFormat) for key, info of resources.sounds
+    @downloadImage(key, info) for key, info of resources.images
 
 
   downloadImage: (key, info) ->
@@ -36,8 +39,12 @@ class ContentManager
 
   downloadSound: (key, info, extension) ->
     for i in [0..(info.channels || 1)]
+      @numElementsQueued += 1
       asset = new Audio()
       asset.src = "#{info.src || info}#{extension}"
+      asset.onload = (e) =>
+        @numElementsLoaded += 1
+        @downloadsComplete() if (@numElementsLoaded == @numElementsQueued)
       asset.load()
       @elements.sounds[key] ||= {channels: [], next: 0}
       @elements.sounds[key].channels.push(asset)
@@ -46,6 +53,7 @@ class ContentManager
   downloadsComplete: () =>
     Ticker.removeListener(@)
     @contentStatusCallback({progress: 100})
+    @contentFinishedCallback() if @contentFinishedCallback
 
 
   tick: () =>

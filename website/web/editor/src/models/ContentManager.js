@@ -9,36 +9,41 @@
 
       this.downloadsComplete = __bind(this.downloadsComplete, this);
 
-      var _this = this;
+      this.fetchLevelAssets = __bind(this.fetchLevelAssets, this);
       this.numElementsQueued = 0;
       this.numElementsLoaded = 0;
       this.contentStatusCallback = statusCallback;
+      this.contentFinishedCallback = null;
       this.elements = {
         images: {},
         sounds: {}
       };
-      window.Socket.on('assetlist', function(resources) {
-        var info, key, _ref, _ref1;
-        _this.soundFormat = _this._soundFormatForBrowser();
-        _this.contentStatusCallback({
-          progress: 0
-        });
-        if (_this.soundFormat !== '.none') {
-          _ref = resources.sounds;
-          for (key in _ref) {
-            info = _ref[key];
-            _this.downloadSound(key, info, _this.soundFormat);
-          }
-        }
-        _ref1 = resources.images;
-        for (key in _ref1) {
-          info = _ref1[key];
-          _this.downloadImage(key, info);
-        }
-        Ticker.addListener(_this);
-        return Ticker.setInterval(50);
-      });
+      Ticker.addListener(this);
+      Ticker.setInterval(50);
     }
+
+    ContentManager.prototype.fetchLevelAssets = function(resources, finishCallback) {
+      var info, key, _ref, _ref1, _results;
+      this.soundFormat = this._soundFormatForBrowser();
+      this.contentStatusCallback({
+        progress: 0
+      });
+      this.contentFinishedCallback = finishCallback;
+      if (this.soundFormat !== '.none') {
+        _ref = resources.sounds;
+        for (key in _ref) {
+          info = _ref[key];
+          this.downloadSound(key, info, this.soundFormat);
+        }
+      }
+      _ref1 = resources.images;
+      _results = [];
+      for (key in _ref1) {
+        info = _ref1[key];
+        _results.push(this.downloadImage(key, info));
+      }
+      return _results;
+    };
 
     ContentManager.prototype.downloadImage = function(key, info) {
       var _this = this;
@@ -58,11 +63,19 @@
     };
 
     ContentManager.prototype.downloadSound = function(key, info, extension) {
-      var asset, i, _base, _i, _ref, _results;
+      var asset, i, _base, _i, _ref, _results,
+        _this = this;
       _results = [];
       for (i = _i = 0, _ref = info.channels || 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
+        this.numElementsQueued += 1;
         asset = new Audio();
         asset.src = "" + (info.src || info) + extension;
+        asset.onload = function(e) {
+          _this.numElementsLoaded += 1;
+          if (_this.numElementsLoaded === _this.numElementsQueued) {
+            return _this.downloadsComplete();
+          }
+        };
         asset.load();
         (_base = this.elements.sounds)[key] || (_base[key] = {
           channels: [],
@@ -75,9 +88,12 @@
 
     ContentManager.prototype.downloadsComplete = function() {
       Ticker.removeListener(this);
-      return this.contentStatusCallback({
+      this.contentStatusCallback({
         progress: 100
       });
+      if (this.contentFinishedCallback) {
+        return this.contentFinishedCallback();
+      }
     };
 
     ContentManager.prototype.tick = function() {

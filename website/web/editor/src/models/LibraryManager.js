@@ -10,17 +10,10 @@
       this.loadActorDefinition = __bind(this.loadActorDefinition, this);
 
       this.loadActorDefinitions = __bind(this.loadActorDefinitions, this);
-
-      var _this = this;
       this.libraryName = name;
       this.libraryProgressCallback = progressCallback;
       this.definitions = {};
       this.definitionReadyCallbacks = {};
-      window.Socket.on('actor', function(actor_json) {
-        var actor;
-        actor = new ActorDefinition(actor_json);
-        return _this.addActorDefinition(actor);
-      });
       this;
 
     }
@@ -38,8 +31,12 @@
       }
       this.outstanding += 1;
       this.definitionReadyCallbacks[identifier] = callback;
-      return window.Socket.emit('get-actor', {
-        identifier: identifier
+      return $.ajax({
+        url: "/worlds/" + window.Game.world_id + "/actors/" + identifier + "/data"
+      }).done(function(data) {
+        var actor;
+        actor = new ActorDefinition(actor_json);
+        return this.addActorDefinition(actor);
       });
     };
 

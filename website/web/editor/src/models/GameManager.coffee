@@ -43,16 +43,15 @@ class GameManager
 
   load: (world_id, stage_id, callback = null) ->
     @dispose()
-    @identifier = stage_id
+    @world_id = world_id
+    @stage_id = stage_id
     @loadStatusChanged({progress: 0})
 
-    $.ajax({
-      url: "/worlds/#{world_id}/stages/#{stage_id}/data"
-    }).done (data) ->
-      console.log('Got Level Data', data)
-      return unless data.identifier == @identifier
-      @loadLevelDataReady(data)
-      callback(null) if callback
+    $.ajax({url: "/worlds/#{world_id}/stages/#{stage_id}/data"})
+      .done (data) =>
+        @content.fetchLevelAssets data.resources, () =>
+          @loadLevelDataReady(data)
+          callback(null) if callback
 
 
   loadStatusChanged: (state) =>
@@ -62,9 +61,8 @@ class GameManager
       @mainStage.setStatusMessage(null)
 
 
-  loadLevelDataReady: (json) ->
-    console.log('loadLevelDataReady')
-    @mainStage.prepareWithData json, (err) =>
+  loadLevelDataReady: (data) ->
+    @mainStage.prepareWithData data, (err) =>
       @loadStatusChanged({progress: 100})
       @initialGameTime = Ticker.getTime()
 
@@ -134,11 +132,16 @@ class GameManager
 
 
   save: () ->
-    console.log('Trying to save while editing a rule??')
-    return if @selectedRule && @selectedRule.editing
-    data = @mainStage.saveData()
-    data.identifier = @identifier
-    window.Socket.emit 'put-level', data
+    if @selectedRule && @selectedRule.editing
+      console.log('Trying to save while editing a rule??')
+      return
+
+    $.ajax({
+      url: "/worlds/#{@world_id}/stages/#{@stage_id}/data",
+      data: @mainStage.saveData(),
+      type: 'POST'
+    }).done () ->
+      console.log('Stage Saved')
 
 
   isKeyDown: (code) ->
