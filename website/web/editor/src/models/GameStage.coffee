@@ -48,7 +48,7 @@ class GameStage extends Stage
     @widthTarget = width
 
 
-  saveData: () ->
+  saveData: (options = {}) ->
     data =
       _id: @_id
       width: @width,
@@ -56,7 +56,9 @@ class GameStage extends Stage
       wrapX: @wrapX,
       wrapY: @wrapY,
       actor_library: @actorDefinitionIDs(),
-      actor_descriptors: []
+      actor_descriptors: [],
+
+    data.thumbnail = @canvas.toDataURL("image/jpeg", 0.8) if options.thumbnail
     data.actor_descriptors.push(actor.descriptor()) for actor in @actors
     data
 

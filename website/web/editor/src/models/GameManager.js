@@ -175,16 +175,26 @@
       GameManager.content.pauseSound('globalMusic');
     } catch (_error) {}
 
-    GameManager.prototype.save = function() {
+    GameManager.prototype.save = function(options) {
+      var isAsync;
+      if (options == null) {
+        options = {};
+      }
       if (this.selectedRule && this.selectedRule.editing) {
         console.log('Trying to save while editing a rule??');
         return;
       }
+      isAsync = true;
+      if (options.async !== void 0) {
+        isAsync = options.async;
+      }
+      debugger;
       return $.ajax({
         url: "/api/v0/worlds/" + this.world_id + "/stages/" + this.stage_id,
-        data: angular.toJson(this.mainStage.saveData()),
+        data: angular.toJson(this.mainStage.saveData(options)),
         contentType: 'application/json',
-        type: 'POST'
+        type: 'POST',
+        async: isAsync
       }).done(function() {
         return console.log('Stage Saved');
       });

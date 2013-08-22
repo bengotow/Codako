@@ -134,16 +134,20 @@ class GameManager
       @content.pauseSound('globalMusic')
 
 
-  save: () ->
+  save: (options = {}) ->
     if @selectedRule && @selectedRule.editing
       console.log('Trying to save while editing a rule??')
       return
 
+    isAsync = true
+    isAsync = options.async if options.async != undefined
+
     $.ajax({
       url: "/api/v0/worlds/#{@world_id}/stages/#{@stage_id}",
-      data: angular.toJson(@mainStage.saveData()),
+      data: angular.toJson(@mainStage.saveData(options)),
       contentType: 'application/json',
-      type: 'POST'
+      type: 'POST',
+      async: isAsync
     }).done () ->
       console.log('Stage Saved')
 

@@ -61,8 +61,11 @@
       return this.widthTarget = width;
     };
 
-    GameStage.prototype.saveData = function() {
+    GameStage.prototype.saveData = function(options) {
       var actor, data, _i, _len, _ref;
+      if (options == null) {
+        options = {};
+      }
       data = {
         _id: this._id,
         width: this.width,
@@ -72,6 +75,9 @@
         actor_library: this.actorDefinitionIDs(),
         actor_descriptors: []
       };
+      if (options.thumbnail) {
+        data.thumbnail = this.canvas.toDataURL("image/jpeg", 0.8);
+      }
       _ref = this.actors;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         actor = _ref[_i];

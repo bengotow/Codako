@@ -10,7 +10,7 @@
 		<h4>Stages</h4>
 		<div ng-show="stages.length" class="stages-collection">
 			<div ng-repeat="stage in stages" class="span3">
-				<a ng-click="openStage(stage)"><h4>{{stage._id}}</h4></a>
+				<a ng-click="openStage(stage)"><img ng-src="{{stage.thumbnail}}" style="width:240px; height:156px;"/></a>
 			</div>
 		</div>
 	</div>

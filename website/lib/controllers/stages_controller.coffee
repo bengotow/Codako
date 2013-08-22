@@ -38,8 +38,12 @@ exports.stage_put = (req, res) ->
       return res.endWithError('error.notfound', 404) unless stage
       return res.endWithUnauthorized() unless stage.isWithinWorld(world)
 
-      for attribute in ['width', 'height', 'wrapX', 'wrapY', 'actor_library', 'actor_descriptors', 'resources']
-        stage[attribute] = req.body[attribute]
+      for attribute in ['width', 'height', 'wrapX', 'wrapY', 'actor_library', 'actor_descriptors', 'resources', 'thumbnail']
+        stage[attribute] = req.body[attribute] if req.body[attribute]
+
+      if req.body.thumbnail
+        world.thumbnail = req.body.thumbnail
+        world.save()
 
       stage.save (err, stage) ->
         return res.endWithError(err, 400) if err

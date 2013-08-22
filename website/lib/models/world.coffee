@@ -2,6 +2,7 @@ global.WorldSchema = new mongoose.Schema
   title: String
   description: String
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+  thumbnail: { type:String, default: '/img/thumbnail_empty.png' }
 
 WorldSchema.methods.findComments = (callback) ->
   Comment.find({world: @_id}, callback)

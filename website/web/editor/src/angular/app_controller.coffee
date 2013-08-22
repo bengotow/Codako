@@ -21,6 +21,8 @@
 
     window.Game = new GameManager(stagePane1, stagePane2, renderingStage)
     window.rootScope = angular.element('body').scope()
+    window.onunload = (e) ->
+      window.Game.save({thumbnail: true, async: false})
 
     path = window.location.href.split('#')[1]
     if path
@@ -32,6 +34,7 @@
         window.location.href = "/"
 
     window.Game.load(world_id, stage_id)
+
 
 
 @AppCtrl.$inject = ['$scope', '$location', 'Users', 'Stages', 'Auth', '$http']

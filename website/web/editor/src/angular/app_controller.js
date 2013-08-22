@@ -22,6 +22,12 @@
       });
       window.Game = new GameManager(stagePane1, stagePane2, renderingStage);
       window.rootScope = angular.element('body').scope();
+      window.onunload = function(e) {
+        return window.Game.save({
+          thumbnail: true,
+          async: false
+        });
+      };
       path = window.location.href.split('#')[1];
       if (path) {
         path = path.split('/');

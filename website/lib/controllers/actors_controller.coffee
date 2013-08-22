@@ -36,7 +36,7 @@ exports.actor_put = (req, res) ->
       return res.endWithUnauthorized() unless actor.isWithinWorld(world)
 
       for attribute in ['name', 'spritesheet', 'rules', 'variableDefaults']
-        actor[attribute] = req.body[attribute]
+        actor[attribute] = req.body[attribute] if req.body[attribute]
 
       actor.save (err, actor) ->
         return res.endWithError(err, 400) if err

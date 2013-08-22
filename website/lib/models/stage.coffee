@@ -6,8 +6,11 @@ global.StageSchema = new mongoose.Schema
   height: { type: Number, default: 13 }
   wrapX: { type: Boolean, default: false }
   wrapY: { type: Boolean, default: false }
+  thumbnail: { type:String, default: '/img/thumbnail_empty.png' }
+
   actor_library: {type: mongoose.Schema.Types.Mixed, default: []}
   actor_descriptors: {type: mongoose.Schema.Types.Mixed, default: []}
+
   resources: {type: mongoose.Schema.Types.Mixed, default: {
       images: {"Layer0_0": {src:"/editor/img/Backgrounds/Layer0_0.png"}},
       sounds: {}
