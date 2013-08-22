@@ -87,6 +87,11 @@ class ActorDefinition
       @rebuildSpritesheetInstance()
       @ruleRenderCache = {}
       window.rootScope.$apply()
+
+      # make the currently selected actor refresh it's display cache
+      # to force it to update if it's using the current appearance
+      window.Game.selectedActor?.setSelected(true)
+
     ,250
 
 

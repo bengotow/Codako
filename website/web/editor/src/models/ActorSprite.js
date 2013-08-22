@@ -74,7 +74,8 @@
         return;
       }
       this.appearance = identifier;
-      return this.gotoAndStop(this.appearance);
+      this.gotoAndStop(this.appearance);
+      return this.setSelected(this.selected);
     };
 
     ActorSprite.prototype.reset = function(position) {

@@ -65,9 +65,11 @@
 
     Sprite.prototype.setSelected = function(sel) {
       this.selected = sel;
-      this.shadow = null;
+      this.filters = [];
+      this.uncache();
       if (this.selected) {
-        return this.shadow = new Shadow("#FFF", 2, 2, 9);
+        this.filters = [new createjs.SelectionFilter(2)];
+        return this.cache(-2, -2, Tile.WIDTH + 4, Tile.HEIGHT + 4);
       }
     };
 

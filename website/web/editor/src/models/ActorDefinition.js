@@ -125,9 +125,11 @@
       this.spritesheet.width = args.width;
       this.img.src = args.data;
       return setTimeout(function() {
+        var _ref;
         _this.rebuildSpritesheetInstance();
         _this.ruleRenderCache = {};
-        return window.rootScope.$apply();
+        window.rootScope.$apply();
+        return (_ref = window.Game.selectedActor) != null ? _ref.setSelected(true) : void 0;
       }, 250);
     };
 

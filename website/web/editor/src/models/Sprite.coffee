@@ -47,8 +47,13 @@ class Sprite extends BitmapAnimation
 
   setSelected: (sel) ->
     @selected = sel
-    @shadow = null
-    @shadow = new Shadow("#FFF", 2, 2, 9) if @selected
+    # @shadow = null
+    # @shadow = new Shadow("#FFF", 2, 2, 9) if @selected
+    @filters = []
+    @uncache()
+    if @selected
+      @filters = [new createjs.SelectionFilter(2)]
+      @cache(-2,-2, Tile.WIDTH+4, Tile.HEIGHT+4)
 
 
   getBounds: () ->

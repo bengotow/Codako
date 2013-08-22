@@ -428,7 +428,7 @@ class PixelArtCanvas
 
   tick: () ->
     # for the fun marching-ants selection areas.
-    if @selectedPixels
+    if @selectedPixels?.length
       @render()
 
   render: () ->

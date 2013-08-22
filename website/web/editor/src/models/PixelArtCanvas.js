@@ -690,7 +690,8 @@
     };
 
     PixelArtCanvas.prototype.tick = function() {
-      if (this.selectedPixels) {
+      var _ref;
+      if ((_ref = this.selectedPixels) != null ? _ref.length : void 0) {
         return this.render();
       }
     };

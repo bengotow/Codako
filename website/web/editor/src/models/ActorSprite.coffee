@@ -49,6 +49,7 @@ class ActorSprite extends Sprite
     return unless @definition.hasAppearance(identifier)
     @appearance = identifier
     @gotoAndStop(@appearance)
+    @setSelected(@selected)
 
 
   reset: (position) ->
