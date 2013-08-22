@@ -23,8 +23,15 @@
     window.rootScope = angular.element('body').scope()
 
     path = window.location.href.split('#')[1]
-    path = path.split('/')
-    window.Game.load(path[path.length-2], path[path.length-1])
+    if path
+        path = path.split('/')
+        stage_id = path[path.length-1]
+        world_id = path[path.length-2]
+
+    if !stage_id || !world_id
+        window.location.href = "/"
+
+    window.Game.load(world_id, stage_id)
 
 
 @AppCtrl.$inject = ['$scope', '$location', 'Users', 'Stages', 'Auth', '$http']
