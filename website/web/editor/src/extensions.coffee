@@ -18,6 +18,38 @@ Array.matrix = (m, n, initial) ->
     i += 1
   mat
 
+String.fromEventKeyCode = (code) ->
+  if code == 32
+    return 'Space Bar'
+  if code == 13
+    return 'Enter'
+  if code == 9
+    return 'Tab'
+  if code == 187
+    return '+'
+  if code == 189
+    return '-'
+  if code == 192
+    return '`'
+  if code == 188
+    return '<'
+  if code == 190
+    return '>'
+  if code == 191
+    return '?'
+  if code == 186
+    return ';'
+  if code == 222
+    return '"'
+  if code == 220
+    return '\\'
+  if code == 221
+    return ']'
+  if code == 219
+    return '['
+  else
+    return String.fromCharCode(code)
+
 Math.clamp = (value, min, max) ->
   value = (if value > max then max else value)
   value = (if value < min then min else value)

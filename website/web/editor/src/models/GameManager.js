@@ -34,6 +34,9 @@
         if ($(e.target).prop('id') === 'pixelArtModal') {
           return;
         }
+        if ($(e.target).prop('id') === 'keyInputModal') {
+          return;
+        }
         if (e.keyCode === 127 || e.keyCode === 8) {
           e.preventDefault();
           if (_this.selectedActor) {
@@ -188,7 +191,6 @@
       if (options.async !== void 0) {
         isAsync = options.async;
       }
-      debugger;
       return $.ajax({
         url: "/api/v0/worlds/" + this.world_id + "/stages/" + this.stage_id,
         data: angular.toJson(this.mainStage.saveData(options)),

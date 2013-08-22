@@ -11,7 +11,7 @@
       </div>
 
       <img class="icon" ng-src="./img/icon_event_{{struct.event}}.png"/>
-      <div class="name">{{name_for_event_group(struct)}}</div>
+      <div class="name" ng-dblclick="double_click_edit_event_group(struct)" ng-bind-html-unsafe="name_for_event_group(struct)"></div>
     </div>
     <ul class="unstyled rules-list" ng-hide="struct.disclosed" sortable='{"connectWith":".rules-list"}'>
       <li ng-repeat="struct in struct.rules"  ng-click="rule_clicked(struct)" ng-include="'rule_template.html'" data-id="{{struct._id}}"></li>
@@ -56,16 +56,16 @@
 </script>
 
 <div style="position:absolute;z-index:1000;top:-37px; left:200px;" class="btn-group" ng-show="definition_name()">
-  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+  <a class="btn dropdown-toggle" data-toggle="dropdown">
   	<i class="icon-tasks"></i> Add <span class="caret"></span>
   </a>
   <ul id="rules-dropdown" class="dropdown-menu">
-  	<li><a href="#" ng-click="add_rule()"><span class="badge"></span> Add New Rule</a></li>
+  	<li><a ng-click="add_rule()"><span class="badge"></span> Add New Rule</a></li>
   	<li class="divider"></li>
-  	<li><a href="#" ng-click="add_rule_group_flow('key')"><span class="badge badge-info"></span> Add Flow Container</a></li>
+  	<li><a ng-click="add_rule_group_flow('key')"><span class="badge badge-info"></span> Add Flow Container</a></li>
   	<li class="divider"></li>
-  	<li><a href="#" ng-click="add_rule_group_event('key')"><span class="badge badge-success"></span> When a Key is Pressed...</a></li>
-  	<li><a href="#" ng-click="add_rule_group_event('click')"><span class="badge badge-success"></span> When I'm Clicked...</a></li>
+  	<li><a ng-click="add_rule_group_event('key')"><span class="badge badge-success"></span> When a Key is Pressed...</a></li>
+  	<li><a ng-click="add_rule_group_event('click')"><span class="badge badge-success"></span> When I'm Clicked...</a></li>
   </ul>
 </div>
 

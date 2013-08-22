@@ -151,6 +151,16 @@ h4 {
 .rules-list .rule-container.group .header {
   height: 50px;
 }
+.rules-list .rule-container .keycode {
+  padding-left: 4px;
+  padding-right: 4px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 25, 0);
+}
+.rules-list .rule-container .keycode:hover {
+  background-color: rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255, 255, 25, 0.6);
+}
 .rules-list .rule-container .circle {
   display: inline-block;
   width: 12px;

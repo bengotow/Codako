@@ -2,6 +2,7 @@
   var RulesCtrl;
 
   RulesCtrl = function($scope) {
+    var _this = this;
     window.rulesScope = $scope;
     $scope.structs_lookup_table = null;
     $scope.flow_types = {
@@ -38,18 +39,22 @@
       return window.Game.editRule(rule, window.Game.selectedActor);
     };
     $scope.add_rule_group_event = function(type) {
-      var code;
       if (type === 'key') {
-        code = 'A';
-        return window.Game.selectedDefinition.addEventGroup({
-          event: type,
-          code: code
+        return $scope.$root.$broadcast('edit_key', {
+          key_code: false,
+          completion_callback: $scope.add_rule_group_event_key
         });
       } else {
         return window.Game.selectedDefinition.addEventGroup({
           event: type
         });
       }
+    };
+    $scope.add_rule_group_event_key = function(key_code) {
+      return window.Game.selectedDefinition.addEventGroup({
+        event: 'key',
+        code: key_code
+      });
     };
     $scope.add_rule_group_flow = function() {
       return window.Game.selectedDefinition.addFlowGroup();
@@ -89,15 +94,26 @@
       if (code === 39) {
         return "Right Arrow";
       }
-      return String.fromCharCode(code);
+      return String.fromEventKeyCode(code);
     };
     $scope.name_for_event_group = function(struct) {
       if (struct.event === 'key') {
-        return "When the " + ($scope.name_for_key(struct.code)) + " Key is Pressed";
+        return "When the <span class='keycode'>" + ($scope.name_for_key(struct.code)) + " Key</span> is Pressed";
       } else if (struct.event === 'click') {
         return "When I'm Clicked";
       } else {
         return "When I'm Idle";
+      }
+    };
+    $scope.double_click_edit_event_group = function(struct) {
+      if (struct.event === 'key') {
+        return $scope.$root.$broadcast('edit_key', {
+          key_code: struct.code,
+          completion_callback: function(code) {
+            struct.code = code;
+            return window.Game.selectedDefinition.save();
+          }
+        });
       }
     };
     $scope.name_for_flow_group = function(struct) {

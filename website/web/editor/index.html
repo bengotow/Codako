@@ -64,6 +64,7 @@
   <script src="./src/angular/controls_controller.js"></script>
   <script src="./src/angular/variables_controller.js"></script>
   <script src="./src/angular/rules_controller.js"></script>
+  <script src="./src/angular/key_input_controller.js"></script>
   <script src="./src/angular/pixel_art_controller.js"></script>
   <script src="./src/angular/library_controller.js"></script>
 
@@ -142,6 +143,12 @@
 
   </div>
 
+
+  <div id="keyInputModal"
+       ng-controller="KeyInputCtrl"
+       ng-include="'./src/angular/key_input_controller.html'"
+       class="modal hide fade" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" ng-cloak>
+  </div>
 
   <div id="pixelArtModal"
        ng-controller="PixelArtCtrl"

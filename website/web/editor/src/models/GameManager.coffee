@@ -24,6 +24,7 @@ class GameManager
     $('body').keydown (e) =>
       return if $(e.target).prop('tagName') == 'INPUT'
       return if $(e.target).prop('id') == 'pixelArtModal'
+      return if $(e.target).prop('id') == 'keyInputModal'
 
       if e.keyCode == 127 || e.keyCode == 8
         e.preventDefault()

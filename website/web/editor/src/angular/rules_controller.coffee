@@ -37,10 +37,13 @@ RulesCtrl = ($scope) ->
 
   $scope.add_rule_group_event = (type) ->
     if type == 'key'
-      code = 'A'
-      window.Game.selectedDefinition.addEventGroup({event: type, code: code})
+      $scope.$root.$broadcast('edit_key', {key_code:false, completion_callback: $scope.add_rule_group_event_key})
     else
       window.Game.selectedDefinition.addEventGroup({event: type})
+
+
+  $scope.add_rule_group_event_key = (key_code) =>
+    window.Game.selectedDefinition.addEventGroup({event: 'key', code: key_code})
 
 
   $scope.add_rule_group_flow = () ->
@@ -75,16 +78,25 @@ RulesCtrl = ($scope) ->
     return "Up Arrow" if code == 38
     return "Left Arrow" if code == 37
     return "Right Arrow" if code == 39
-    return String.fromCharCode(code)
+    return String.fromEventKeyCode(code)
 
 
   $scope.name_for_event_group = (struct) ->
     if struct.event == 'key'
-      return "When the #{$scope.name_for_key(struct.code)} Key is Pressed"
+      return "When the <span class='keycode'>#{$scope.name_for_key(struct.code)} Key</span> is Pressed"
     else if struct.event == 'click'
       return "When I'm Clicked"
     else
       return "When I'm Idle"
+
+  $scope.double_click_edit_event_group = (struct) ->
+    if struct.event == 'key'
+      $scope.$root.$broadcast 'edit_key',
+        key_code:struct.code,
+        completion_callback: (code) ->
+          struct.code = code
+          window.Game.selectedDefinition.save()
+
 
 
   $scope.name_for_flow_group = (struct) ->

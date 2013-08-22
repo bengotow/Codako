@@ -24,6 +24,53 @@
     return mat;
   };
 
+  String.fromEventKeyCode = function(code) {
+    if (code === 32) {
+      return 'Space Bar';
+    }
+    if (code === 13) {
+      return 'Enter';
+    }
+    if (code === 9) {
+      return 'Tab';
+    }
+    if (code === 187) {
+      return '+';
+    }
+    if (code === 189) {
+      return '-';
+    }
+    if (code === 192) {
+      return '`';
+    }
+    if (code === 188) {
+      return '<';
+    }
+    if (code === 190) {
+      return '>';
+    }
+    if (code === 191) {
+      return '?';
+    }
+    if (code === 186) {
+      return ';';
+    }
+    if (code === 222) {
+      return '"';
+    }
+    if (code === 220) {
+      return '\\';
+    }
+    if (code === 221) {
+      return ']';
+    }
+    if (code === 219) {
+      return '[';
+    } else {
+      return String.fromCharCode(code);
+    }
+  };
+
   Math.clamp = function(value, min, max) {
     value = (value > max ? max : value);
     value = (value < min ? min : value);

@@ -22,7 +22,7 @@
 		Auth.setCredentials($scope.credentials.email, CryptoJS.MD5($scope.credentials.password))
 		Auth.withUser (error, user) ->
 			return alert(error) if (error)
-			$location.path('/home')
+			$location.path('/worlds')
 
 
 @SignInCtrl.$inject = ['$scope', '$location', '$dialog', 'Users', 'Stages', 'Comments', 'Auth', '$http']

@@ -1,0 +1,13 @@
+<div class="modal-header">
+<h3>Press Any Key</h3>
+</div>
+
+<div class="modal-body" style="max-height:585px;">
+  <div style="padding:20px; text-align:center; font-weight:bold; font-size:1.4em; height:25px;" ng-bind-html-unsafe="html_for_key_code()"></div>
+  <canvas id="keyInputCanvas" height="190" width="540"></canvas>
+</div>
+
+<div class="modal-footer">
+  <button class="btn" data-dismiss="modal" aria-hidden="true" ng-click="cancel()">Cancel</button>
+  <button class="btn btn-primary" data-dismiss="modal" ng-click="done()" ng-disabled="!key_code">Done</button>
+</div>

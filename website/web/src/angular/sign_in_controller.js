@@ -35,7 +35,7 @@
         if (error) {
           return alert(error);
         }
-        return $location.path('/home');
+        return $location.path('/worlds');
       });
     };
   };
