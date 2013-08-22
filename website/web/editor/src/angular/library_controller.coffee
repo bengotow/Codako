@@ -11,7 +11,7 @@ LibraryCtrl = ($scope) ->
 
 
   $scope.add_definition = () ->
-    window.Game.library.createActorDefinition (actor) ->
+    window.Game.library.createActorDefinition (err, actor) ->
       window.Game.selectDefinition(actor)
       $scope.$apply()
       $scope.$root.$broadcast('edit_appearance', {actor_definition: actor, identifier: 'idle'})

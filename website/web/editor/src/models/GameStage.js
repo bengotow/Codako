@@ -72,7 +72,7 @@
         height: this.height,
         wrapX: this.wrapX,
         wrapY: this.wrapY,
-        actor_library: this.actorDefinitionIDs(),
+        actor_library: window.Game.library.actorDefinitionIDs(),
         actor_descriptors: []
       };
       if (options.thumbnail) {
@@ -299,19 +299,6 @@
         }
       }
       return results;
-    };
-
-    GameStage.prototype.actorDefinitionIDs = function() {
-      var actor, ids, _i, _len, _ref;
-      ids = [];
-      _ref = this.actors;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        actor = _ref[_i];
-        if (ids.indexOf(actor.definition_id) === -1) {
-          ids.push(actor.definition_id);
-        }
-      }
-      return ids;
     };
 
     GameStage.prototype.actorsAtPositionMatchDescriptors = function(position, descriptors) {

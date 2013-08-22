@@ -11,13 +11,17 @@ class LibraryManager
 
   # -- Actor Definitions -- #
 
+  actorDefinitionIDs: () ->
+    return Object.keys(@definitions)
+
+
   loadActorDefinitions: (IDs, callback) =>
     return callback(null) unless IDs && IDs.length
     async.each(IDs, @loadActorDefinition, callback)
 
 
   loadActorDefinition: (ID, callback) =>
-    return callback(null) if @definitions[ID]
+    return callback(null, null) if @definitions[ID]
     @outstanding += 1
 
     $.ajax({
@@ -48,7 +52,8 @@ class LibraryManager
 
       progress = (@definitions.length / (@definitions.length + @outstanding)) * 100
       @libraryProgressCallback({progress: progress})
-      callback(definition) if callback
+      callback(null, definition) if callback
+
 
     definition.spritesheet.data ||= './img/splat.png'
     definition.img.src = definition.spritesheet.data

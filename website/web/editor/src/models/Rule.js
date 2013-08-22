@@ -44,6 +44,19 @@
       return this.actor = actor;
     };
 
+    Rule.prototype.mainActorDescriptor = function() {
+      var descriptor, key, _ref;
+      _ref = this.descriptors;
+      for (key in _ref) {
+        descriptor = _ref[key];
+        if (descriptor.mainActor === true) {
+          return descriptor;
+        }
+      }
+      debugger;
+      throw "Rule has no decriptor for it's main actor?";
+    };
+
     Rule.prototype.beforeSaveData = function(worldPadX, worldPadY) {
       var block, data, descriptor, extent, ref, x, y, _i, _j, _len, _len1, _ref, _ref1, _ref2;
       extent = this.extentRelativeToRoot();
@@ -103,6 +116,7 @@
     Rule.prototype.updateActorReference = function(struct, actor) {
       var constraint, obj, vID, value, _ref;
       struct.appearance = actor.appearance;
+      struct.mainActor = actor === this.actor;
       struct.variableConstraints || (struct.variableConstraints = {});
       _ref = actor.definition.variables();
       for (vID in _ref) {

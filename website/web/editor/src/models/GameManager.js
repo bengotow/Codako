@@ -366,16 +366,19 @@
     };
 
     GameManager.prototype.editRule = function(rule, actor, isNewRule) {
+      if (actor == null) {
+        actor = null;
+      }
       if (isNewRule == null) {
         isNewRule = false;
       }
-      if (!(rule && actor)) {
+      if (!rule) {
         return;
       }
       if (this.selectedRule && this.selectedRule !== rule) {
         this.saveRecording();
       }
-      if (this.selectedActor !== actor) {
+      if (actor && this.selectedActor !== actor) {
         this.selectActor(actor);
       }
       this.selectedRule = rule;
@@ -402,7 +405,7 @@
         _this.stagePane1.setDisplayWidth(_this.stageTotalWidth / 2 - 2);
         extentRelative = _this.selectedRule.extentRelativeToRoot();
         extentRootPos = new Point(-extentRelative.left + extent.left, -extentRelative.top + extent.top);
-        actor = _this.stagePane1.actorMatchingDescriptor(_this.selectedActor.descriptor(), _this.stagePane1.actorsAtPosition(extentRootPos));
+        actor = _this.stagePane1.actorMatchingDescriptor(_this.selectedRule.mainActorDescriptor(), _this.stagePane1.actorsAtPosition(extentRootPos));
         _this.selectedRule.setMainActor(actor);
         if (_this.selectedActor !== actor) {
           _this.selectActor(actor);
@@ -456,7 +459,13 @@
       this.stagePane2.setDisplayWidth(0);
       if (this.previousGameState) {
         this.stagePane1.prepareWithData(this.previousGameState, function() {
-          _this.selectActor(_this.stagePane1.actorWithID(_this.selectedRule.actor._id));
+          var previouslySelectedActor;
+          if (_this.selectedRule.actor) {
+            previouslySelectedActor = _this.stagePane1.actorWithID(_this.selectedRule.actor._id);
+            if (previouslySelectedActor) {
+              _this.selectActor(previouslySelectedActor);
+            }
+          }
           _this.previousGameState = void 0;
           return _this.previousRuleState = void 0;
         });

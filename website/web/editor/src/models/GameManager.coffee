@@ -292,10 +292,10 @@ class GameManager
     @selectActor(actor)
 
 
-  editRule: (rule, actor, isNewRule = false) ->
-    return unless rule && actor
+  editRule: (rule, actor = null, isNewRule = false) ->
+    return unless rule
     @saveRecording() if @selectedRule && @selectedRule != rule
-    @selectActor(actor) if @selectedActor != actor
+    @selectActor(actor) if actor && @selectedActor != actor
     @selectedRule = rule
     @enterRecordingMode(isNewRule)
 
@@ -320,7 +320,7 @@ class GameManager
       extentRelative = @selectedRule.extentRelativeToRoot()
       extentRootPos = new Point(-extentRelative.left + extent.left, -extentRelative.top + extent.top)
 
-      actor = @stagePane1.actorMatchingDescriptor(@selectedActor.descriptor(), @stagePane1.actorsAtPosition(extentRootPos))
+      actor = @stagePane1.actorMatchingDescriptor(@selectedRule.mainActorDescriptor(), @stagePane1.actorsAtPosition(extentRootPos))
       @selectedRule.setMainActor(actor)
       @selectActor(actor) if @selectedActor != actor
 
@@ -368,7 +368,10 @@ class GameManager
 
     if @previousGameState
       @stagePane1.prepareWithData @previousGameState, () =>
-        @selectActor(@stagePane1.actorWithID(@selectedRule.actor._id))
+        if @selectedRule.actor
+          previouslySelectedActor = @stagePane1.actorWithID(@selectedRule.actor._id)
+          @selectActor(previouslySelectedActor) if previouslySelectedActor
+
         @previousGameState = undefined
         @previousRuleState = undefined
 

@@ -15,6 +15,13 @@ class Rule
     @extentRoot = new Point(actor.worldPos.x, actor.worldPos.y)
     @actor = actor
 
+  mainActorDescriptor: () ->
+    for key, descriptor of @descriptors
+      return descriptor if descriptor.mainActor == true
+
+    debugger
+    throw "Rule has no decriptor for it's main actor?"
+
 
   beforeSaveData: (worldPadX, worldPadY) ->
     extent = @extentRelativeToRoot()
@@ -59,6 +66,8 @@ class Rule
 
   updateActorReference: (struct, actor) ->
     struct.appearance = actor.appearance
+    struct.mainActor = actor == @actor
+
     struct.variableConstraints ||= {}
     for vID, obj of actor.definition.variables()
       value = actor.variableValue(vID)

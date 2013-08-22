@@ -12,7 +12,7 @@
       return window.Game.library.definitions;
     };
     $scope.add_definition = function() {
-      return window.Game.library.createActorDefinition(function(actor) {
+      return window.Game.library.createActorDefinition(function(err, actor) {
         window.Game.selectDefinition(actor);
         $scope.$apply();
         return $scope.$root.$broadcast('edit_appearance', {

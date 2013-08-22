@@ -55,7 +55,7 @@ class GameStage extends Stage
       height: @height,
       wrapX: @wrapX,
       wrapY: @wrapY,
-      actor_library: @actorDefinitionIDs(),
+      actor_library: window.Game.library.actorDefinitionIDs(),
       actor_descriptors: [],
 
     data.thumbnail = @canvas.toDataURL("image/jpeg", 0.8) if options.thumbnail
@@ -91,7 +91,6 @@ class GameStage extends Stage
     window.Game.library.loadActorDefinitions library, (err) =>
       @addActor(descriptor) for descriptor in json.actor_descriptors
       @update()
-
       callback(null) if callback
 
 
@@ -235,13 +234,6 @@ class GameStage extends Stage
       if actor.worldPos.isEqual(position)
         results.push(actor)
     results
-
-
-  actorDefinitionIDs: () ->
-    ids = []
-    for actor in @actors
-      ids.push(actor.definition_id) if ids.indexOf(actor.definition_id) == -1
-    ids
 
 
   actorsAtPositionMatchDescriptors: (position, descriptors) ->

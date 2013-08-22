@@ -19,6 +19,10 @@
 
     }
 
+    LibraryManager.prototype.actorDefinitionIDs = function() {
+      return Object.keys(this.definitions);
+    };
+
     LibraryManager.prototype.loadActorDefinitions = function(IDs, callback) {
       if (!(IDs && IDs.length)) {
         return callback(null);
@@ -29,7 +33,7 @@
     LibraryManager.prototype.loadActorDefinition = function(ID, callback) {
       var _this = this;
       if (this.definitions[ID]) {
-        return callback(null);
+        return callback(null, null);
       }
       this.outstanding += 1;
       return $.ajax({
@@ -71,7 +75,7 @@
           progress: progress
         });
         if (callback) {
-          return callback(definition);
+          return callback(null, definition);
         }
       });
       (_base = definition.spritesheet).data || (_base.data = './img/splat.png');
