@@ -86,6 +86,9 @@ h4 {
 #variables {
   position: relative;
 }
+#rules-dropdown {
+  left: -137px;
+}
 #rules-dropdown span.badge:empty {
   height: 10px;
   display: inline-block;
@@ -171,7 +174,7 @@ h4 {
   border: 1px solid rgba(0, 0, 0, 0.2);
 }
 .rules-list .rule-container .circle.true {
-  background-color: green;
+  background-color: #74E535;
   border: 1px solid rgba(0, 0, 0, 0.2);
 }
 .rules-list .rule-container .circle.false {
