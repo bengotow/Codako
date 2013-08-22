@@ -67,10 +67,10 @@
         progress: 0
       });
       return $.ajax({
-        url: "/worlds/" + world_id + "/stages/" + stage_id + "/data"
-      }).done(function(data) {
-        return _this.content.fetchLevelAssets(data.resources, function() {
-          _this.loadLevelDataReady(data);
+        url: "/api/v0/worlds/" + world_id + "/stages/" + stage_id
+      }).done(function(stage) {
+        return _this.content.fetchLevelAssets(stage.resources, function() {
+          _this.loadLevelDataReady(stage);
           if (callback) {
             return callback(null);
           }
@@ -179,7 +179,7 @@
         return;
       }
       return $.ajax({
-        url: "/worlds/" + this.world_id + "/stages/" + this.stage_id + "/data",
+        url: "/api/v0/worlds/" + this.world_id + "/stages/" + this.stage_id,
         data: this.mainStage.saveData(),
         type: 'POST'
       }).done(function() {

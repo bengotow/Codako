@@ -156,7 +156,7 @@ RulesCtrl = ($scope) ->
     # for block in rule.scenario
     #   for descriptor in block.descriptors
     #     for action in descriptor.actions
-    #       actions.push({identifier: descriptor.identifier, action})
+    #       actions.push({identifier: descriptor._id, action})
     # actions
 
 

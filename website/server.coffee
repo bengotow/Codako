@@ -6,7 +6,7 @@ webdir = "#{__dirname}/#{process.env['WEB_BASE']}"
 usersController = require('./lib/controllers/users_controller')
 stagesController = require('./lib/controllers/stages_controller')
 worldsController = require('./lib/controllers/worlds_controller')
-storageController = require('./lib/controllers/storage_controller')
+actorsController = require('./lib/controllers/actors_controller')
 commentsController = require('./lib/controllers/comments_controller')
 global.T8NError = require ("./lib/models/t8n_error")
 
@@ -39,18 +39,20 @@ handlers =
 						'stages':
 							'GET':  stagesController.stages_get
 							'POST': stagesController.stages_post
-							'%':
-								'/':
-									'data':
-										'GET': storageController.stage_get_data
-										'POST': storageController.stage_post_data
+							'/':
+								'%':
+									'GET': stagesController.stage_get
+									'PUT': stagesController.stage_put
+									'POST': stagesController.stage_put
 
 						'actors':
-							'%':
-								'/':
-									'data':
-										'GET': storageController.actor_get_data
-										'POST': storageController.actor_post_data
+							'GET':  actorsController.actors_get
+							'POST': actorsController.actors_post
+							'/':
+								'%':
+									'GET': actorsController.actor_get
+									'PUT': actorsController.actor_put
+									'POST': actorsController.actor_put
 
 						'comments':
 							'GET':	commentsController.comments_get

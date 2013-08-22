@@ -12,9 +12,7 @@
       return window.Game.library.definitions;
     };
     $scope.add_definition = function() {
-      var actor;
-      actor = new ActorDefinition();
-      return window.Game.library.addActorDefinition(actor, function() {
+      return window.Game.library.createActorDefinition(function(actor) {
         window.Game.selectDefinition(actor);
         $scope.$apply();
         return $scope.$root.$broadcast('edit_appearance', {
@@ -28,12 +26,12 @@
       if (window.Game.tool === 'delete') {
         if (confirm('Are you sure you want to remove this actor? When you delete something from your library, all copies of it are deleted.')) {
           definitions = $scope.definitions();
-          delete definitions[def.identifier];
+          delete definitions[def._id];
           window.Game.mainStage.removeActorsMatchingDescriptor({
-            identifier: def.identifier
+            _id: def._id
           });
           window.Game.stagePane1.removeActorsMatchingDescriptor({
-            identifier: def.identifier
+            _id: def._id
           });
           window.Game.save();
         }

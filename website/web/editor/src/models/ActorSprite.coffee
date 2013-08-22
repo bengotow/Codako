@@ -29,7 +29,7 @@ class ActorSprite extends Sprite
     }
 
   matchesDescriptor: (descriptor) ->
-    id_match = @identifier == descriptor.identifier
+    id_match = @identifier == descriptor._id
     appearance_match = @appearance == descriptor.appearance || !descriptor.appearance
 
     variable_failed = false
@@ -186,6 +186,7 @@ class ActorSprite extends Sprite
       e.addEventListener 'mousemove', (e) =>
         @x = e.stageX - grabX
         @y = e.stageY - grabY
+
       e.addEventListener 'mouseup', (e) =>
         p = new Point(Math.round(@x / Tile.WIDTH), Math.round(@y / Tile.HEIGHT))
         @dropped(p)

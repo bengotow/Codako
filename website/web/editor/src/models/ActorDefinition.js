@@ -12,7 +12,6 @@
       this.save = __bind(this.save, this);
 
       this.name = 'Untitled';
-      this.identifier = Math.createUUID();
       this.variableDefaults = {};
       this.size = {
         width: 1,
@@ -82,7 +81,7 @@
 
     ActorDefinition.prototype.rebuildSpritesheetInstance = function() {
       var key, old, value, _ref;
-      old = this.spritesheetObj;
+      old = this.spritesheetInstance();
       this.spritesheetObj = null;
       this.spritesheetIconCache = {};
       this.spritesheetInstance();
@@ -97,15 +96,16 @@
     ActorDefinition.prototype.save = function() {
       var json;
       json = {
-        identifier: this.identifier,
+        _id: this._id,
         name: this.name,
         spritesheet: this.spritesheet,
         variableDefaults: this.variableDefaults,
         rules: Rule.deflateRules(this.rules)
       };
       return $.ajax({
-        url: "/worlds/" + window.Game.world_id + "/actors/" + this.identifier + "/data",
-        data: json,
+        url: "/api/v0/worlds/" + window.Game.world_id + "/actors/" + this._id,
+        data: JSON.stringify(json),
+        contentType: 'application/json',
         type: 'POST'
       }).done(function() {
         return console.log('Actor Saved');

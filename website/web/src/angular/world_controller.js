@@ -5,21 +5,24 @@
       _id: $routeParams._id
     };
     Worlds.get($scope.world, function(world) {
-      return $scope.world = world;
+      $scope.world = world;
+      Stages.index({
+        world_id: $scope.world._id
+      }, function(stages) {
+        return $scope.stages = stages;
+      });
+      return Comments.index({
+        world_id: $scope.world._id
+      }, function(comments) {
+        return $scope.comments = comments;
+      });
     }, function(error) {
       return $location.path('/home');
     });
-    Comments.index({
-      world_id: $scope.world._id
-    }, function(comments) {
-      return $scope.comments = comments;
-    });
     $scope.newStage = function() {
-      var data;
-      data = {
+      return Stages.create({
         world_id: $scope.world._id
-      };
-      return Stages.create(data, function(stage) {
+      }, function(stage) {
         return $scope.openStage(stage);
       });
     };

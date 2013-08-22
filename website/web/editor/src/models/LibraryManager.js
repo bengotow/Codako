@@ -7,13 +7,14 @@
     function LibraryManager(name, progressCallback) {
       this.addActorDefinition = __bind(this.addActorDefinition, this);
 
+      this.createActorDefinition = __bind(this.createActorDefinition, this);
+
       this.loadActorDefinition = __bind(this.loadActorDefinition, this);
 
       this.loadActorDefinitions = __bind(this.loadActorDefinitions, this);
       this.libraryName = name;
       this.libraryProgressCallback = progressCallback;
       this.definitions = {};
-      this.definitionReadyCallbacks = {};
       this;
 
     }
@@ -26,54 +27,64 @@
     };
 
     LibraryManager.prototype.loadActorDefinition = function(identifier, callback) {
+      var _this = this;
       if (this.definitions[identifier]) {
         return callback(null);
       }
       this.outstanding += 1;
-      this.definitionReadyCallbacks[identifier] = callback;
       return $.ajax({
-        url: "/worlds/" + window.Game.world_id + "/actors/" + identifier + "/data"
-      }).done(function(data) {
+        url: "/api/v0/worlds/" + window.Game.world_id + "/actors/" + identifier
+      }).done(function(json) {
         var actor;
-        actor = new ActorDefinition(actor_json);
-        return this.addActorDefinition(actor);
+        actor = new ActorDefinition(json);
+        return _this.addActorDefinition(actor, callback);
       });
     };
 
-    LibraryManager.prototype.addActorDefinition = function(actor, readyCallback) {
+    LibraryManager.prototype.createActorDefinition = function(callback) {
+      var _this = this;
+      return $.ajax({
+        url: "/api/v0/worlds/" + window.Game.world_id + "/actors",
+        type: "POST"
+      }).done(function(json) {
+        var actor;
+        actor = new ActorDefinition(json);
+        return _this.addActorDefinition(actor, callback);
+      });
+    };
+
+    LibraryManager.prototype.addActorDefinition = function(actor, callback) {
       var _base,
         _this = this;
-      if (readyCallback == null) {
-        readyCallback = null;
+      if (callback == null) {
+        callback = null;
       }
       actor.img = new Image();
-      actor.img.onload = function() {
+      actor.img.src = "";
+      $(actor.img).on('load', function() {
         var progress;
+        $(actor.img).off('load');
         _this.outstanding -= 1;
-        _this.definitions[actor.identifier] = actor;
-        progress = (_this.definitions.length / Object.keys(_this.definitionReadyCallbacks).length) * 100;
+        _this.definitions[actor._id] = actor;
+        progress = (_this.definitions.length / (_this.definitions.length + _this.outstanding)) * 100;
         _this.libraryProgressCallback({
           progress: progress
         });
-        console.log('got actor identifier', actor.identifier);
-        if (_this.definitionReadyCallbacks[actor.identifier]) {
-          _this.definitionReadyCallbacks[actor.identifier](null);
+        if (callback) {
+          return callback(actor);
         }
-        if (readyCallback) {
-          return readyCallback(null);
-        }
-      };
-      (_base = actor.spritesheet).data || (_base.data = 'img/splat.png');
-      return actor.img.src = actor.spritesheet.data;
+      });
+      (_base = actor.spritesheet).data || (_base.data = './img/splat.png');
+      actor.img.src = actor.spritesheet.data;
+      return actor;
     };
 
     LibraryManager.prototype.instantiateActorFromDescriptor = function(descriptor, initial_position) {
-      var constraint, def, ident, model, pos, variable, _ref;
+      var constraint, def, model, pos, variable, _ref;
       if (initial_position == null) {
         initial_position = null;
       }
-      ident = descriptor.identifier;
-      def = this.definitions[ident];
+      def = this.definitions[descriptor._id];
       if (!def) {
         return false;
       }

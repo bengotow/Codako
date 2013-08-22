@@ -1,5 +1,5 @@
 body {
-  background: url(/img/background.png) top left;
+  background: url(../img/background.png) top left;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;

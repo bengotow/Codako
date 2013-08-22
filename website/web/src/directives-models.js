@@ -41,6 +41,7 @@ App.factory('Comments', ['$resource', function($resource) {
 App.factory('Auth', ['Base64', 'Users', '$cookieStore', '$http', function (Base64, Users, $cookieStore, $http) {
     // initialize to whatever is in the cookie, if anything
     $http.defaults.headers.common.Authorization = 'Basic ' + $cookieStore.get('authdata');
+    $.ajaxSetup({headers: { 'Authorization': $http.defaults.headers.common.Authorization }});
     var loadedUser = null;
 
     return {
@@ -62,7 +63,7 @@ App.factory('Auth', ['Base64', 'Users', '$cookieStore', '$http', function (Base6
             return callback(null, loadedUser);
 
           if (!$cookieStore.get('authdata'))
-            return null;
+            return callback(null, null);
 
           Users.me({}, function(user) {
               loadedUser = user;

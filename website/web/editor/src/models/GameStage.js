@@ -31,22 +31,22 @@
       this.widthTarget = canvas.width;
       this.widthCurrent = canvas.width;
       this.canvas.ondrop = function(e, dragEl) {
-        var actor, identifier, parentOffset, point;
-        identifier = $(dragEl.draggable).data('identifier');
+        var actor, draggedObjectID, parentOffset, point;
+        draggedObjectID = $(dragEl.draggable).data('identifier');
         parentOffset = $(_this.canvas).parent().offset();
         e.pageX = e.pageX - _this.x - $(_this.canvas).offset().left;
         e.pageY = e.pageY - _this.y;
         point = new Point(Math.round((e.pageX - e.offsetX) / Tile.WIDTH), Math.round((e.pageY - e.offsetY - parentOffset.top) / Tile.HEIGHT));
-        if (identifier.slice(0, 5) === 'actor') {
+        if (draggedObjectID.slice(0, 5) === 'actor') {
           actor = _this.addActor({
-            identifier: identifier.slice(6),
+            _id: draggedObjectID.slice(6),
             position: point
           });
           return window.Game.onActorPlaced(actor, _this);
-        } else if (identifier.slice(0, 10) === 'appearance') {
+        } else if (draggedObjectID.slice(0, 10) === 'appearance') {
           actor = _this.actorsAtPosition(point)[0];
           if (actor) {
-            return window.Game.onAppearancePlaced(actor, _this, identifier.slice(11));
+            return window.Game.onAppearancePlaced(actor, _this, draggedObjectID.slice(11));
           }
         }
       };
@@ -76,7 +76,6 @@
         actor = _ref[_i];
         data.actor_descriptors.push(actor.descriptor());
       }
-      console.log('Created Save Data:', data);
       return data;
     };
 

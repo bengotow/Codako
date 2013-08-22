@@ -20,7 +20,7 @@ class GameStage extends Stage
     @widthCurrent = canvas.width
 
     @canvas.ondrop = (e, dragEl) =>
-      identifier = $(dragEl.draggable).data('identifier')
+      draggedObjectID = $(dragEl.draggable).data('identifier')
       parentOffset = $(@canvas).parent().offset()
 
       # account for the stage's transform
@@ -30,13 +30,13 @@ class GameStage extends Stage
       # compute grid point
       point = new Point(Math.round((e.pageX - e.offsetX) / Tile.WIDTH), Math.round((e.pageY - e.offsetY - parentOffset.top) / Tile.HEIGHT))
 
-      if identifier[0..4] == 'actor'
-        actor = @addActor({identifier: identifier[6..-1], position: point})
+      if draggedObjectID[0..4] == 'actor'
+        actor = @addActor({_id: draggedObjectID[6..-1], position: point})
         window.Game.onActorPlaced(actor, @)
 
-      else if identifier[0..9] == 'appearance'
+      else if draggedObjectID[0..9] == 'appearance'
         actor = @actorsAtPosition(point)[0]
-        window.Game.onAppearancePlaced(actor, @, identifier[11..-1]) if actor
+        window.Game.onAppearancePlaced(actor, @, draggedObjectID[11..-1]) if actor
 
 
   onscreen: () ->
@@ -57,8 +57,6 @@ class GameStage extends Stage
       actor_library: @actorIdentifiers(),
       actor_descriptors: []
     data.actor_descriptors.push(actor.descriptor()) for actor in @actors
-
-    console.log 'Created Save Data:', data
     data
 
 

@@ -14,6 +14,7 @@ exports.user_get = (req, res) ->
 
 
 exports.user_get_me = (req, res) ->
+  console.log(req.user)
   return res.endWithError('users.not_found', 404) unless req.user
   res.endWithJSON(req.user)
 

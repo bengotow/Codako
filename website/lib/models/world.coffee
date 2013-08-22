@@ -6,6 +6,12 @@ global.WorldSchema = new mongoose.Schema
 WorldSchema.methods.findComments = (callback) ->
   Comment.find({world: @_id}, callback)
 
+WorldSchema.methods.findStages = (callback) ->
+  Stage.find({world: @_id}, callback)
+
+WorldSchema.methods.findActors = (callback) ->
+  Actor.find({world: @_id}, callback)
+
 WorldSchema.methods.isOwnedBy = (user) ->
   user._id.toString() == @user.toString()
 

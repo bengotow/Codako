@@ -2,7 +2,6 @@ class ActorDefinition
 
   constructor: (json = {}) ->
     @name = 'Untitled'
-    @identifier = Math.createUUID()
     @variableDefaults = {}
     @size = {width: 1, height: 1}
     @spritesheet =
@@ -52,7 +51,7 @@ class ActorDefinition
 
 
   rebuildSpritesheetInstance: () ->
-    old = @spritesheetObj
+    old = @spritesheetInstance()
     @spritesheetObj = null
     @spritesheetIconCache = {}
     @spritesheetInstance()
@@ -63,15 +62,16 @@ class ActorDefinition
 
   save: () =>
     json =
-      identifier: @identifier
+      _id: @_id
       name: @name
       spritesheet: @spritesheet
       variableDefaults: @variableDefaults
       rules: Rule.deflateRules(@rules)
 
     $.ajax({
-      url: "/worlds/#{window.Game.world_id}/actors/#{@identifier}/data",
-      data: json,
+      url: "/api/v0/worlds/#{window.Game.world_id}/actors/#{@_id}",
+      data: JSON.stringify(json),
+      contentType: 'application/json',
       type: 'POST'
     }).done () ->
       console.log('Actor Saved')

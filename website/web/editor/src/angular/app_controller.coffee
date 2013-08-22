@@ -1,6 +1,9 @@
 @AppCtrl = ($scope, $location, Users, Stages, Auth, $http) ->
 
   Auth.withUser (error, user) ->
+    if error || !user
+        alert('You need to log in!')
+
     $scope.$apply() unless $scope.$$phase
 
     # find canvas and load images, wait for last image to load
@@ -8,11 +11,13 @@
     stagePane2 = new GameStage($("#platformerCanvasPane2")[0])
     renderingStage = new Stage($("#renderingCanvas")[0])
 
-    $(document).mousedown (e) ->
+    $(document).on 'mousedown', (e) ->
       window.mouseIsDown = true
+      true #continue propogation
 
-    $(document).mouseup (e) ->
+    $(document).on 'mouseup', (e) ->
       window.mouseIsDown = false
+      true #continue propogation
 
     window.Game = new GameManager(stagePane1, stagePane2, renderingStage)
     window.rootScope = angular.element('body').scope()

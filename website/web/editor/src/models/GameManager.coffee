@@ -47,10 +47,10 @@ class GameManager
     @stage_id = stage_id
     @loadStatusChanged({progress: 0})
 
-    $.ajax({url: "/worlds/#{world_id}/stages/#{stage_id}/data"})
-      .done (data) =>
-        @content.fetchLevelAssets data.resources, () =>
-          @loadLevelDataReady(data)
+    $.ajax({url: "/api/v0/worlds/#{world_id}/stages/#{stage_id}"})
+      .done (stage) =>
+        @content.fetchLevelAssets stage.resources, () =>
+          @loadLevelDataReady(stage)
           callback(null) if callback
 
 
@@ -137,7 +137,7 @@ class GameManager
       return
 
     $.ajax({
-      url: "/worlds/#{@world_id}/stages/#{@stage_id}/data",
+      url: "/api/v0/worlds/#{@world_id}/stages/#{@stage_id}",
       data: @mainStage.saveData(),
       type: 'POST'
     }).done () ->

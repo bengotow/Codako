@@ -6,8 +6,6 @@ class LibraryManager
     @libraryName = name
     @libraryProgressCallback = progressCallback
     @definitions = {}
-    @definitionReadyCallbacks = {}
-
     @
 
 
@@ -21,39 +19,45 @@ class LibraryManager
   loadActorDefinition: (identifier, callback) =>
     return callback(null) if @definitions[identifier]
     @outstanding += 1
-    @definitionReadyCallbacks[identifier] = callback
 
     $.ajax({
-      url: "/worlds/#{window.Game.world_id}/actors/#{identifier}/data"
-    }).done (data) ->
-      actor = new ActorDefinition(actor_json)
-      @addActorDefinition(actor)
+      url: "/api/v0/worlds/#{window.Game.world_id}/actors/#{identifier}"
+    }).done (json) =>
+      actor = new ActorDefinition(json)
+      @addActorDefinition(actor, callback)
 
 
+  createActorDefinition: (callback) =>
+    $.ajax({
+      url:  "/api/v0/worlds/#{window.Game.world_id}/actors"
+      type: "POST"
+    }).done (json) =>
+      actor = new ActorDefinition(json)
+      @addActorDefinition(actor, callback)
 
-  addActorDefinition: (actor, readyCallback = null) =>
+
+  addActorDefinition: (actor, callback = null) =>
     actor.img = new Image()
-    actor.img.onload = () =>
+    actor.img.src = ""
+
+    $(actor.img).on 'load', () =>
+      $(actor.img).off('load')
+
       @outstanding -= 1
-      @definitions[actor.identifier] = actor
+      @definitions[actor._id] = actor
 
-      progress = (@definitions.length / Object.keys(@definitionReadyCallbacks).length) * 100
-
+      progress = (@definitions.length / (@definitions.length + @outstanding)) * 100
       @libraryProgressCallback({progress: progress})
-      console.log 'got actor identifier', actor.identifier
-      @definitionReadyCallbacks[actor.identifier](null) if @definitionReadyCallbacks[actor.identifier]
-      readyCallback(null) if readyCallback
+      callback(actor) if callback
 
-
-    actor.spritesheet.data ||= 'img/splat.png'
+    actor.spritesheet.data ||= './img/splat.png'
     actor.img.src = actor.spritesheet.data
-
+    actor
 
   # -- Using Actor Descriptors to Reference Actors ---#
 
   instantiateActorFromDescriptor: (descriptor, initial_position = null) ->
-    ident = descriptor.identifier
-    def = @definitions[ident]
+    def = @definitions[descriptor._id]
     return false unless def
 
     pos = new Point(-1,-1)

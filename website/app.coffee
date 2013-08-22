@@ -23,6 +23,7 @@ global.mongo = mongoose.connect process.env['MONGODB_URL'], {}, (err) ->
 global.User = require('./lib/models/user')
 global.Stage = require('./lib/models/stage')
 global.World = require('./lib/models/world')
+global.Actor = require('./lib/models/Actor')
 global.Comment = require('./lib/models/Comment')
 
 # Create tables if necessary

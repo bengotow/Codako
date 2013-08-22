@@ -9,20 +9,21 @@ LibraryCtrl = ($scope) ->
     return [] unless window.Game?.library?
     window.Game.library.definitions
 
+
   $scope.add_definition = () ->
-    actor = new ActorDefinition()
-    window.Game.library.addActorDefinition actor, () ->
+    window.Game.library.createActorDefinition (actor) ->
       window.Game.selectDefinition(actor)
       $scope.$apply()
       $scope.$root.$broadcast('edit_appearance', {actor_definition: actor, identifier: 'idle'})
+
 
   $scope.select_definition = (def) ->
     if window.Game.tool == 'delete'
       if confirm('Are you sure you want to remove this actor? When you delete something from your library, all copies of it are deleted.')
         definitions = $scope.definitions()
-        delete definitions[def.identifier]
-        window.Game.mainStage.removeActorsMatchingDescriptor({identifier: def.identifier})
-        window.Game.stagePane1.removeActorsMatchingDescriptor({identifier: def.identifier})
+        delete definitions[def._id]
+        window.Game.mainStage.removeActorsMatchingDescriptor({_id: def._id})
+        window.Game.stagePane1.removeActorsMatchingDescriptor({_id: def._id})
         window.Game.save()
 
       window.Game.resetToolAfterAction()
@@ -30,8 +31,10 @@ LibraryCtrl = ($scope) ->
       window.Game.selectActor(null)
       window.Game.selectedDefinition = def
 
+
   $scope.selected_definition = () ->
     window.Game?.selectedDefinition
+
 
   $scope.save_definition = (definition = null) ->
     definition = $scope.selected_definition() unless definition

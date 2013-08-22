@@ -118,7 +118,7 @@
       }
       descriptor = (_ref = window.Game) != null ? (_ref1 = _ref.selectedRule) != null ? _ref1.descriptors[ref] : void 0 : void 0;
       appearance_id || (appearance_id = descriptor.appearance);
-      definition = window.Game.library.definitions[descriptor.identifier];
+      definition = window.Game.library.definitions[descriptor._id];
       return definition.iconForAppearance(appearance_id, 26, 26) || "";
     };
     $scope.icon_for_move = function(delta) {
@@ -176,7 +176,7 @@
       if (!descriptor) {
         return "Unknown";
       }
-      definition = window.Game.library.definitions[descriptor.identifier];
+      definition = window.Game.library.definitions[descriptor._id];
       return definition.name;
     };
     $scope.name_for_appearance = function(id) {

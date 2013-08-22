@@ -42,7 +42,7 @@
 
     ActorSprite.prototype.matchesDescriptor = function(descriptor) {
       var appearance_match, constraint, id, id_match, value, variable_failed, _ref;
-      id_match = this.identifier === descriptor.identifier;
+      id_match = this.identifier === descriptor._id;
       appearance_match = this.appearance === descriptor.appearance || !descriptor.appearance;
       variable_failed = false;
       _ref = descriptor.variableConstraints;

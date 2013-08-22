@@ -7,7 +7,7 @@
     You haven't defined any actors yet! Create a new actor by clicking the '+' icon.
   </div>
   <div ng-repeat="def in definitions()" ng-click="select_definition(def)" class="item {{class_for_definition(def)}}">
-    <i draggable data-identifier="actor:{{def.identifier}}" style="{{css_for_sprite_frame(def)}}"></i>
+    <i draggable data-identifier="actor:{{def._id}}" style="{{css_for_sprite_frame(def)}}"></i>
     <input class="name" ng-model="def.name" ng-blur="save_definition(def)" />
   </div>
 

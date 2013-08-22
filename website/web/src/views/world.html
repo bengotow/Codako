@@ -8,10 +8,20 @@
 			<a ng-click="newStage()" class="btn btn-primary"><i class="icon-pencil"></i> New Stage</a>
 		</div>
 		<h4>Stages</h4>
+		<div ng-show="stages.length" class="stages-collection">
+			<div ng-repeat="stage in stages" class="span3">
+				<a ng-click="openStage(stage)"><h4>{{stage._id}}</h4></a>
+			</div>
+		</div>
 	</div>
 
 	<div class="span12">
 		<h4>Library</h4>
+		<div ng-show="actors.length" class="actors-collection">
+			<div ng-repeat="actor in actors" class="span3">
+				<h4>{{actor._id}}</h4>
+			</div>
+		</div>
 	</div>
 
 </div>
