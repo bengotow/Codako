@@ -2,6 +2,9 @@
 class GameManager
 
   constructor: (stagePane1, stagePane2, renderingStage) ->
+    @world_id = null
+    @stage_id = null
+
     @library = new LibraryManager('default', @loadStatusChanged)
     @content = new ContentManager(@loadStatusChanged)
     @selectedActor = null
@@ -138,7 +141,8 @@ class GameManager
 
     $.ajax({
       url: "/api/v0/worlds/#{@world_id}/stages/#{@stage_id}",
-      data: @mainStage.saveData(),
+      data: angular.toJson(@mainStage.saveData()),
+      contentType: 'application/json',
       type: 'POST'
     }).done () ->
       console.log('Stage Saved')

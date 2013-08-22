@@ -19,25 +19,25 @@
 
     }
 
-    LibraryManager.prototype.loadActorDefinitions = function(identifiers, callback) {
-      if (!(identifiers && identifiers.length)) {
+    LibraryManager.prototype.loadActorDefinitions = function(IDs, callback) {
+      if (!(IDs && IDs.length)) {
         return callback(null);
       }
-      return async.each(identifiers, this.loadActorDefinition, callback);
+      return async.each(IDs, this.loadActorDefinition, callback);
     };
 
-    LibraryManager.prototype.loadActorDefinition = function(identifier, callback) {
+    LibraryManager.prototype.loadActorDefinition = function(ID, callback) {
       var _this = this;
-      if (this.definitions[identifier]) {
+      if (this.definitions[ID]) {
         return callback(null);
       }
       this.outstanding += 1;
       return $.ajax({
-        url: "/api/v0/worlds/" + window.Game.world_id + "/actors/" + identifier
+        url: "/api/v0/worlds/" + window.Game.world_id + "/actors/" + ID
       }).done(function(json) {
-        var actor;
-        actor = new ActorDefinition(json);
-        return _this.addActorDefinition(actor, callback);
+        var definition;
+        definition = new ActorDefinition(json);
+        return _this.addActorDefinition(definition, callback);
       });
     };
 
@@ -53,39 +53,39 @@
       });
     };
 
-    LibraryManager.prototype.addActorDefinition = function(actor, callback) {
+    LibraryManager.prototype.addActorDefinition = function(definition, callback) {
       var _base,
         _this = this;
       if (callback == null) {
         callback = null;
       }
-      actor.img = new Image();
-      actor.img.src = "";
-      $(actor.img).on('load', function() {
+      definition.img = new Image();
+      definition.img.src = "";
+      $(definition.img).on('load', function() {
         var progress;
-        $(actor.img).off('load');
+        $(definition.img).off('load');
         _this.outstanding -= 1;
-        _this.definitions[actor._id] = actor;
+        _this.definitions[definition._id] = definition;
         progress = (_this.definitions.length / (_this.definitions.length + _this.outstanding)) * 100;
         _this.libraryProgressCallback({
           progress: progress
         });
         if (callback) {
-          return callback(actor);
+          return callback(definition);
         }
       });
-      (_base = actor.spritesheet).data || (_base.data = './img/splat.png');
-      actor.img.src = actor.spritesheet.data;
-      return actor;
+      (_base = definition.spritesheet).data || (_base.data = './img/splat.png');
+      definition.img.src = definition.spritesheet.data;
+      return definition;
     };
 
     LibraryManager.prototype.instantiateActorFromDescriptor = function(descriptor, initial_position) {
-      var constraint, def, model, pos, variable, _ref;
+      var constraint, definition, model, pos, variable, _ref;
       if (initial_position == null) {
         initial_position = null;
       }
-      def = this.definitions[descriptor._id];
-      if (!def) {
+      definition = this.definitions[descriptor.definition_id];
+      if (!definition) {
         return false;
       }
       pos = new Point(-1, -1);
@@ -95,10 +95,10 @@
       if (initial_position) {
         pos = initial_position;
       }
-      model = new ActorSprite(ident, pos, def.size);
-      model.setSpriteSheet(def.spritesheetInstance());
+      model = new ActorSprite(definition._id, pos, definition.size);
+      model.setSpriteSheet(definition.spritesheetInstance());
       model._id = descriptor._id || descriptor.actor_id_during_recording || Math.createUUID();
-      model.definition = def;
+      model.definition = definition;
       if (descriptor.variableValues) {
         model.variableValues = _.clone(descriptor.variableValues);
       } else if (descriptor.variableConstraints) {

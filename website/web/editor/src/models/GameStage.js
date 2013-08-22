@@ -15,6 +15,7 @@
 
       var _this = this;
       GameStage.__super__.initialize.call(this, canvas);
+      this._id = null;
       this.recordingHandles = {};
       this.recordingMasks = [];
       this.recordingMaskStyle = 'masked';
@@ -31,22 +32,22 @@
       this.widthTarget = canvas.width;
       this.widthCurrent = canvas.width;
       this.canvas.ondrop = function(e, dragEl) {
-        var actor, draggedObjectID, parentOffset, point;
-        draggedObjectID = $(dragEl.draggable).data('identifier');
+        var actor, dragIdentifier, parentOffset, point;
+        dragIdentifier = $(dragEl.draggable).data('identifier');
         parentOffset = $(_this.canvas).parent().offset();
         e.pageX = e.pageX - _this.x - $(_this.canvas).offset().left;
         e.pageY = e.pageY - _this.y;
         point = new Point(Math.round((e.pageX - e.offsetX) / Tile.WIDTH), Math.round((e.pageY - e.offsetY - parentOffset.top) / Tile.HEIGHT));
-        if (draggedObjectID.slice(0, 5) === 'actor') {
+        if (dragIdentifier.slice(0, 5) === 'actor') {
           actor = _this.addActor({
-            _id: draggedObjectID.slice(6),
+            definition_id: dragIdentifier.slice(6),
             position: point
           });
           return window.Game.onActorPlaced(actor, _this);
-        } else if (draggedObjectID.slice(0, 10) === 'appearance') {
+        } else if (dragIdentifier.slice(0, 10) === 'appearance') {
           actor = _this.actorsAtPosition(point)[0];
           if (actor) {
-            return window.Game.onAppearancePlaced(actor, _this, draggedObjectID.slice(11));
+            return window.Game.onAppearancePlaced(actor, _this, dragIdentifier.slice(11));
           }
         }
       };
@@ -63,12 +64,12 @@
     GameStage.prototype.saveData = function() {
       var actor, data, _i, _len, _ref;
       data = {
-        identifier: this.identifier,
+        _id: this._id,
         width: this.width,
         height: this.height,
         wrapX: this.wrapX,
         wrapY: this.wrapY,
-        actor_library: this.actorIdentifiers(),
+        actor_library: this.actorDefinitionIDs(),
         actor_descriptors: []
       };
       _ref = this.actors;
@@ -101,8 +102,8 @@
       _ref = json.actor_descriptors;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         actor = _ref[_i];
-        if (library.indexOf(actor.identifier) === -1) {
-          library.push(actor.identifier);
+        if (library.indexOf(actor.definition_id) === -1) {
+          library.push(actor.definition_id);
         }
       }
       return window.Game.library.loadActorDefinitions(library, function(err) {
@@ -294,14 +295,14 @@
       return results;
     };
 
-    GameStage.prototype.actorIdentifiers = function() {
+    GameStage.prototype.actorDefinitionIDs = function() {
       var actor, ids, _i, _len, _ref;
       ids = [];
       _ref = this.actors;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         actor = _ref[_i];
-        if (ids.indexOf(actor.identifier) === -1) {
-          ids.push(actor.identifier);
+        if (ids.indexOf(actor.definition_id) === -1) {
+          ids.push(actor.definition_id);
         }
       }
       return ids;

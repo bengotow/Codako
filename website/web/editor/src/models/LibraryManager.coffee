@@ -11,20 +11,20 @@ class LibraryManager
 
   # -- Actor Definitions -- #
 
-  loadActorDefinitions: (identifiers, callback) =>
-    return callback(null) unless identifiers && identifiers.length
-    async.each(identifiers, @loadActorDefinition, callback)
+  loadActorDefinitions: (IDs, callback) =>
+    return callback(null) unless IDs && IDs.length
+    async.each(IDs, @loadActorDefinition, callback)
 
 
-  loadActorDefinition: (identifier, callback) =>
-    return callback(null) if @definitions[identifier]
+  loadActorDefinition: (ID, callback) =>
+    return callback(null) if @definitions[ID]
     @outstanding += 1
 
     $.ajax({
-      url: "/api/v0/worlds/#{window.Game.world_id}/actors/#{identifier}"
+      url: "/api/v0/worlds/#{window.Game.world_id}/actors/#{ID}"
     }).done (json) =>
-      actor = new ActorDefinition(json)
-      @addActorDefinition(actor, callback)
+      definition = new ActorDefinition(json)
+      @addActorDefinition(definition, callback)
 
 
   createActorDefinition: (callback) =>
@@ -36,38 +36,38 @@ class LibraryManager
       @addActorDefinition(actor, callback)
 
 
-  addActorDefinition: (actor, callback = null) =>
-    actor.img = new Image()
-    actor.img.src = ""
+  addActorDefinition: (definition, callback = null) =>
+    definition.img = new Image()
+    definition.img.src = ""
 
-    $(actor.img).on 'load', () =>
-      $(actor.img).off('load')
+    $(definition.img).on 'load', () =>
+      $(definition.img).off('load')
 
       @outstanding -= 1
-      @definitions[actor._id] = actor
+      @definitions[definition._id] = definition
 
       progress = (@definitions.length / (@definitions.length + @outstanding)) * 100
       @libraryProgressCallback({progress: progress})
-      callback(actor) if callback
+      callback(definition) if callback
 
-    actor.spritesheet.data ||= './img/splat.png'
-    actor.img.src = actor.spritesheet.data
-    actor
+    definition.spritesheet.data ||= './img/splat.png'
+    definition.img.src = definition.spritesheet.data
+    definition
 
   # -- Using Actor Descriptors to Reference Actors ---#
 
   instantiateActorFromDescriptor: (descriptor, initial_position = null) ->
-    def = @definitions[descriptor._id]
-    return false unless def
+    definition = @definitions[descriptor.definition_id]
+    return false unless definition
 
     pos = new Point(-1,-1)
     pos = Point.fromHash(descriptor.position) if descriptor.position
     pos = initial_position if initial_position
 
-    model = new ActorSprite(ident, pos, def.size)
-    model.setSpriteSheet(def.spritesheetInstance())
+    model = new ActorSprite(definition._id, pos, definition.size)
+    model.setSpriteSheet(definition.spritesheetInstance())
     model._id = descriptor._id || descriptor.actor_id_during_recording || Math.createUUID()
-    model.definition = def
+    model.definition = definition
 
     if descriptor.variableValues
       model.variableValues = _.clone(descriptor.variableValues)
@@ -81,9 +81,9 @@ class LibraryManager
 
     else
       model.variableValues ||= {}
+
     model.setAppearance(descriptor.appearance)
     model
-
 
 
 

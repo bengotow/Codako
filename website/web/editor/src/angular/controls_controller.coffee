@@ -101,7 +101,7 @@ ControlsCtrl = ($scope) ->
   $scope.icon_for_referenced_actor = (ref, appearance_id = null) ->
     descriptor = window.Game?.selectedRule?.descriptors[ref]
     appearance_id ||= descriptor.appearance
-    definition = window.Game.library.definitions[descriptor._id]
+    definition = window.Game.library.definitions[descriptor.definition_id]
     definition.iconForAppearance(appearance_id, 26, 26) || ""
 
   $scope.icon_for_move = (delta) ->
@@ -140,7 +140,7 @@ ControlsCtrl = ($scope) ->
     return "Unknown" unless ref
     descriptor = window.Game?.selectedRule?.descriptors[ref]
     return "Unknown" unless descriptor
-    definition = window.Game.library.definitions[descriptor._id]
+    definition = window.Game.library.definitions[descriptor.definition_id]
     definition.name
 
   $scope.name_for_appearance = (id) ->

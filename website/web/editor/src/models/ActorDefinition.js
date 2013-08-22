@@ -11,6 +11,7 @@
       }
       this.save = __bind(this.save, this);
 
+      this._id = null;
       this.name = 'Untitled';
       this.variableDefaults = {};
       this.size = {
@@ -104,7 +105,7 @@
       };
       return $.ajax({
         url: "/api/v0/worlds/" + window.Game.world_id + "/actors/" + this._id,
-        data: JSON.stringify(json),
+        data: angular.toJson(json),
         contentType: 'application/json',
         type: 'POST'
       }).done(function() {

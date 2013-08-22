@@ -15,6 +15,7 @@ exports.actors_post = (req, res) ->
     actor = new Actor()
     actor.world = world
     actor.save (err, actor) ->
+      return res.endWithError(err, 400) if err
       res.endWithJSON(actor)
 
 
@@ -24,7 +25,7 @@ exports.actors_post = (req, res) ->
 
 exports.actor_get = (req, res) ->
   req.withWorld (world) ->
-    Actor.findOne req.pathArgs[1], (err, actor) ->
+    Actor.findById req.pathArgs[1], (err, actor) ->
       res.endWithJSON(actor)
 
 

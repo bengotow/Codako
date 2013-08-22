@@ -10,7 +10,7 @@
         <div ng-click="toggle_disclosed(struct)" class="triangle {{struct.disclosed}}"></div>
       </div>
 
-      <img class="icon" ng-src="/img/icon_event_{{struct.event}}.png"/>
+      <img class="icon" ng-src="./img/icon_event_{{struct.event}}.png"/>
       <div class="name">{{name_for_event_group(struct)}}</div>
     </div>
     <ul class="unstyled rules-list" ng-hide="struct.disclosed" sortable='{"connectWith":".rules-list"}'>

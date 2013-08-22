@@ -2,6 +2,7 @@ class GameStage extends Stage
 
   constructor: (canvas) ->
     GameStage.__super__.initialize.call(this, canvas)
+    @_id = null
     @recordingHandles = {}
     @recordingMasks = []
     @recordingMaskStyle = 'masked'
@@ -20,7 +21,7 @@ class GameStage extends Stage
     @widthCurrent = canvas.width
 
     @canvas.ondrop = (e, dragEl) =>
-      draggedObjectID = $(dragEl.draggable).data('identifier')
+      dragIdentifier = $(dragEl.draggable).data('identifier')
       parentOffset = $(@canvas).parent().offset()
 
       # account for the stage's transform
@@ -30,13 +31,13 @@ class GameStage extends Stage
       # compute grid point
       point = new Point(Math.round((e.pageX - e.offsetX) / Tile.WIDTH), Math.round((e.pageY - e.offsetY - parentOffset.top) / Tile.HEIGHT))
 
-      if draggedObjectID[0..4] == 'actor'
-        actor = @addActor({_id: draggedObjectID[6..-1], position: point})
+      if dragIdentifier[0..4] == 'actor'
+        actor = @addActor({definition_id: dragIdentifier[6..-1], position: point})
         window.Game.onActorPlaced(actor, @)
 
-      else if draggedObjectID[0..9] == 'appearance'
+      else if dragIdentifier[0..9] == 'appearance'
         actor = @actorsAtPosition(point)[0]
-        window.Game.onAppearancePlaced(actor, @, draggedObjectID[11..-1]) if actor
+        window.Game.onAppearancePlaced(actor, @, dragIdentifier[11..-1]) if actor
 
 
   onscreen: () ->
@@ -49,12 +50,12 @@ class GameStage extends Stage
 
   saveData: () ->
     data =
-      identifier: @identifier
+      _id: @_id
       width: @width,
       height: @height,
       wrapX: @wrapX,
       wrapY: @wrapY,
-      actor_library: @actorIdentifiers(),
+      actor_library: @actorDefinitionIDs(),
       actor_descriptors: []
     data.actor_descriptors.push(actor.descriptor()) for actor in @actors
     data
@@ -82,7 +83,7 @@ class GameStage extends Stage
     # make sure all of the actors on the stage are in the library
     library = json.actor_library || []
     for actor in json.actor_descriptors
-      library.push(actor.identifier) if library.indexOf(actor.identifier) == -1
+      library.push(actor.definition_id) if library.indexOf(actor.definition_id) == -1
 
     # fetch the actor definitions (which include base64 image data, etc...)
     window.Game.library.loadActorDefinitions library, (err) =>
@@ -234,10 +235,10 @@ class GameStage extends Stage
     results
 
 
-  actorIdentifiers: () ->
+  actorDefinitionIDs: () ->
     ids = []
     for actor in @actors
-      ids.push(actor.identifier) if ids.indexOf(actor.identifier) == -1
+      ids.push(actor.definition_id) if ids.indexOf(actor.definition_id) == -1
     ids
 
 

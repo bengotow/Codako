@@ -10,6 +10,17 @@ class ContentManager
       images: {}
       sounds: {}
 
+    @builtInResources =
+      images:
+        tile_masked_checkered: './img/tiles/tile_masked_checkered.png'
+        tile_masked: './img/tiles/tile_masked.png'
+        tile_white: './img/tiles/tile_white.png'
+        handle_bottom: './img/tiles/handle_bottom.png'
+        handle_left: './img/tiles/handle_left.png'
+        handle_right: './img/tiles/handle_right.png'
+        handle_top: './img/tiles/handle_top.png'
+
+
     Ticker.addListener(@)
     Ticker.setInterval(50)
 
@@ -20,9 +31,14 @@ class ContentManager
     @contentStatusCallback({progress: 0})
     @contentFinishedCallback = finishCallback
 
+    # fetch built-in assets that are required as well as the ones
+    # that have been requested
+
     if @soundFormat != '.none'
       @downloadSound(key, info, @soundFormat) for key, info of resources.sounds
+      @downloadSound(key, info, @soundFormat) for key, info of @builtInResources.sounds
     @downloadImage(key, info) for key, info of resources.images
+    @downloadImage(key, info) for key, info of @builtInResources.images
 
 
   downloadImage: (key, info) ->

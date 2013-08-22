@@ -14,6 +14,8 @@
       this.loadStatusChanged = __bind(this.loadStatusChanged, this);
 
       var _this = this;
+      this.world_id = null;
+      this.stage_id = null;
       this.library = new LibraryManager('default', this.loadStatusChanged);
       this.content = new ContentManager(this.loadStatusChanged);
       this.selectedActor = null;
@@ -180,7 +182,8 @@
       }
       return $.ajax({
         url: "/api/v0/worlds/" + this.world_id + "/stages/" + this.stage_id,
-        data: this.mainStage.saveData(),
+        data: angular.toJson(this.mainStage.saveData()),
+        contentType: 'application/json',
         type: 'POST'
       }).done(function() {
         return console.log('Stage Saved');

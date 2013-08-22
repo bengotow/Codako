@@ -7,8 +7,9 @@
 
     __extends(ActorSprite, _super);
 
-    function ActorSprite(identifier, position, size) {
-      this.identifier = identifier;
+    function ActorSprite(definition_id, position, size) {
+      this._id = Math.createUUID();
+      this.definition_id = definition_id;
       this.stage = void 0;
       this.definition = void 0;
       this.currentFrame = 66;
@@ -30,7 +31,7 @@
     ActorSprite.prototype.descriptor = function() {
       return {
         _id: this._id,
-        identifier: this.identifier,
+        definition_id: this.definition_id,
         position: {
           x: this.worldPos.x,
           y: this.worldPos.y
@@ -42,7 +43,7 @@
 
     ActorSprite.prototype.matchesDescriptor = function(descriptor) {
       var appearance_match, constraint, id, id_match, value, variable_failed, _ref;
-      id_match = this.identifier === descriptor._id;
+      id_match = this.definition_id === descriptor.definition_id;
       appearance_match = this.appearance === descriptor.appearance || !descriptor.appearance;
       variable_failed = false;
       _ref = descriptor.variableConstraints;

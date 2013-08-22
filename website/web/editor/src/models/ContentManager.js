@@ -18,12 +18,23 @@
         images: {},
         sounds: {}
       };
+      this.builtInResources = {
+        images: {
+          tile_masked_checkered: './img/tiles/tile_masked_checkered.png',
+          tile_masked: './img/tiles/tile_masked.png',
+          tile_white: './img/tiles/tile_white.png',
+          handle_bottom: './img/tiles/handle_bottom.png',
+          handle_left: './img/tiles/handle_left.png',
+          handle_right: './img/tiles/handle_right.png',
+          handle_top: './img/tiles/handle_top.png'
+        }
+      };
       Ticker.addListener(this);
       Ticker.setInterval(50);
     }
 
     ContentManager.prototype.fetchLevelAssets = function(resources, finishCallback) {
-      var info, key, _ref, _ref1, _results;
+      var info, key, _ref, _ref1, _ref2, _ref3, _results;
       this.soundFormat = this._soundFormatForBrowser();
       this.contentStatusCallback({
         progress: 0
@@ -35,11 +46,21 @@
           info = _ref[key];
           this.downloadSound(key, info, this.soundFormat);
         }
+        _ref1 = this.builtInResources.sounds;
+        for (key in _ref1) {
+          info = _ref1[key];
+          this.downloadSound(key, info, this.soundFormat);
+        }
       }
-      _ref1 = resources.images;
+      _ref2 = resources.images;
+      for (key in _ref2) {
+        info = _ref2[key];
+        this.downloadImage(key, info);
+      }
+      _ref3 = this.builtInResources.images;
       _results = [];
-      for (key in _ref1) {
-        info = _ref1[key];
+      for (key in _ref3) {
+        info = _ref3[key];
         _results.push(this.downloadImage(key, info));
       }
       return _results;

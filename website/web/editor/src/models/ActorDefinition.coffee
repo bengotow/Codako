@@ -1,6 +1,8 @@
 class ActorDefinition
 
   constructor: (json = {}) ->
+    @_id = null #always provided remotely
+    
     @name = 'Untitled'
     @variableDefaults = {}
     @size = {width: 1, height: 1}
@@ -70,7 +72,7 @@ class ActorDefinition
 
     $.ajax({
       url: "/api/v0/worlds/#{window.Game.world_id}/actors/#{@_id}",
-      data: JSON.stringify(json),
+      data: angular.toJson(json),
       contentType: 'application/json',
       type: 'POST'
     }).done () ->

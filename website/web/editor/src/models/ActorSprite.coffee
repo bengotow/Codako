@@ -1,7 +1,9 @@
 class ActorSprite extends Sprite
 
-  constructor: (identifier, position, size) ->
-    @identifier = identifier
+  constructor: (definition_id, position, size) ->
+    @_id = Math.createUUID()
+    @definition_id = definition_id
+
     @stage = undefined
     @definition = undefined
     @currentFrame = 66
@@ -22,14 +24,14 @@ class ActorSprite extends Sprite
   descriptor: () ->
     {
       _id: @_id
-      identifier: @identifier,
+      definition_id: @definition_id,
       position: {x: @worldPos.x, y: @worldPos.y},
       appearance: @appearance,
       variableValues: @variableValues
     }
 
   matchesDescriptor: (descriptor) ->
-    id_match = @identifier == descriptor._id
+    id_match = @definition_id == descriptor.definition_id
     appearance_match = @appearance == descriptor.appearance || !descriptor.appearance
 
     variable_failed = false
