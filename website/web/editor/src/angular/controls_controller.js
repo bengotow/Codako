@@ -27,7 +27,15 @@
     $scope.step_back = function() {
       return window.Game.frameRewind();
     };
-    $scope.reset = function() {};
+    $scope.set_start_state = function() {
+      return window.Game.setStartState();
+    };
+    $scope.reset_to_start_state = function() {
+      return window.Game.resetToStartState();
+    };
+    $scope.start_state_src = function() {
+      return window.Game.mainStage.startThumbnail;
+    };
     $scope.speed = function() {
       if (!window.Game) {
         return 0;

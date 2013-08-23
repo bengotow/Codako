@@ -28,7 +28,14 @@ ControlsCtrl = ($scope) ->
   $scope.step_back = () ->
     window.Game.frameRewind()
 
-  $scope.reset = () ->
+  $scope.set_start_state = () ->
+    window.Game.setStartState()
+
+  $scope.reset_to_start_state = () ->
+    window.Game.resetToStartState()
+
+  $scope.start_state_src = () ->
+    window.Game.mainStage.startThumbnail
 
   $scope.speed = () ->
     return 0 unless window.Game

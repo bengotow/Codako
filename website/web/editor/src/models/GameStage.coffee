@@ -21,6 +21,8 @@ class GameStage extends Stage
     @wrapX = true
     @wrapY = true
 
+    @startDescriptors = null
+
     @widthTarget = canvas.width
     @widthCurrent = canvas.width
 
@@ -62,6 +64,8 @@ class GameStage extends Stage
       background: @background,
       actor_library: window.Game.library.actorDefinitionIDs(),
       actor_descriptors: [],
+      start_descriptors: @startDescriptors,
+      start_thumbnail: @startThumbnail
 
     data.thumbnail = @canvas.toDataURL("image/jpeg", 0.8) if options.thumbnail
     data.actor_descriptors.push(actor.descriptor()) for actor in @actors
@@ -75,6 +79,8 @@ class GameStage extends Stage
     @height = json['height']
     @wrapX = json['wrapX']
     @wrapY = json['wrapY']
+    @startDescriptors = json['start_descriptors']
+    @startThumbnail = json['start_thumbnail']
 
     @setBackground(json['background'])
 
@@ -88,6 +94,22 @@ class GameStage extends Stage
       @addActor(descriptor) for descriptor in json.actor_descriptors
       @update()
       callback(null) if callback
+
+
+  setStartState: () =>
+    @startDescriptors = []
+    @startDescriptors.push(actor.descriptor()) for actor in @actors
+
+    @cache(0, 0, @canvas.width, @canvas.height, 0.1)
+    @startThumbnail = @cacheCanvas.toDataURL("image/jpg", 0.5)
+    @uncache()
+
+
+  resetToStartState: () =>
+    @actors = []
+    data = @saveData()
+    data.actor_descriptors = [].concat(data.start_descriptors)
+    @prepareWithData(data)
 
 
   dispose: () =>

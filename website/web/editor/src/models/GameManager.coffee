@@ -281,6 +281,20 @@ class GameManager
     @stagePane2.setBackground(background_key, true)
     @save()
 
+
+  # -- Managing the Stage Start State -- #
+  setStartState: () =>
+    return if @selectedRule
+    @mainStage.setStartState()
+    @save()
+
+
+  resetToStartState: () =>
+    return if @selectedRule
+    @selectActor(null)
+    @mainStage.resetToStartState()
+
+
   # -- Recording Mode -- #
 
   editNewRuleForActor: (actor) ->

@@ -9,6 +9,10 @@
 
       this.recordingActionModified = __bind(this.recordingActionModified, this);
 
+      this.resetToStartState = __bind(this.resetToStartState, this);
+
+      this.setStartState = __bind(this.setStartState, this);
+
       this.onActorClicked = __bind(this.onActorClicked, this);
 
       this.loadStatusChanged = __bind(this.loadStatusChanged, this);
@@ -349,6 +353,22 @@
       this.stagePane1.setBackground(background_key, true);
       this.stagePane2.setBackground(background_key, true);
       return this.save();
+    };
+
+    GameManager.prototype.setStartState = function() {
+      if (this.selectedRule) {
+        return;
+      }
+      this.mainStage.setStartState();
+      return this.save();
+    };
+
+    GameManager.prototype.resetToStartState = function() {
+      if (this.selectedRule) {
+        return;
+      }
+      this.selectActor(null);
+      return this.mainStage.resetToStartState();
     };
 
     GameManager.prototype.editNewRuleForActor = function(actor) {

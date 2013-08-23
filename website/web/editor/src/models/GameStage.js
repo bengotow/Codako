@@ -15,6 +15,10 @@
 
       this.dispose = __bind(this.dispose, this);
 
+      this.resetToStartState = __bind(this.resetToStartState, this);
+
+      this.setStartState = __bind(this.setStartState, this);
+
       var _this = this;
       GameStage.__super__.initialize.call(this, canvas);
       this._id = null;
@@ -33,6 +37,7 @@
       this.height = 20;
       this.wrapX = true;
       this.wrapY = true;
+      this.startDescriptors = null;
       this.widthTarget = canvas.width;
       this.widthCurrent = canvas.width;
       this.canvas.ondrop = function(e, dragEl) {
@@ -78,7 +83,9 @@
         wrapY: this.wrapY,
         background: this.background,
         actor_library: window.Game.library.actorDefinitionIDs(),
-        actor_descriptors: []
+        actor_descriptors: [],
+        start_descriptors: this.startDescriptors,
+        start_thumbnail: this.startThumbnail
       };
       if (options.thumbnail) {
         data.thumbnail = this.canvas.toDataURL("image/jpeg", 0.8);
@@ -99,6 +106,8 @@
       this.height = json['height'];
       this.wrapX = json['wrapX'];
       this.wrapY = json['wrapY'];
+      this.startDescriptors = json['start_descriptors'];
+      this.startThumbnail = json['start_thumbnail'];
       this.setBackground(json['background']);
       library = json.actor_library || [];
       _ref = json.actor_descriptors;
@@ -120,6 +129,27 @@
           return callback(null);
         }
       });
+    };
+
+    GameStage.prototype.setStartState = function() {
+      var actor, _i, _len, _ref;
+      this.startDescriptors = [];
+      _ref = this.actors;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        actor = _ref[_i];
+        this.startDescriptors.push(actor.descriptor());
+      }
+      this.cache(0, 0, this.canvas.width, this.canvas.height, 0.1);
+      this.startThumbnail = this.cacheCanvas.toDataURL("image/jpg", 0.5);
+      return this.uncache();
+    };
+
+    GameStage.prototype.resetToStartState = function() {
+      var data;
+      this.actors = [];
+      data = this.saveData();
+      data.actor_descriptors = [].concat(data.start_descriptors);
+      return this.prepareWithData(data);
     };
 
     GameStage.prototype.dispose = function() {
