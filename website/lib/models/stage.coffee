@@ -7,6 +7,7 @@ global.StageSchema = new mongoose.Schema
   wrapX: { type: Boolean, default: false }
   wrapY: { type: Boolean, default: false }
   thumbnail: { type:String, default: '/img/thumbnail_empty.png' }
+  background: { type: String, default: null }
 
   actor_library: {type: mongoose.Schema.Types.Mixed, default: []}
   actor_descriptors: {type: mongoose.Schema.Types.Mixed, default: []}

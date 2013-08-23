@@ -52,6 +52,38 @@ ControlsCtrl = ($scope) ->
       return alert("You're already recording a rule! Exit the recording mode by clicking 'Cancel' or 'Save Recording' and then try again.")
     window.Game.setTool(t)
 
+  $scope.choose_stage_background = () ->
+    filepicker.setKey('ALlMNOVpIQNieyu71mvIMz')
+    filepicker.pick {
+      mimetypes: ['image/*'],
+      container: 'window',
+      services:['COMPUTER', 'IMAGE_SEARCH', 'FLICKR', 'GOOGLE_DRIVE', 'DROPBOX', 'URL', 'WEBCAM'],
+    },
+    (InkBlob) ->
+      filepicker.convert(InkBlob, {
+          fit: 'clip',
+          width:window.Game.mainStage.canvas.width,
+          height:window.Game.mainStage.canvas.height,
+          format: 'jpg',
+          quality: 85,
+        },{
+            location:"S3",
+            access: 'public'
+        },
+        (InkBlob) ->
+          window.Game.setStageBackground(InkBlob.key)
+        ,
+        (FPError) ->
+          console.log(FPError.toString())
+        ,
+        (percent) ->
+          console.log(percent)
+      )
+    ,
+    (FPError) ->
+      console.log(FPError.toString())
+
+
   $scope.definition_name = () ->
     return undefined unless window.Game && window.Game.selectedDefinition
     window.Game.selectedDefinition.name

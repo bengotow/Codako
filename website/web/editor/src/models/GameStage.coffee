@@ -3,6 +3,10 @@ class GameStage extends Stage
   constructor: (canvas) ->
     GameStage.__super__.initialize.call(this, canvas)
     @_id = null
+
+    @background = null
+    @backgroundSprite = null
+
     @recordingHandles = {}
     @recordingMasks = []
     @recordingMaskStyle = 'masked'
@@ -55,6 +59,7 @@ class GameStage extends Stage
       height: @height,
       wrapX: @wrapX,
       wrapY: @wrapY,
+      background: @background,
       actor_library: window.Game.library.actorDefinitionIDs(),
       actor_descriptors: [],
 
@@ -71,16 +76,7 @@ class GameStage extends Stage
     @wrapX = json['wrapX']
     @wrapY = json['wrapY']
 
-    # Creating a random background based on the 3 layers available in 3 versions
-    background = new Bitmap(window.Game.content.imageNamed('Layer0_0'))
-    background.scaleX = ((@width * Tile.WIDTH) / background.image.width)
-    background.scaleY = ((@height * Tile.HEIGHT) / background.image.height)
-
-    background.addEventListener 'click', (e) =>
-      window.Game.onActorClicked(null)
-    background.addEventListener 'dblclick', (e) =>
-      window.Game.onActorDoubleClicked(null)
-    @addChild(background)
+    @setBackground(json['background'])
 
     # make sure all of the actors on the stage are in the library
     library = json.actor_library || []
@@ -100,6 +96,33 @@ class GameStage extends Stage
     @recordingHandles = {}
     @removeAllChildren()
     @update()
+
+
+  setBackground: (background, animate = false) =>
+    @background = background || '/editor/img/backgrounds/Layer0_2.png'
+
+    img = new Image()
+    img.crossOrigin = 'Anonymous'
+    img.src = ''
+    $(img).on 'load', () =>
+      $(img).off 'load'
+      @removeChild(@backgroundSprite) if @backgroundSprite
+
+      @backgroundSprite = new Bitmap(img)
+
+      scale = Math.max((@width * Tile.WIDTH) / img.width, (@height * Tile.HEIGHT) / img.height)
+      @backgroundSprite.scaleX = @backgroundSprite.scaleY = scale
+
+      @backgroundSprite.addEventListener 'click', (e) =>
+        window.Game.onActorClicked(null)
+      @backgroundSprite.addEventListener 'dblclick', (e) =>
+        window.Game.onActorDoubleClicked(null)
+      @addChildAt(@backgroundSprite, 0)
+
+    if @background.indexOf('/') != -1
+      img.src = @background
+    else
+      img.src = "//cocoa-user-assets.s3-website-us-east-1.amazonaws.com/#{@background}"
 
 
   setStatusMessage: (message) =>

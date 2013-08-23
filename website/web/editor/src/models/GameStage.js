@@ -11,11 +11,15 @@
     function GameStage(canvas) {
       this.setStatusMessage = __bind(this.setStatusMessage, this);
 
+      this.setBackground = __bind(this.setBackground, this);
+
       this.dispose = __bind(this.dispose, this);
 
       var _this = this;
       GameStage.__super__.initialize.call(this, canvas);
       this._id = null;
+      this.background = null;
+      this.backgroundSprite = null;
       this.recordingHandles = {};
       this.recordingMasks = [];
       this.recordingMaskStyle = 'masked';
@@ -72,6 +76,7 @@
         height: this.height,
         wrapX: this.wrapX,
         wrapY: this.wrapY,
+        background: this.background,
         actor_library: window.Game.library.actorDefinitionIDs(),
         actor_descriptors: []
       };
@@ -87,23 +92,14 @@
     };
 
     GameStage.prototype.prepareWithData = function(json, callback) {
-      var actor, background, library, _i, _len, _ref,
+      var actor, library, _i, _len, _ref,
         _this = this;
       this.dispose();
       this.width = json['width'];
       this.height = json['height'];
       this.wrapX = json['wrapX'];
       this.wrapY = json['wrapY'];
-      background = new Bitmap(window.Game.content.imageNamed('Layer0_0'));
-      background.scaleX = (this.width * Tile.WIDTH) / background.image.width;
-      background.scaleY = (this.height * Tile.HEIGHT) / background.image.height;
-      background.addEventListener('click', function(e) {
-        return window.Game.onActorClicked(null);
-      });
-      background.addEventListener('dblclick', function(e) {
-        return window.Game.onActorDoubleClicked(null);
-      });
-      this.addChild(background);
+      this.setBackground(json['background']);
       library = json.actor_library || [];
       _ref = json.actor_descriptors;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -132,6 +128,40 @@
       this.recordingHandles = {};
       this.removeAllChildren();
       return this.update();
+    };
+
+    GameStage.prototype.setBackground = function(background, animate) {
+      var img,
+        _this = this;
+      if (animate == null) {
+        animate = false;
+      }
+      this.background = background || '/editor/img/backgrounds/Layer0_2.png';
+      img = new Image();
+      img.crossOrigin = 'Anonymous';
+      img.src = '';
+      $(img).on('load', function() {
+        var scale;
+        $(img).off('load');
+        if (_this.backgroundSprite) {
+          _this.removeChild(_this.backgroundSprite);
+        }
+        _this.backgroundSprite = new Bitmap(img);
+        scale = Math.max((_this.width * Tile.WIDTH) / img.width, (_this.height * Tile.HEIGHT) / img.height);
+        _this.backgroundSprite.scaleX = _this.backgroundSprite.scaleY = scale;
+        _this.backgroundSprite.addEventListener('click', function(e) {
+          return window.Game.onActorClicked(null);
+        });
+        _this.backgroundSprite.addEventListener('dblclick', function(e) {
+          return window.Game.onActorDoubleClicked(null);
+        });
+        return _this.addChildAt(_this.backgroundSprite, 0);
+      });
+      if (this.background.indexOf('/') !== -1) {
+        return img.src = this.background;
+      } else {
+        return img.src = "//cocoa-user-assets.s3-website-us-east-1.amazonaws.com/" + this.background;
+      }
     };
 
     GameStage.prototype.setStatusMessage = function(message) {

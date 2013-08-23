@@ -345,6 +345,12 @@
       }
     };
 
+    GameManager.prototype.setStageBackground = function(background_key) {
+      this.stagePane1.setBackground(background_key, true);
+      this.stagePane2.setBackground(background_key, true);
+      return this.save();
+    };
+
     GameManager.prototype.editNewRuleForActor = function(actor) {
       var initialExtent;
       if (!actor) {

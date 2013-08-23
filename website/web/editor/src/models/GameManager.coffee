@@ -275,6 +275,11 @@ class GameManager
       if stage == @mainStage
         @save()
 
+  # -- Managing the Background -- #
+  setStageBackground: (background_key) ->
+    @stagePane1.setBackground(background_key, true)
+    @stagePane2.setBackground(background_key, true)
+    @save()
 
   # -- Recording Mode -- #
 

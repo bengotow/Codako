@@ -72,6 +72,7 @@
   <link href="./css/editor.css" rel="stylesheet" media="screen">
   <link href="./css/colorpicker.css" rel="stylesheet" media="screen">
 
+  <script type="text/javascript" src="//api.filepicker.io/v1/filepicker.js"></script>
 </head>
 
 <body ng-app="App">
@@ -92,9 +93,12 @@
   <div class="container" style="width:1180px; margin:auto;" ng-controller="ControlsCtrl" ng-cloak>
     <div id="tool-box" class="white-box" style="float:left;line-height:0;width:40px;">
       <div class="{{class_for_btn(tool() == 'pointer')}} btn-tool-first" ng-click="set_tool('pointer')"><img src="img/sidebar_pointer.png"></div>
+
       <div class="{{class_for_btn(tool() == 'record')}} btn-tool" ng-click="set_tool('record')"><img src="img/sidebar_record.png"></div>
       <div class="{{class_for_btn(tool() == 'paint')}} btn-tool" ng-click="set_tool('paint')"><img src="img/sidebar_paint.png"></div>
-      <div class="{{class_for_btn(tool() == 'delete')}} btn-tool" ng-click="set_tool('delete')"><img src="img/sidebar_trash.png"></div>
+      <div class="{{class_for_btn(tool() == 'delete')}} btn-tool-first" ng-click="set_tool('delete')"><img src="img/sidebar_trash.png"></div>
+
+      <div class="btn btn-tool" ng-click="choose_stage_background()"><img src="img/sidebar_choose_background.png"></div>
     </div>
 
     <div id="viewport-box" class="white-box" style="float:left;line-height:0;">

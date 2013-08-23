@@ -60,6 +60,33 @@
       }
       return window.Game.setTool(t);
     };
+    $scope.choose_stage_background = function() {
+      filepicker.setKey('ALlMNOVpIQNieyu71mvIMz');
+      return filepicker.pick({
+        mimetypes: ['image/*'],
+        container: 'window',
+        services: ['COMPUTER', 'IMAGE_SEARCH', 'FLICKR', 'GOOGLE_DRIVE', 'DROPBOX', 'URL', 'WEBCAM']
+      }, function(InkBlob) {
+        return filepicker.convert(InkBlob, {
+          fit: 'clip',
+          width: window.Game.mainStage.canvas.width,
+          height: window.Game.mainStage.canvas.height,
+          format: 'jpg',
+          quality: 85
+        }, {
+          location: "S3",
+          access: 'public'
+        }, function(InkBlob) {
+          return window.Game.setStageBackground(InkBlob.key);
+        }, function(FPError) {
+          return console.log(FPError.toString());
+        }, function(percent) {
+          return console.log(percent);
+        });
+      }, function(FPError) {
+        return console.log(FPError.toString());
+      });
+    };
     $scope.definition_name = function() {
       if (!(window.Game && window.Game.selectedDefinition)) {
         return void 0;

@@ -80,32 +80,47 @@ var p = SelectionFilter.prototype = new createjs.Filter();
 			console.log(e);
 			return false;
 		}
-		var data = imageData.data;
-		var l = data.length;
-		var edge = [];
-		for (var x=0; x < width; x ++) {
-			for (var y=0; y < height; y ++) {
-				var i = 4 * ((y * width) + x);
-				if ((data[4 * (((y) * width) + x) + 3] == 0) &&
-					((data[4 * (((y-1) * width) + x) + 3] > 0) ||
-					 (data[4 * (((y+1) * width) + x) + 3] > 0) ||
-					 (data[4 * ((y * width) + (x+1)) + 3] > 0) ||
-					 (data[4 * ((y * width) + (x-1)) + 3] > 0)))
-					edge.push({x:x, y:y})
+
+		for (var iteration = 0; iteration < this.borderWidth; iteration ++) {
+			var data = imageData.data;
+			var l = data.length;
+			var edge = [];
+			for (var x=0; x < width; x ++) {
+				for (var y=0; y < height; y ++) {
+					var i = 4 * ((y * width) + x);
+					if (data[4 * (((y) * width) + x) + 3] == 0) {
+						if ((data[4 * (((y-1) * width) + x) + 3] > 0) ||
+						 	(data[4 * (((y+1) * width) + x) + 3] > 0) ||
+						 	(data[4 * ((y * width) + (x+1)) + 3] > 0) ||
+							(data[4 * ((y * width) + (x-1)) + 3] > 0)) {
+							edge.push({x:x, y:y})
+
+						} else if ((iteration == this.borderWidth - 1) &&
+								((data[4 * (((y-1) * width) + (x-1)) + 3] > 0) ||
+						 		 (data[4 * (((y-1) * width) + (x+1)) + 3] > 0) ||
+						 		 (data[4 * (((y+1) * width) + (x-1)) + 3] > 0) ||
+						 		 (data[4 * (((y+1) * width) + (x+1)) + 3] > 0))) {
+							edge.push({x:x, y:y, alias: true})
+						}
+					} else {
+						for (var o=0; o<3; o++)
+							data[i+o] += 15;
+					}
+				}
+			}
+
+			for (var i=0; i < edge.length; i++) {
+				var x = edge[i].x;
+				var y = edge[i].y;
+				var b = 4 * ((y * width) + x);
+				for (var o=0; o<3; o++)
+					data[b+o] = 255;
+				if (edge.alias)
+					data[b+3] = 50;
 				else
-					for (var o=0; o<3; o++)
-						data[i+o] += 35;
+					data[b+3] = 150 + 50 / (iteration + 1);
 
 			}
-		}
-
-		for (var i=0; i < edge.length; i++) {
-			var x = edge[i].x;
-			var y = edge[i].y;
-			var b = 4 * ((y * width) + x);
-			for (var o=0; o<3; o++)
-				data[b+o] = 255;
-			data[b+3] = 200;
 		}
 
 		imageData.data = data;
