@@ -20,13 +20,13 @@
       };
       this.builtInResources = {
         images: {
-          tile_masked_checkered: './img/tiles/tile_masked_checkered.png',
-          tile_masked: './img/tiles/tile_masked.png',
-          tile_white: './img/tiles/tile_white.png',
-          handle_bottom: './img/tiles/handle_bottom.png',
-          handle_left: './img/tiles/handle_left.png',
-          handle_right: './img/tiles/handle_right.png',
-          handle_top: './img/tiles/handle_top.png'
+          tile_masked_checkered: '/stage-editor/img/tiles/tile_masked_checkered.png',
+          tile_masked: '/stage-editor/img/tiles/tile_masked.png',
+          tile_white: '/stage-editor/img/tiles/tile_white.png',
+          handle_bottom: '/stage-editor/img/tiles/handle_bottom.png',
+          handle_left: '/stage-editor/img/tiles/handle_left.png',
+          handle_right: '/stage-editor/img/tiles/handle_right.png',
+          handle_top: '/stage-editor/img/tiles/handle_top.png'
         }
       };
       Ticker.addListener(this);
@@ -35,6 +35,9 @@
 
     ContentManager.prototype.fetchLevelAssets = function(resources, finishCallback) {
       var info, key, _ref, _ref1, _ref2, _ref3, _results;
+      if (!resources) {
+        finishCallback();
+      }
       this.soundFormat = this._soundFormatForBrowser();
       this.contentStatusCallback({
         progress: 0

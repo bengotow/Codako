@@ -53,6 +53,7 @@ class GameManager
 
     $.ajax({url: "/api/v0/worlds/#{world_id}/stages/#{stage_id}"})
       .done (stage) =>
+        stage.resources ||= {images: {}, sounds: {}}
         @content.fetchLevelAssets stage.resources, () =>
           @loadLevelDataReady(stage)
           callback(null) if callback
@@ -89,8 +90,8 @@ class GameManager
     if (@running && time > @simulationFrameNextTime) || forceRules
       @frameSave()
       @frameAdvance()
-      window.rulesScope.$apply()
-      window.variablesScope.$apply()
+      window.rulesScope.$apply() unless window.rulesScope.$$phase
+      window.variablesScope.$apply() unless window.variablesScope.$$phase
       @mainStage.update(elapsed)
     else
       @stagePane1.update(elapsed) if @stagePane1.onscreen()
@@ -101,8 +102,8 @@ class GameManager
     return alert("Sorry, you can't rewind any further!") unless @prevFrames.length
     @selectedActor = null
     @mainStage.prepareWithData @prevFrames.pop(), () ->
-      window.rulesScope.$apply()
-      window.variablesScope.$apply()
+      window.rulesScope.$apply() unless window.rulesScope.$$phase
+      window.variablesScope.$apply() unless window.variablesScope.$$phase
 
 
   frameSave: () ->

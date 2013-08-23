@@ -12,13 +12,13 @@ class ContentManager
 
     @builtInResources =
       images:
-        tile_masked_checkered: './img/tiles/tile_masked_checkered.png'
-        tile_masked: './img/tiles/tile_masked.png'
-        tile_white: './img/tiles/tile_white.png'
-        handle_bottom: './img/tiles/handle_bottom.png'
-        handle_left: './img/tiles/handle_left.png'
-        handle_right: './img/tiles/handle_right.png'
-        handle_top: './img/tiles/handle_top.png'
+        tile_masked_checkered: '/stage-editor/img/tiles/tile_masked_checkered.png'
+        tile_masked: '/stage-editor/img/tiles/tile_masked.png'
+        tile_white: '/stage-editor/img/tiles/tile_white.png'
+        handle_bottom: '/stage-editor/img/tiles/handle_bottom.png'
+        handle_left: '/stage-editor/img/tiles/handle_left.png'
+        handle_right: '/stage-editor/img/tiles/handle_right.png'
+        handle_top: '/stage-editor/img/tiles/handle_top.png'
 
 
     Ticker.addListener(@)
@@ -26,6 +26,8 @@ class ContentManager
 
 
   fetchLevelAssets: (resources, finishCallback) =>
+    finishCallback() unless resources
+
     # If the browser supports either MP3 or OGG
     @soundFormat = @_soundFormatForBrowser()
     @contentStatusCallback({progress: 0})

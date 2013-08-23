@@ -78,6 +78,10 @@
       return $.ajax({
         url: "/api/v0/worlds/" + world_id + "/stages/" + stage_id
       }).done(function(stage) {
+        stage.resources || (stage.resources = {
+          images: {},
+          sounds: {}
+        });
         return _this.content.fetchLevelAssets(stage.resources, function() {
           _this.loadLevelDataReady(stage);
           if (callback) {
@@ -124,8 +128,12 @@
       if ((this.running && time > this.simulationFrameNextTime) || forceRules) {
         this.frameSave();
         this.frameAdvance();
-        window.rulesScope.$apply();
-        window.variablesScope.$apply();
+        if (!window.rulesScope.$$phase) {
+          window.rulesScope.$apply();
+        }
+        if (!window.variablesScope.$$phase) {
+          window.variablesScope.$apply();
+        }
         return this.mainStage.update(elapsed);
       } else {
         if (this.stagePane1.onscreen()) {
@@ -143,8 +151,12 @@
       }
       this.selectedActor = null;
       return this.mainStage.prepareWithData(this.prevFrames.pop(), function() {
-        window.rulesScope.$apply();
-        return window.variablesScope.$apply();
+        if (!window.rulesScope.$$phase) {
+          window.rulesScope.$apply();
+        }
+        if (!window.variablesScope.$$phase) {
+          return window.variablesScope.$apply();
+        }
       });
     };
 

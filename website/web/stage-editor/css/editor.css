@@ -413,7 +413,7 @@ h4 {
   opacity: 0.4;
 }
 .controls .panel .condition.ignored .ignore_toggle {
-  background: url(/img/visible.png) top right no-repeat;
+  background: url(../img/visible.png) top right no-repeat;
 }
 .controls .panel .ignore_toggle {
   float: right;
@@ -422,7 +422,7 @@ h4 {
   margin-top: 13px;
   margin-right: 5px;
   display: inline-block;
-  background: url(/img/visible.png) top left no-repeat;
+  background: url(../img/visible.png) top left no-repeat;
 }
 .controls .panel .action img,
 .controls .panel .condition img {

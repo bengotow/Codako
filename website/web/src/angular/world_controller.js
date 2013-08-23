@@ -27,7 +27,7 @@
       });
     };
     return $scope.openStage = function(stage) {
-      return window.location.href = "/editor/#/" + $scope.world._id + "/" + stage._id;
+      return window.location.href = "/stage-editor/#/" + $scope.world._id + "/" + stage._id;
     };
   };
 

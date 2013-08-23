@@ -121,7 +121,7 @@ class GameStage extends Stage
 
 
   setBackground: (background, animate = false) =>
-    @background = background || '/editor/img/backgrounds/Layer0_2.png'
+    @background = background || '/stage-editor/img/backgrounds/Layer0_2.png'
 
     img = new Image()
     img.crossOrigin = 'Anonymous'

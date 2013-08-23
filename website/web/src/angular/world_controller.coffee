@@ -21,7 +21,7 @@
 			$scope.openStage(stage)
 
 	$scope.openStage = (stage) ->
-		window.location.href = "/editor/#/#{$scope.world._id}/#{stage._id}"
+		window.location.href = "/stage-editor/#/#{$scope.world._id}/#{stage._id}"
 
 
 @WorldCtrl.$inject = ['$scope', '$dialog', '$location','$routeParams', 'Stages', 'Worlds', 'Comments', 'Auth', '$http']

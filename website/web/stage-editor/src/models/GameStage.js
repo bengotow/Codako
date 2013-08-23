@@ -166,7 +166,7 @@
       if (animate == null) {
         animate = false;
       }
-      this.background = background || '/editor/img/backgrounds/Layer0_2.png';
+      this.background = background || '/stage-editor/img/backgrounds/Layer0_2.png';
       img = new Image();
       img.crossOrigin = 'Anonymous';
       img.src = '';
