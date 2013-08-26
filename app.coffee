@@ -16,15 +16,16 @@ en = require ('./lang/en')
 server = require("./server").start()
 
 # Open a database connection
-global.mongo = mongoose.connect process.env['MONGODB_URL'], {}, (err) ->
+mongoURL = process.env['MONGODB_URL'] || process.env['MONGOHQ_URL']
+global.mongo = mongoose.connect mongoURL, {}, (err) ->
   console.log('Mongo Connected', err)
 
 # Load models
 global.User = require('./lib/models/user')
 global.Stage = require('./lib/models/stage')
 global.World = require('./lib/models/world')
-global.Actor = require('./lib/models/Actor')
-global.Comment = require('./lib/models/Comment')
+global.Actor = require('./lib/models/actor')
+global.Comment = require('./lib/models/comment')
 
 # Create tables if necessary
 User.findOne {'nickname': 'bengotow'}, (err, user) ->
