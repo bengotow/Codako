@@ -2,7 +2,6 @@
 *.DS_Store
 /server/dump.rdb
 /node_modules
-web/stage-editor/src/angular/*.js
 /ssl
 /web/css/main.css
 *_controller.js
