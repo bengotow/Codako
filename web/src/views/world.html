@@ -21,10 +21,7 @@
 </div>
 
 <div class="row">
-	<div ng-show="!stages.length">
-		You haven't created any stages yet.
-	</div>
-	<div ng-show="stages.length" class="stages-collection">
+	<div class="stages-collection">
 		<div ng-repeat="stage in stages" class="span4 stage">
 			<a ng-click="open_stage(stage)">
 				<img ng-src="{{stage.thumbnail}}" />
