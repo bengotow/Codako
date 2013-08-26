@@ -43,10 +43,10 @@
       var items;
       items = [];
       if (side === 'left') {
-        if (Auth.user()) {
-          items.push($scope.navigationItemMatching('My Worlds', 'worlds'));
-        }
         items.push($scope.navigationItemMatching('Home', 'home'));
+        if (Auth.user()) {
+          items.push($scope.navigationItemMatching('Me', 'profile'));
+        }
         items.push($scope.navigationItemMatching('Community', 'community'));
         items.push($scope.navigationItemMatching('Parents', 'parents'));
         $scope.rebuildNavigationClasses(items);

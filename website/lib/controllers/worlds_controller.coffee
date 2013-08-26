@@ -29,7 +29,12 @@ exports.world_get = (req, res) ->
 
 exports.world_put = (req, res) ->
   req.withWorld (world) ->
-    return res.endWithUnauthorized() unless req.user && req.user._id == world.user_id
-    world.updateAttributes(req.body).success (world) ->
+    return res.endWithUnauthorized() unless req.user && world.isOwnedBy(req.user)
+
+    for attribute in ['title', 'description', 'published']
+      world[attribute] = req.body[attribute] if req.body[attribute]
+
+    world.save (err, world) ->
+      return res.endWithError(err, 400) if err
       res.endWithJSON(world)
 

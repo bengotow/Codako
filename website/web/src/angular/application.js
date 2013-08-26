@@ -9,7 +9,7 @@ App.config(function($routeProvider) {
 
     when('/community',{controller:CommunityCtrl, templateUrl:'/src/views/community.html'}).
 
-    when('/worlds',    {controller:WorldsCtrl, templateUrl:'/src/views/worlds.html'}).
+    when('/profile',    {controller:ProfileCtrl, templateUrl:'/src/views/profile.html'}).
     when('/world/:_id', {controller:WorldCtrl, templateUrl:'/src/views/world.html'}).
 
     when('/home',{controller:AppCtrl, templateUrl:'/src/views/home.html'}).

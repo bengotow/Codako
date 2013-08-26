@@ -41,7 +41,7 @@
   <script src="./src/directives-timeago.js"></script>
 
   <script src="./src/angular/sign_in_controller.js"></script>
-  <script src="./src/angular/worlds_controller.js"></script>
+  <script src="./src/angular/profile_controller.js"></script>
   <script src="./src/angular/world_controller.js"></script>
   <script src="./src/angular/community_controller.js"></script>
   <script src="./src/angular/app_controller.js"></script>
@@ -51,21 +51,22 @@
 
 
 <body ng-app="App">
+  <div class="navbar navbar-fixed-top" style="z-index:2;" ng-controller="AppCtrl">
+      <div class="navbar-inner">
+      <div class="container">
+        <a class="brand" href="#">Codako</a>
+        <ul class="nav">
+          <li ng-repeat="item in navigation('left')" class="{{item.class}}"><a href="#/{{item.href}}">{{item.label}}</a></li>
+        </ul>
 
-  <div class="navbar" ng-controller="AppCtrl">
-    <div class="navbar-inner">
-      <a class="brand" href="#">Codako</a>
-      <ul class="nav">
-        <li ng-repeat="item in navigation('left')" class="{{item.class}}"><a href="#/{{item.href}}">{{item.label}}</a></li>
-      </ul>
-
-      <ul class="nav" style="float:right;">
-        <li ng-repeat="item in navigation('right')" class="{{item.class}}"><a href="#/{{item.href}}">{{item.label}}</a></li>
-      </ul>
+        <ul class="nav" style="float:right;">
+          <li ng-repeat="item in navigation('right')" class="{{item.class}}"><a href="#/{{item.href}}">{{item.label}}</a></li>
+        </ul>
+      </div>
     </div>
   </div>
 
-  <div class="container" ng-view></div>
+  <div class="container" style="position:relative; top:50px;" ng-view></div>
 
 </body>
 </html>

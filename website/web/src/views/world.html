@@ -1,16 +1,19 @@
 
 <div class="row">
-	<h3>{{world.title}}</h3>
-	<p>{{world.description}}</p>
+	<div style="float:right; display:inline-block;">
+		<a ng-click="publish()" class="btn btn-primary"><i class="icon-pencil"></i> {{publish_action_text()}}</a>
+	</div>
+	<h3>{{world.title}}</h3></a>
+	<p>{{world.description}} <a ng-click="edit_details()"><i class="icon-pencil"></i></p>
 
 	<div class="span12">
 		<div style="float:right; display:inline-block;">
-			<a ng-click="newStage()" class="btn btn-primary"><i class="icon-pencil"></i> New Stage</a>
+			<a ng-click="new_stage()" class="btn btn-primary"><i class="icon-pencil"></i> New Stage</a>
 		</div>
 		<h4>Stages</h4>
 		<div ng-show="stages.length" class="stages-collection">
 			<div ng-repeat="stage in stages" class="span3">
-				<a ng-click="openStage(stage)"><img ng-src="{{stage.thumbnail}}" style="width:240px; height:156px;"/></a>
+				<a ng-click="open_stage(stage)"><img ng-src="{{stage.thumbnail}}" style="width:240px; height:156px;"/></a>
 			</div>
 		</div>
 	</div>
@@ -26,3 +29,34 @@
 
 </div>
 
+<div id="editDetailsModal"
+	class="modal hide fade" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" ng-cloak>
+	<div class="modal-header"><h4>Edit World</h4></div>
+	<div class="modal-body">
+		<div class="alert" ng-show="edit_message">{{edit_message}}</div>
+
+		<form class="form-horizontal">
+		  <div class="control-group">
+		    <label class="control-label" for="Title">Title</label>
+		    <div class="controls">
+		      <input type="text" id="Title" ng-model="world.title" placeholder="Title">
+		    </div>
+		  </div>
+		  <div class="control-group">
+		    <label class="control-label" for="Description">Description</label>
+		    <div class="controls">
+		      <textarea id="Description" ng-model="world.description"></textarea>
+		    </div>
+		  </div>
+		</form>
+
+	</div>
+	<div class="modal-footer">
+	    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+	    <button ng-click="edit_details_save()" class="btn btn-primary">Save Changes</button>
+	</div>
+</div>
+
+<div id="publishModal"
+	class="modal hide fade" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" ng-cloak>
+</div>
