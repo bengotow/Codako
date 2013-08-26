@@ -1,0 +1,95 @@
+Welcome to Digiverse - I'm Ben, your virtual adventurer!
+
+< in a free area where students can drive a truck around >
+
+Today, we're on a mission to gather jibjib crystals. Jibjib crystals grow deep in forests and caves. When you see a glowing icon on the edge of the forest, drive there! I can use my hands to dig up the crystals. We need to collect crystals to power the robot factory - without us, they won't be able to build any more of me!
+
+< truck parks next to a puzzle, which is set deep in the forest. There's a maze-like path to crystals onscreen. >
+
+I'm great at following instructions, but I need you to show me what to do. Use the buttons below to tell me which direction to go! Each time you press a button, I'll move one step in that direction.
+
+<audiovisual feedback upon each correct / incorrect step>
+
+Wow - I can see crystals! Click the button below and I'll pick em up!
+
+That was great! Jibjib crystals are my favorite.
+
+< 10 or so more mazes:
+- user collects a single crystal by walking straight
+- introduction to turning
+- two crystals
+
+<First programming concept! Sequence of instructions must be defined ahead of time.>
+
+Uhoh - it looks like we need to go farther into the jungle to get the jibjib crystals this time. My radio won't work that far into the forest so you'll need to create a plan for me ahead of time! See that tray down at the bottom? Fill it with instructions for me by clicking the icons. As you click each instruction, you'll see where I'll go! If you make a mistake, you can press the X to empty the tray.
+
+Good job! Your instructions made it easy for me to find the crystals. It looks like this forest is getting thicker, so let's plan on doing that from now on!
+
+Can you get me to the crystals here?
+
+<Next programming concept - identification of repeatable instructions>
+
+Oh boy... look at all those crystals! I'm... I'm not sure I'm going to be able to remember enough steps to get them all. My memory is only so big! Let's try it out.
+
+< Student tries to fill the tray with instructions, but there are too many >
+
+That didn't work :-( I just can't remember that many steps! Let's try this. Teach me how to get down one of these tunnels to get a crystal. Since all the tunnels look the same, I can just follow those instructions over and over to get them all!
+
+< Student writes instructions to get one crystal, then presses Go. The robot goes down the same tunnel over and over. >
+
+That didn't work either! What's wrong? I followed your instructions three times, but I forgot I needed to move between the tunnels! It looks like I need instructions to get from one tunnel to the next, too.
+
+< Next programming concept - composition >
+
+Let's do this. You can write me two sets of instructions! I'll follow the first set to go between the tunnels, and when I arrive at each tunnel I'll follow the second set. Does that sound good? To help me organize my instructions, I'll color this set red. Whenever you want me to follow the red instructions, just drag a new red block down into the tray.
+
+Wow—did you see that! I followed your instructions, and each time I arrived at a tunnel I followed the red instructions. Remember how many instructions I needed to remember before? My memory isn't even full now!
+
+Let's see what we can do with this idea! Here's another area with crystals.  It looks like we can do the same thing here, but I'm not sure. What do you think? Try writing me a set of instructions for each tunnel, and then another set of instructions for getting between the tunnels!
+
+< 5x more >
+
+Uhoh....
+
+What's going on here! Is that a rock lying in the middle of the path? I haven't told you yet, but I can jump! Jumping will let me get over that rock - I'm sure of it. Here - let's add a new jump instruction so you can tell me when you want me to jump.
+
+< Student experiemnts with jumping - another 5 maps >
+
+< Next programming concept - composition with multiple sets of instructions? >
+
+< Next programming concept - input & events - student is faced with a map that is partially obscured by fog of war >
+
+Student tries to complete the puzzle as usual.
+Oh my goodness—I've discovered a rock in my path! We haven't been out this way in a long time, and my memory is pretty fuzzy. The dark parts of the map are areas I don't remember very well. How will I know when to jump? I'll never make it through!
+
+Let's create a set of instructions that I'll follow whenver I find a rock in my path. That way, I'll know what to do, and I can get to those crystals! Click the + icon below to create a new set of instructions for me.
+
+See that? That's a picture of me with a rock in my way! I drew it so I'd remember to follow these instructions whenever there's a rock blocking my path. When I move to a new place, I'll check to see if my surroundings match the picture and follow the right instructions!
+
+Ahh, good job. I feel so much better now. Now let's try that again. Even though there are hidden rocks out there, I know what to do!
+
+< A few more examples of event handling. Rock in front = jump over, crystals in front = pick up! Passing crystals = pick up! >
+
+Great! Now that you've prepared me to jump rocks and pick up crystals, this jungle is easier to handle! You know, I've noticed these old brick paths through the forest that lead to the crystals. Sometimes I'm walking along the path, and suddenly it's gone! Can you tell me what to do when that happens?
+
+< For the first time the student is encouraged to draw the rule scenario themselves >
+
+I'm not sure what the picture on this instruction card should look like! Can you help me with it? Remember - when the picture on the card matches the things around me, I'll follow your instructions! You can drag and drop items from the sidebar into the picture.
+
+I know that I'm on the path, and then the path disappears off to the left. Can you create a picture of that?
+
+< Student draws if statement picture >
+
+Great! Now just tell me what to do when that happens. I want to learn to stay on the path!
+
+< Student tells robot to turn the fuck left >
+
+Alright let's try it! I want to explore! I'll walk straight all the time and follow these instructions you gave me.
+
+Great! This is so exciting! Let's try gathering crystals from other paths in the forest. I think I can do it myself now that you've shown me how to turn!
+
+< Does it successfully on two more maps, demonstrating how event-driven behaviors have made the student's life easier. Then comes to a map that requires the student to write a right turn rule as well as a left turn rule. >
+
+< On the next map, the path forms a loop. Robot jumps in enthusiastically, and goes in circles. >
+
+Help - I'm stuck! I'm getting tired! Have I collected all the crystals? I remember I saw seven on the map, but I haven't been keeping track of how many I picked up. Can you help me keep track so I know when I'm done? I have a jar 
