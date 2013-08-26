@@ -1,11 +1,9 @@
 
 <div class="row">
-	<div class="span12" style="background-color: #466F7E; position:relative; z-index:-1; top:-22px; padding-top:30px;">
-		<div style="margin-left:20px; position:relative; top:10px;">
-			<img src="" style="background-color: #eee; width:90px;height:90px;float:left; margin-right:15px;"/>
-			<h3 style="margin-bottom:0; color:white;">{{user().nickname}}</h3>
-			<div style="color:rgba(255,255,255,0.7);">User statistics go here.</div>
-		</div>
+	<div class="span12" style="margin-top:20px; margin-bottom:20px;">
+		<img src="" style="background-color: #eee; width:90px;height:90px;float:left; margin-right:15px;"/>
+		<h3 style="margin-bottom:0; color:black;">{{user().nickname}}</h3>
+		<div style="color:rgba(0,0,0,0.7);">User statistics go here.</div>
 	</div>
 </div>
 
@@ -27,7 +25,8 @@
 				<img src="{{world.thumbnail}}">
 				<h4 style="color:black; margin-bottom:3px;">{{world.title}}</h4>
 			</a>
-		</div></div>
+		</div>
+		<a class="span4 new-item" ng-click="new_stage()"><div>+ New World</div></a>
 	</div>
 </div>
 

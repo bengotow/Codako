@@ -2,11 +2,11 @@
 
   this.SignInCtrl = function($scope, $location, $dialog, Users, Stages, Comments, Auth, $http) {
     $scope.credentials = {
-      email: '',
+      nickname: '',
       password: ''
     };
     $scope.registration = {
-      email: '',
+      nickname: '',
       password: '',
       password_confirm: '',
       nickname: '',
@@ -30,7 +30,7 @@
       });
     };
     return $scope.signIn = function() {
-      Auth.setCredentials($scope.credentials.email, CryptoJS.MD5($scope.credentials.password));
+      Auth.setCredentials($scope.credentials.nickname, CryptoJS.MD5($scope.credentials.password));
       return Auth.withUser(function(error, user) {
         if (error) {
           return alert(error);

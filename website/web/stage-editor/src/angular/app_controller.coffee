@@ -27,13 +27,14 @@
     path = window.location.href.split('#')[1]
     if path
         path = path.split('/')
-        stage_id = path[path.length-1]
-        world_id = path[path.length-2]
+        $scope.stage_id = path[path.length-1]
+        $scope.world_id = path[path.length-2]
 
-    if !stage_id || !world_id
+    if !$scope.stage_id || !$scope.world_id
         window.location.href = "/"
 
-    window.Game.load(world_id, stage_id)
+    window.Game.load($scope.world_id, $scope.stage_id)
+
 
 
 

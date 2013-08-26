@@ -2,7 +2,7 @@
 
   this.AppCtrl = function($scope, $location, Users, Stages, Auth, $http) {
     return Auth.withUser(function(error, user) {
-      var path, renderingStage, stagePane1, stagePane2, stage_id, world_id;
+      var path, renderingStage, stagePane1, stagePane2;
       if (error || !user) {
         alert('You need to log in!');
       }
@@ -31,13 +31,13 @@
       path = window.location.href.split('#')[1];
       if (path) {
         path = path.split('/');
-        stage_id = path[path.length - 1];
-        world_id = path[path.length - 2];
+        $scope.stage_id = path[path.length - 1];
+        $scope.world_id = path[path.length - 2];
       }
-      if (!stage_id || !world_id) {
+      if (!$scope.stage_id || !$scope.world_id) {
         window.location.href = "/";
       }
-      return window.Game.load(world_id, stage_id);
+      return window.Game.load($scope.world_id, $scope.stage_id);
     });
   };
 

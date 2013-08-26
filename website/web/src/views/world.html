@@ -1,33 +1,39 @@
 
 <div class="row">
-	<div style="float:right; display:inline-block;">
-		<a ng-click="publish()" class="btn btn-primary"><i class="icon-pencil"></i> {{publish_action_text()}}</a>
-	</div>
-	<h3>{{world.title}}</h3></a>
-	<p>{{world.description}} <a ng-click="edit_details()"><i class="icon-pencil"></i></p>
+	<div class="span12" style="background-color: #466F7E; position:relative; z-index:-1; top:-22px;">
 
-	<div class="span12">
-		<div style="float:right; display:inline-block;">
-			<a ng-click="new_stage()" class="btn btn-primary"><i class="icon-pencil"></i> New Stage</a>
-		</div>
-		<h4>Stages</h4>
-		<div ng-show="stages.length" class="stages-collection">
-			<div ng-repeat="stage in stages" class="span3">
-				<a ng-click="open_stage(stage)"><img ng-src="{{stage.thumbnail}}" style="width:240px; height:156px;"/></a>
+		<div style="position:absolute; z-index:-2; background:url({{stages[stages.length-1].thumbnail}}) center center; background-size:cover; -webkit-filter: blur(5px); display:block; width:100%; height:100%;"></div>
+
+		<div style="position:absolute; z-index:-1; display:block; width:100%; height:100%; background-color:rgba(0,0,0,0.3);"></div>
+
+		<div style="padding:25px; padding-top:90px;">
+			<div style="float:right; display:inline-block; margin-top:20px;">
+				<a ng-click="publish()" class="btn btn-large btn-success"><i class="icon-pencil"></i> {{publish_action_text()}}</a>
+			</div>
+
+			<div style="margin-left:20px;">
+				<h3 style="margin-bottom:0; color:white;">{{world.title}}</h3>
+				<div style="color:rgba(255,255,255,0.7);">{{world.description}}</div>
 			</div>
 		</div>
-	</div>
 
-	<div class="span12">
-		<h4>Library</h4>
-		<div ng-show="actors.length" class="actors-collection">
-			<div ng-repeat="actor in actors" class="span3">
-				<h4>{{actor._id}}</h4>
-			</div>
-		</div>
 	</div>
-
 </div>
+
+<div class="row">
+	<div ng-show="!stages.length">
+		You haven't created any stages yet.
+	</div>
+	<div ng-show="stages.length" class="stages-collection">
+		<div ng-repeat="stage in stages" class="span4 stage">
+			<a ng-click="open_stage(stage)">
+				<img ng-src="{{stage.thumbnail}}" />
+			</a>
+		</div>
+		<a class="span4 new-item" ng-click="new_stage()"><div>+ New Stage</div></a>
+	</div>
+</div>
+
 
 <div id="editDetailsModal"
 	class="modal hide fade" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" ng-cloak>
@@ -60,3 +66,14 @@
 <div id="publishModal"
 	class="modal hide fade" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" ng-cloak>
 </div>
+
+
+
+	<div class="span12">
+		<h4>Library</h4>
+		<div ng-show="actors.length" class="actors-collection">
+			<div ng-repeat="actor in actors" class="span3">
+				<h4>{{actor._id}}</h4>
+			</div>
+		</div>
+	</div>

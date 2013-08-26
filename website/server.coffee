@@ -161,11 +161,11 @@ handleAPIRequest = (req, res, next) ->
 
 		credentials = new Buffer(parts[1], 'base64').toString().split(':')
 
-		User.findOne {email: credentials[0], password: credentials[1]}, (err, user) ->
+		User.findOne {nickname: credentials[0], password: credentials[1]}, (err, user) ->
 			if user
 				req.user_is_self = (req.pathArgs[0] == user._id)
 				req.user = user
-				console.log('Request with user ' + user.email)
+				console.log('Request for user ' + user.nickname)
 			choices[method](req, res)
 
 	else

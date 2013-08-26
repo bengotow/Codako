@@ -77,20 +77,23 @@
 
 <body ng-app="App">
 
-  <div class="navbar" ng-controller="AppCtrl">
-    <div class="navbar-inner">
-      <a class="brand" href="/">Codako</a>
-      <ul class="nav">
-        <li ng-repeat="item in navigation('left')" class="{{item.class}}"><a href="#/{{item.href}}">{{item.label}}</a></li>
-      </ul>
+  <div class="navbar navbar-fixed-top" style="z-index:2;" ng-controller="AppCtrl">
+      <div class="navbar-inner">
+      <div class="container">
+        <a class="brand" href="#">Codako</a>
+        <ul class="nav">
+          <li><a href="/#/world/{{world_id}}">Back to World</a></li>
+        </ul>
 
-      <ul class="nav" style="float:right;">
-        <li ng-repeat="item in navigation('right')" class="{{item.class}}"><a href="#/{{item.href}}">{{item.label}}</a></li>
-      </ul>
+        <ul class="nav" style="float:right;">
+          <li><a href="/#/sign-out">Sign Out</a></li>
+        </ul>
+      </div>
     </div>
   </div>
 
-  <div class="container" style="width:1180px; margin:auto;" ng-controller="ControlsCtrl" ng-cloak>
+
+  <div class="container" style="width:1180px; margin:auto; margin-top:60px;" ng-controller="ControlsCtrl" ng-cloak>
     <div id="tool-box" class="white-box" style="float:left;line-height:0;width:40px;">
       <div class="{{class_for_btn(tool() == 'pointer')}} btn-tool-first" ng-click="set_tool('pointer')"><img src="img/sidebar_pointer.png"></div>
 
