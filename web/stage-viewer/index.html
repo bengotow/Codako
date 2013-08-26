@@ -61,6 +61,7 @@
   <script src="/src/directives-models.js"></script>
   <script src="/src/directives-dragdrop.js"></script>
 
+  <script src="/src/angular/nav_controller.js"></script>
   <script src="/stage-editor/src/angular/app_controller.js"></script>
   <script src="/stage-editor/src/angular/controls_controller.js"></script>
 
@@ -68,24 +69,29 @@
 
 </head>
 
+
 <body ng-app="App">
 
-  <div class="navbar" ng-controller="AppCtrl">
-    <div class="navbar-inner">
-      <a class="brand" href="/">Codako</a>
-      <ul class="nav">
-        <li ng-repeat="item in navigation('left')" class="{{item.class}}"><a href="#/{{item.href}}">{{item.label}}</a></li>
-      </ul>
+  <div ng-controller="AppCtrl"></div>
 
-      <ul class="nav" style="float:right;">
-        <li ng-repeat="item in navigation('right')" class="{{item.class}}"><a href="#/{{item.href}}">{{item.label}}</a></li>
-      </ul>
+  <div class="navbar navbar-fixed-top" style="z-index:2;" ng-controller="NavCtrl">
+      <div class="navbar-inner">
+      <div class="container">
+        <a class="brand" href="#">Codako</a>
+        <ul class="nav">
+          <li ng-repeat="item in navigation('left')" class="{{item.class}}"><a href="{{item.href}}">{{item.label}}</a></li>
+        </ul>
+
+        <ul class="nav" style="float:right;">
+          <li ng-repeat="item in navigation('right')" class="{{item.class}}"><a href="{{item.href}}">{{item.label}}</a></li>
+        </ul>
+      </div>
     </div>
   </div>
 
-  <div class="container" style="width:1180px; margin:auto;" ng-controller="ControlsCtrl" ng-cloak>
+  <div class="container" style="width:800px; margin:auto; margin-top:60px;" ng-controller="ControlsCtrl" ng-cloak>
 
-    <div id="viewport-box" class="white-box" style="float:left;line-height:0;">
+    <div id="viewport-box" class="white-box" style="line-height:0;">
       <div style="overflow:hidden; width:800px; height:520px;">
         <div style="width:1605px; height:520px;">
           <canvas droppable id="platformerCanvasPane1" width="800" height="520" class="stage">
@@ -100,10 +106,6 @@
            ng-include="'/stage-editor/src/angular/controls_controller/'+control_set+'.html'"
            style="text-align:center;">
       </div>
-    </div>
-
-
-    <div id="sidebar-box" class="white-box" style="float:right; width:280px;" ng-cloak>
     </div>
 
   </div>

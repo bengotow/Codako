@@ -1,4 +1,4 @@
-@AppCtrl = ($scope, $dialog, $location, Users, Stages, Comments, Auth, $http) ->
+@NavCtrl = ($scope, $location, Users, Stages, Comments, Auth, $http) ->
   $scope.navigationItems = []
 
   Auth.withUser (error, user) ->
@@ -29,23 +29,23 @@
     items = []
 
     if side == 'left'
-      items.push($scope.navigationItemMatching('Home', 'home'))
+      items.push($scope.navigationItemMatching('Home', '/#/home'))
       if Auth.user()
-        items.push($scope.navigationItemMatching('Me', 'profile'))
+        items.push($scope.navigationItemMatching('Me', '/#/profile'))
 
-      items.push($scope.navigationItemMatching('Community', 'community'))
-      items.push($scope.navigationItemMatching('Parents', 'parents'))
+      items.push($scope.navigationItemMatching('Community', '/#/community'))
+      items.push($scope.navigationItemMatching('Parents', '/#/parents'))
       $scope.rebuildNavigationClasses(items)
       return items
 
     if side == 'right'
       if Auth.user()
-        items.push($scope.navigationItemMatching('Sign Out', 'sign-out'))
+        items.push($scope.navigationItemMatching('Sign Out', '/#/sign-out'))
       else
-        items.push($scope.navigationItemMatching('Create Account', 'sign-up'))
-        items.push($scope.navigationItemMatching('Sign In', 'sign-in'))
+        items.push($scope.navigationItemMatching('Create Account', '/#/sign-up'))
+        items.push($scope.navigationItemMatching('Sign In', '/#/sign-in'))
       $scope.rebuildNavigationClasses(items)
       return items
 
 
-@AppCtrl.$inject = ['$scope', '$dialog','$location', 'Users', 'Stages', 'Comments', 'Auth', '$http']
+@NavCtrl.$inject = ['$scope', '$location', 'Users', 'Stages', 'Comments', 'Auth', '$http']

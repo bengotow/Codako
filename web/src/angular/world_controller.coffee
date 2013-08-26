@@ -20,7 +20,7 @@
 
 	$scope.new_stage = () ->
 		Stages.create {world_id: $scope.world._id}, (stage) ->
-			$scope.openStage(stage)
+			$scope.open_stage(stage)
 
 	$scope.open_stage = (stage) ->
 		window.location.href = "/stage-editor/#/#{$scope.world._id}/#{stage._id}"
@@ -42,6 +42,16 @@
 				$scope.world = world
 
 
+	$scope.share = () ->
+		$('#publishModal').modal({show:true})
+
+
+	$scope.share_url = () ->
+		if $scope.world && $scope.stages
+			"http://#{window.location.host}/stage-viewer/#/#{$scope.world._id}/#{$scope.stages[0]._id}"
+		else
+			""
+
 	$scope.publish = (force = false) ->
 		if $scope.world.title == "Untitled World" && !force
 			$scope.edit_details_callback = $scope.publish
@@ -52,15 +62,9 @@
 			Worlds.update $scope.world, (world) ->
 				$scope.world = world
 				if world.published
-					$('#publishModal').modal({show:true})
+					$scope.share()
 
 
-
-	$scope.publish_action_text = () ->
-		if $scope.world.published
-			return 'Unpublish'
-		else
-			return 'Publish'
 
 
 @WorldCtrl.$inject = ['$scope', '$dialog', '$location','$routeParams', 'Stages', 'Worlds', 'Comments', 'Auth', '$http']

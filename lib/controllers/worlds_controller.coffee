@@ -32,7 +32,7 @@ exports.world_put = (req, res) ->
     return res.endWithUnauthorized() unless req.user && world.isOwnedBy(req.user)
 
     for attribute in ['title', 'description', 'published']
-      world[attribute] = req.body[attribute] if req.body[attribute]
+      world[attribute] = req.body[attribute] if req.body[attribute] != undefined
 
     world.save (err, world) ->
       return res.endWithError(err, 400) if err

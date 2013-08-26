@@ -44,23 +44,23 @@
   <script src="./src/angular/profile_controller.js"></script>
   <script src="./src/angular/world_controller.js"></script>
   <script src="./src/angular/community_controller.js"></script>
-  <script src="./src/angular/app_controller.js"></script>
+  <script src="./src/angular/nav_controller.js"></script>
   <script src="./src/underscore.js"></script>
 
 </head>
 
 
 <body ng-app="App">
-  <div class="navbar navbar-fixed-top" style="z-index:2;" ng-controller="AppCtrl">
+  <div class="navbar navbar-fixed-top" style="z-index:2;" ng-controller="NavCtrl">
       <div class="navbar-inner">
       <div class="container">
         <a class="brand" href="#">Codako</a>
         <ul class="nav">
-          <li ng-repeat="item in navigation('left')" class="{{item.class}}"><a href="#/{{item.href}}">{{item.label}}</a></li>
+          <li ng-repeat="item in navigation('left')" class="{{item.class}}"><a href="{{item.href}}">{{item.label}}</a></li>
         </ul>
 
         <ul class="nav" style="float:right;">
-          <li ng-repeat="item in navigation('right')" class="{{item.class}}"><a href="#/{{item.href}}">{{item.label}}</a></li>
+          <li ng-repeat="item in navigation('right')" class="{{item.class}}"><a href="{{item.href}}">{{item.label}}</a></li>
         </ul>
       </div>
     </div>
