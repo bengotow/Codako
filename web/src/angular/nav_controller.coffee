@@ -19,7 +19,7 @@
 
   $scope.rebuildNavigationClasses = (items) ->
     for item in items
-      if $location.$$path.indexOf(item.href) != -1
+      if "/##{$location.$$path}".indexOf(item.href) != -1
         item.class = 'active'
       else
         item.class = ''
