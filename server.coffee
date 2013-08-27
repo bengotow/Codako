@@ -18,6 +18,7 @@ handlers =
 	'/':
 		'users':
 			'/':
+				'POST':   usersController.users_post
 				'me':
 					'GET':    usersController.user_get_me
 				'%':

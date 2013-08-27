@@ -29,3 +29,8 @@ exports.user_delete = (req, res) ->
   return res.endWithUnauthorized() unless req.user && req.user_is_self
   req.user.remove()
   res.endWithJSON({success: true})
+
+exports.users_post = (req, res) ->
+  user = new User(req.body)
+  user.save (err, user) ->
+    res.endWithJSON(user)

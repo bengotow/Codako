@@ -7,7 +7,7 @@
 		$location.path('/sign-in')
 
 	Auth.withUser (error, user) ->
-		$location.path('/home') if user
+		$location.path('/profile') if user
 
 
 	$scope.signUp = () ->
