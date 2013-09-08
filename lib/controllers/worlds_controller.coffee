@@ -17,6 +17,11 @@ exports.worlds_get_mine = (req, res) ->
     res.endWithJSON(worlds)
 
 
+exports.worlds_get_popular = (req, res) ->
+  World.find {where: {published: true}}, (err, worlds) ->
+    res.endWithJSON(worlds)
+
+
 # --------------------------------
 # Operations on Stream Instances
 # --------------------------------

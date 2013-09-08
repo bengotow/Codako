@@ -1,7 +1,7 @@
 global.ActorSchema = new mongoose.Schema
   world: { type: mongoose.Schema.Types.ObjectId, ref: 'World' }
   name: { type: String, default: 'Untitled' }
-  spritesheet: { type: mongoose.Schema.Types.Mixed, default: {animations: {idle: [0,0]}, animation_names: 'idle'} }
+  spritesheet: { type: mongoose.Schema.Types.Mixed, default: {animations: {idle: [0,0]}, animation_names: { idle: 'Idle' }} }
   rules: { type: Array, default: [] }
   variableDefaults: { type: mongoose.Schema.Types.Mixed, default: {} }
 

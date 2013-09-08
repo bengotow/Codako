@@ -2,7 +2,7 @@
 	$scope.credentials = false
 	$scope.worlds = []
 
-	Worlds.index {}, (worlds) ->
+	Worlds.popular {}, (worlds) ->
 		$scope.worlds = worlds
 
 

@@ -22,6 +22,13 @@ RulesCtrl = ($scope) ->
     window.Game.editNewRuleForActor(window.Game.selectedActor)
 
 
+  $scope.focus_rule_input = (event) ->
+    if $(event.target).val().indexOf('Untitled') != -1
+      $(event.target).select()
+      $(event.target).mouseup (e)-> e.preventDefault()
+      event.preventDefault()
+
+
   $scope.rule_clicked = (rule) ->
     if window.Game.tool == 'delete'
       if rule.event == 'idle'
@@ -31,7 +38,10 @@ RulesCtrl = ($scope) ->
     window.Game.resetToolAfterAction()
 
 
-  $scope.rule_dbl_clicked = (rule) ->
+  $scope.rule_dbl_clicked = (rule, event) ->
+    if event.target.tagName == 'INPUT'
+      #this event is directed to the name field of the rule
+      return
     window.Game.editRule(rule, window.Game.selectedActor)
 
 

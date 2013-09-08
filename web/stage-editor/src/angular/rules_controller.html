@@ -26,14 +26,14 @@
       </div>
       <select ng-model="struct.behavior" ng-options="key for (key,value) in flow_types" ng-change="save_rules()">
       </select>
-      <input class="name" ng-model="struct.name" ng-blur="save_rules()"/>
+      <input class="name" ng-model="struct.name" ng-focus="focus_rule_input($event)" ng-blur="save_rules()"/>
     </div>
     <ul class="unstyled rules-list" ng-hide="struct.disclosed" sortable='{"connectWith":".rules-list"}'>
       <li ng-repeat="struct in struct.rules" ng-click="rule_clicked(struct)" ng-include="'rule_template.html'" data-id="{{struct._id}}"></li>
     </ul>
   </div>
 
-  <div ng-switch-default class="rule-container rule" ng-show="!struct.type" ng-dblclick="rule_dbl_clicked(struct)">
+  <div ng-switch-default class="rule-container rule" ng-show="!struct.type" ng-dblclick="rule_dbl_clicked(struct, $event)">
     <div class="zerospace"><div ng-class="circle_for_rule(struct)" style="position:relative;z-index:4;"></div></div>
     <div class="scenario">
       <img ng-src="{{scenario_before_url(struct)}}"/>
@@ -42,7 +42,7 @@
     </div>
 
     <div ng-click="toggle_disclosed(struct)" class="triangle {{struct.disclosed}}"></div>
-    <input class="name" ng-model="struct.name" ng-blur="save_rules()"/>
+    <input class="name" ng-model="struct.name" ng-focus="focus_rule_input($event)" ng-blur="save_rules()"/>
 
     <ul class="unstyled" ng-show="!struct.disclosed && actions_for_rule(struct).length">
       <li ng-repeat="action in actions_for_rule(struct)" class="action">

@@ -15,8 +15,10 @@
 	<div class="world-collection">
 		<div ng-repeat="world in worlds" class="span4 world">
 			<a ng-href="#/world/{{world._id}}">
-				<img src="{{world.thumbnail}}">
-				<h4 style="color:black; margin-bottom:3px;">{{world.title}}</h4>
+				<img ng-src="{{world.thumbnail}}">
+				<h4 style="color:black; margin-bottom:3px;">{{world.title}}
+					<span ng-show="{{world.published}}" style="float:right;"><i class="icon-globe"></i></span>
+				</h4>
 			</a>
 		</div>
 		<a class="span4 new-item" ng-click="new_world()"><div>+ New World</div></a>

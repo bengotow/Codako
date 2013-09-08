@@ -70,6 +70,7 @@ LibraryCtrl = ($scope) ->
     definition = $scope.selected_definition()
     identifier = $(event.target).data('identifier')
     name = $(event.target).val()
+    debugger
     definition.renameAppearance(identifier, name)
     definition.save()
 

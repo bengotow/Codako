@@ -1,0 +1,16 @@
+
+<div class="row">
+	<div class="span12">
+		<h3 style="float:left;">Popular Worlds</h3>
+	</div>
+
+	<div class="world-collection">
+		<div ng-repeat="world in worlds" class="span4 world">
+			<a ng-href="#/world/{{world._id}}">
+				<img ng-src="{{world.thumbnail}}">
+				<h4 style="color:black; margin-bottom:3px;">{{world.title}}</h4>
+			</a>
+		</div>
+	</div>
+</div>
+
