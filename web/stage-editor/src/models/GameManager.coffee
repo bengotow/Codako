@@ -10,6 +10,9 @@ class GameManager
     @selectedActor = null
     @selectedRule = null
 
+    @tutorial_name = null
+    @tutorial_step = -1
+
     @tool = 'pointer'
 
     @simulationFrameRate = 500
@@ -22,9 +25,9 @@ class GameManager
     @keysDown = {}
 
     $('body').keydown (e) =>
-      return if $(e.target).prop('tagName') == 'INPUT'
-      return if $(e.target).prop('id') == 'pixelArtModal'
-      return if $(e.target).prop('id') == 'keyInputModal'
+      return true if $(e.target).prop('tagName') == 'INPUT'
+      return true if $(e.target).prop('id') == 'pixelArtModal'
+      return true if $(e.target).prop('id') == 'keyInputModal'
 
       if e.keyCode == 127 || e.keyCode == 8
         e.preventDefault()
@@ -49,11 +52,15 @@ class GameManager
     @dispose()
     @world_id = world_id
     @stage_id = stage_id
+    @tutorial_name = null
+    @tutorial_step = -1
     @loadStatusChanged({progress: 0})
 
     $.ajax({url: "/api/v0/worlds/#{world_id}/stages/#{stage_id}"})
       .done (stage) =>
         stage.resources ||= {images: {}, sounds: {}}
+        @tutorial_name = stage.tutorial_name
+        @tutorial_step = stage.tutorial_step
         @content.fetchLevelAssets stage.resources, () =>
           @loadLevelDataReady(stage)
           callback(null) if callback
@@ -144,9 +151,12 @@ class GameManager
     isAsync = true
     isAsync = options.async if options.async != undefined
 
+    stageData = @mainStage.saveData(options)
+    stageData.tutorial_step = @tutorial_step
+
     $.ajax({
       url: "/api/v0/worlds/#{@world_id}/stages/#{@stage_id}",
-      data: angular.toJson(@mainStage.saveData(options)),
+      data: angular.toJson(stageData),
       contentType: 'application/json',
       type: 'POST',
       async: isAsync
@@ -192,7 +202,7 @@ class GameManager
   resetToolAfterAction: () ->
     canRepeat = @tool == 'delete'
     @setTool('pointer') unless canRepeat && (@keysDown[16] || @keysDown[17] || @keysDown[18])
-
+    window.rootScope.$apply() unless window.rootScope.$$phase
 
   # -- Event Handling from the World and GameStage --- #
 

@@ -1,5 +1,6 @@
 var App = angular.module('App')
 
+
 // This makes any element sortable
 // Usage: <div draggable>Foobar</div>
 App.directive('sortable', function() {

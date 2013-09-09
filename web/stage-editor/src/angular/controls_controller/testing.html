@@ -4,8 +4,8 @@
 
 <div class="center">
   <button ng-click="step_back()" class="btn btn-mini" style="margin-right:4px; margin-top:1px;"><i class="icon-step-backward"></i> Back</button>
-  <button ng-click="set_running(false)" class="{{class_for_btn(!running())}}"><i class="icon-stop"></i> Stop</button>
-  <button ng-click="set_running(true)" class="{{class_for_btn(running())}}"><i class="icon-play"></i> Run</button>
+  <button id="button-stop" ng-click="set_running(false)" class="{{class_for_btn(!running())}}"><i class="icon-stop"></i> Stop</button>
+  <button id="button-run" ng-click="set_running(true)" class="{{class_for_btn(running())}}"><i class="icon-play"></i> Run</button>
   <button ng-click="step()" class="btn btn-mini"  style="margin-left:4px; margin-top:1px;"><i class="icon-step-forward"></i> Forward</button>
 </div>
 

@@ -50,6 +50,11 @@ class GameStage extends Stage
     @widthTarget > 1 || @widthCurrent > 1
 
 
+  screenPointForTile: (point) ->
+    parentOffset = $(@canvas).parent().offset()
+    return new Point(point.x * Tile.WIDTH + parentOffset.left - @x, point.y * Tile.HEIGHT + parentOffset.top - @y)
+
+
   setDisplayWidth: (width) ->
     @widthTarget = width
 
@@ -314,6 +319,13 @@ class GameStage extends Stage
     for actor in set
       return actor if actor.matchesDescriptor(descriptor)
     false
+
+
+  actorsMatchingDescriptor: (descriptor, set = @actors) ->
+    results = []
+    for actor in set
+      results.push(actor) if actor.matchesDescriptor(descriptor)
+    results
 
 
   removeActor: (index_or_actor) ->

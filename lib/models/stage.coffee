@@ -9,6 +9,8 @@ global.StageSchema = new mongoose.Schema
 
   thumbnail: { type:String, default: '/img/thumbnail_empty.png' }
   background: { type: String, default: null }
+  tutorial_name: { type: String, default: null }
+  tutorial_step: { type: Number, default: -1 }
 
   actor_library: {type: mongoose.Schema.Types.Mixed, default: []}
   actor_descriptors: {type: mongoose.Schema.Types.Mixed, default: []}

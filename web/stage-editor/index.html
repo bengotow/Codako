@@ -42,6 +42,7 @@
   <script src="./src/easeljs.SelectionFilter.js"></script>
   <script src="./src/bootstrap-colorpicker.js"></script>
   <script src="./src/extensions.js"></script>
+  <script src="./src/jquery.highlighter.js"></script>
 
   <script src="./src/models/XNARectangle.js"></script>
   <script src="./src/models/ContentManager.js"></script>
@@ -61,7 +62,10 @@
   <script src="/src/directives-models.js"></script>
   <script src="/src/directives-dragdrop.js"></script>
 
+  <script src="../src/angular/nav_controller.js"></script>
+
   <script src="./src/angular/app_controller.js"></script>
+  <script src="./src/angular/tutorial_controller.js"></script>
   <script src="./src/angular/controls_controller.js"></script>
   <script src="./src/angular/variables_controller.js"></script>
   <script src="./src/angular/rules_controller.js"></script>
@@ -77,16 +81,18 @@
 
 <body ng-app="App">
 
-  <div class="navbar navbar-fixed-top" style="z-index:2;" ng-controller="AppCtrl">
+  <div ng-controller="AppCtrl"></div>
+
+  <div class="navbar navbar-fixed-top" style="z-index:2;" ng-controller="NavCtrl">
       <div class="navbar-inner">
       <div class="container">
-        <a class="brand" href="#">Codako</a>
+        <a class="brand" href="/#/home">Codako</a>
         <ul class="nav">
           <li><a href="/#/world/{{world_id}}">Back to World</a></li>
         </ul>
 
         <ul class="nav" style="float:right;">
-          <li><a href="/#/sign-out">Sign Out</a></li>
+          <li ng-repeat="item in navigation('right')" class="{{item.class}}"><a href="{{item.href}}">{{item.label}}</a></li>
         </ul>
       </div>
     </div>
@@ -97,9 +103,9 @@
     <div id="tool-box" class="white-box" style="float:left;line-height:0;width:40px;">
       <div class="{{class_for_btn(tool() == 'pointer')}} btn-tool-first" ng-click="set_tool('pointer')"><img src="img/sidebar_pointer.png"></div>
 
-      <div class="{{class_for_btn(tool() == 'record')}} btn-tool" ng-click="set_tool('record')"><img src="img/sidebar_record.png"></div>
-      <div class="{{class_for_btn(tool() == 'paint')}} btn-tool" ng-click="set_tool('paint')"><img src="img/sidebar_paint.png"></div>
-      <div class="{{class_for_btn(tool() == 'delete')}} btn-tool-first" ng-click="set_tool('delete')"><img src="img/sidebar_trash.png"></div>
+      <div id="tool-record" class="{{class_for_btn(tool() == 'record')}} btn-tool" ng-click="set_tool('record')"><img src="img/sidebar_record.png"></div>
+      <div id="tool-paint" class="{{class_for_btn(tool() == 'paint')}} btn-tool" ng-click="set_tool('paint')"><img src="img/sidebar_paint.png"></div>
+      <div id="tool-delete" class="{{class_for_btn(tool() == 'delete')}} btn-tool-first" ng-click="set_tool('delete')"><img src="img/sidebar_trash.png"></div>
 
       <div class="btn btn-tool" ng-click="choose_stage_background()"><img src="img/sidebar_choose_background.png"></div>
     </div>
@@ -149,6 +155,9 @@
          ng-include="'./src/angular/library_controller.html'" ng-cloak>
     </div>
 
+  </div>
+
+  <div ng-controller="TutorialCtrl" ng-show="isInTutorial()" class="tutorial" style="background-color:red; width:300px; height:100px; bottom:0px; right:0px; position:fixed; z-index:2000;"><a ng-click="advanceByStep()" class="btn btn-primary">Start Tutorial</a>{{currentStep().text}}
   </div>
 
 

@@ -1,4 +1,4 @@
-@NavCtrl = ($scope, $location, Users, Stages, Comments, Auth, $http) ->
+@NavCtrl = ($scope, $location, Auth, $http) ->
   $scope.navigationItems = []
 
   Auth.withUser (error, user) ->
@@ -48,4 +48,4 @@
       return items
 
 
-@NavCtrl.$inject = ['$scope', '$location', 'Users', 'Stages', 'Comments', 'Auth', '$http']
+@NavCtrl.$inject = ['$scope', '$location', 'Auth', '$http']

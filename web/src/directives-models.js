@@ -75,6 +75,7 @@ App.factory('Auth', ['Base64', 'Users', '$cookieStore', '$http', function (Base6
         },
 
         clearCredentials: function () {
+            debugger;
             document.execCommand("ClearAuthenticationCache");
             $cookieStore.remove('authdata');
             $.ajaxSetup({headers: { 'Authorization': '' }});
