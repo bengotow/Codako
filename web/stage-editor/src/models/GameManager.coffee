@@ -84,6 +84,7 @@ class GameManager
       Ticker.useRAF = false
       Ticker.setFPS(30)
       window.rootScope.$apply()
+      window.rootScope.$broadcast('tutorial_content_ready')
 
 
   tick: () ->
@@ -310,6 +311,8 @@ class GameManager
 
   editNewRuleForActor: (actor) ->
     return unless actor
+    @running = false
+
     window.rootScope.$broadcast('start_compose_rule')
     initialExtent = {left: actor.worldPos.x, right: actor.worldPos.x, top: actor.worldPos.y, bottom: actor.worldPos.y}
 
@@ -324,6 +327,7 @@ class GameManager
 
   editRule: (rule, actor = null, isNewRule = false) ->
     return unless rule
+    @running = false
     @saveRecording() if @selectedRule && @selectedRule != rule
     @selectActor(actor) if actor && @selectedActor != actor
     @selectedRule = rule

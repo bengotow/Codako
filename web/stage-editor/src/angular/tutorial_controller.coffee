@@ -109,7 +109,7 @@ TutorialCtrl = ($scope) ->
       text: "To tell our hero to climb the block, drag him on top of the block here.",
     },
     {
-      trigger: () -> window.Game.selectedRule.actions.length > 0
+      trigger: () -> window.Game.selectedRule?.actions?.length > 0
       text: "Great! See how that created an instruction for our character? Now he knows what he should do!",
       action: () -> $scope.highlight('.panel.actions .action', {temporary: true})
     },
@@ -119,7 +119,7 @@ TutorialCtrl = ($scope) ->
     },
     {
       trigger: () -> $('#button-run').is(':visible')
-      text: "Press 'Play'! If we did it right, our hero should climb the block now.",
+      text: "Press 'Run'! If we did it right, our hero should climb the block now.",
       action: () -> $scope.highlight('#button-run', {temporary: true})
     },
     {
@@ -176,28 +176,33 @@ TutorialCtrl = ($scope) ->
     }
   ]
 
-  window.AudioContext = window.AudioContext || window.webkitAudioContext
-  $scope.audioContext = new AudioContext()
+  $scope.$root.$on 'tutorial_content_ready', () ->
+    window.AudioContext = window.AudioContext || window.webkitAudioContext
+    $scope.audioContext = new AudioContext()
 
-  async.eachSeries $scope.tutorial, (step, callback) ->
-      return unless step.soundURL
-      request = new XMLHttpRequest()
-      request.open('GET', step.soundURL, true)
-      request.responseType = 'arraybuffer'
-      request.onload = () ->
-        $scope.audioContext.decodeAudioData @response,
-        (buffer) ->
-          step.soundBuffer = buffer
-          callback(null)
-        ,
-        (buffer) ->
-          console.log("Failed to load sound #{step.soundURL}")
-          callback(null)
-      request.send()
+    async.eachSeries $scope.tutorial, (step, callback) ->
+        return unless step.soundURL
+        request = new XMLHttpRequest()
+        request.open('GET', step.soundURL, true)
+        request.responseType = 'arraybuffer'
+        request.onload = () ->
+          $scope.audioContext.decodeAudioData @response,
+          (buffer) ->
+            step.soundBuffer = buffer
+            callback(null)
+          ,
+          (buffer) ->
+            console.log("Failed to load sound #{step.soundURL}")
+            callback(null)
+        request.send()
+
+    if window.Game.tutorial_step >= 0
+      $scope.checkShouldAdvance()
 
 
   $scope.isInTutorial = () ->
     window.Game.tutorial_name != null
+
 
   $scope.currentStep = () ->
     $scope.tutorial[window.Game.tutorial_step]
