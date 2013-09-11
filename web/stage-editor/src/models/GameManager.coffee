@@ -443,9 +443,6 @@ class GameManager
   # -- Helper Methods -- #
 
   renderRule: (rule, applyActions = false) ->
-    # Creating a random background based on the 3 layers available in 3 versions
-    @renderingStage.canvas.style.backgroundColor = '#ff0000'
-
     xmin = xmax = ymin = ymax = 0
     created_actors = {}
 
