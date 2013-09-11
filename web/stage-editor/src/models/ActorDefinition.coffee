@@ -2,7 +2,7 @@ class ActorDefinition
 
   constructor: (json = {}) ->
     @_id = null #always provided remotely
-    
+
     @name = 'Untitled'
     @variableDefaults = {}
     @size = {width: 1, height: 1}
@@ -17,6 +17,14 @@ class ActorDefinition
     @[key] = value for key, value of json
     @spritesheet.width ||= Tile.WIDTH
     @spritesheet.animation_names ||= {}
+
+    # important. What we call the "_id" is actually "definitionId" in the
+    # mongoDB database. This is because "_id" is globally unique in mongo,
+    # and an actor with the same _id could exist in two different worlds
+    # if the worlds were duplicated. Then they have differnet _ids on the server
+    # but the definitionId value we use is still the same.
+    @_id = @definitionId
+    delete @definitionId
 
     @rules = Rule.inflateRules(json['rules'])
     @ruleRenderCache = {}
@@ -64,7 +72,7 @@ class ActorDefinition
 
   save: () =>
     json =
-      _id: @_id
+      definitionId: @_id
       name: @name
       spritesheet: @spritesheet
       variableDefaults: @variableDefaults
@@ -111,6 +119,9 @@ class ActorDefinition
     @spritesheet.animations[identifier] != null
 
   nameForAppearance: (identifier) ->
+    if !@spritesheet.animation_names[identifier]
+      debugger
+      throw "Asked for an appearance which does not exist."
     @spritesheet.animation_names[identifier] || 'Untitled'
 
   renameAppearance: (identifier, newname) ->

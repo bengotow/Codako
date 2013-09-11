@@ -135,7 +135,7 @@ ControlsCtrl = ($scope) ->
     "<code><img src=\"" + $scope.icon_for_referenced_actor(ref) + "\">" + name + "</code>"
 
   $scope.html_for_appearance = (ref, appearance) ->
-    "<code><img src=\"" + $scope.icon_for_referenced_actor(ref,appearance) + "\">" + $scope.name_for_appearance(appearance) + "</code>"
+    "<code><img src=\"" + $scope.icon_for_referenced_actor(ref,appearance) + "\">" + $scope.name_for_appearance(ref,appearance) + "</code>"
 
   $scope.icon_for_referenced_actor = (ref, appearance_id = null) ->
     descriptor = window.Game?.selectedRule?.descriptors[ref]
@@ -182,11 +182,12 @@ ControlsCtrl = ($scope) ->
     definition = window.Game.library.definitions[descriptor.definition_id]
     definition.name
 
-  $scope.name_for_appearance = (id) ->
-    for key,definition of window.Game.library.definitions
-      if definition.hasAppearance(id)
-        return definition.nameForAppearance(id)
-    return "Unknown"
+  $scope.name_for_appearance = (ref, id) ->
+    descriptor = window.Game?.selectedRule?.descriptors[ref]
+    return "Unknown" unless descriptor
+    definition = window.Game.library.definitions[descriptor.definition_id]
+    return "Unknown" unless definition
+    return definition.nameForAppearance(id)
 
   $scope.name_for_variable = (id) ->
     for key,definition of window.Game.library.definitions

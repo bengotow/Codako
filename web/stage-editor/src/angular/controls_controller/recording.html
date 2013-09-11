@@ -4,7 +4,7 @@
 	  <ul>
 		<div ng-repeat="(ref,descriptor) in recording_descriptors()">
 
-		  <li ng-class="class_for_appearance_constraint(descriptor)"><span ng-bind-html-unsafe="html_for_actor(ref,true)"></span> appearance is <span ng-bind-html-unsafe="html_for_appearance(ref)"></span><a class="ignore_toggle" ng-click="toggle_appearance_constraint(ref)"></a></li>
+		  <li ng-class="class_for_appearance_constraint(descriptor)"><span ng-bind-html-unsafe="html_for_actor(ref,true)"></span> appearance is <span ng-bind-html-unsafe="html_for_appearance(ref, descriptor.appearance)"></span><a class="ignore_toggle" ng-click="toggle_appearance_constraint(ref)"></a></li>
 
 		  <li ng-class="class_for_variable_constraint(constraint)" ng-repeat="(variable, constraint) in descriptor.variableConstraints">
 			<span ng-bind-html-unsafe="html_for_actor(ref,true)"></span> variable <code>{{name_for_variable(variable)}}</code> is <select style="width:40px; font-weight:bold;" ng-model="constraint.comparator"><option value="=">=</option><option value="<"><</option><option value=">">></option></select> {{constraint.value}}
