@@ -22,7 +22,8 @@
 
   <!-- Font CSS -->
   <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/3.2.1/css/font-awesome.min.css" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css?family=Varela+Round|Montserrat:400,700" rel="stylesheet" type="text/css">
+  
   <!-- My CSS -->
   <link href="/css/main.css" rel="stylesheet" media="screen">
 
@@ -51,7 +52,10 @@
 
 
 <body ng-app="App">
-  <div class="navbar navbar-fixed-top" style="z-index:2;" ng-controller="NavCtrl">
+
+<div style="min-height:100%; position:relative;">
+
+  <div class="navbar navbar-fixed-top navbar-inverse" style="z-index:2;" ng-controller="NavCtrl">
       <div class="navbar-inner">
       <div class="container">
         <a class="brand" href="#">Codako</a>
@@ -66,7 +70,39 @@
     </div>
   </div>
 
-  <div class="container" style="position:relative; top:50px;" ng-view></div>
+  <div ng-view style="padding-bottom:100px; padding-top:40px;"></div>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="row">
+        <div class="span8">
+          <div class="navbar navbar-inverse" ng-controller="NavCtrl">
+            <div class="container">
+              <ul class="nav">
+                <li ng-repeat="item in navigation('left')" class="{{item.class}}"><a href="{{item.href}}">{{item.label}}</a></li>
+              </ul>
+            </div>
+          </div>
+        © <script type="text/javascript"> var d = new Date();
+            document.write(d.getFullYear());
+          </script>
+          <a href="http://www.foundry376.com/">Foundry376</a>, LLC. All Rights Reserved.
+          <a href="/terms-of-use">Terms of Use</a> and
+          <a href="/privacy-policy">Privacy</a>
+        </div>
+        <div class="span4 footer-newsletter--wrapper pull-right">
+        <div class="footer-newsletter--container">
+<!--   <label>
+  Subscribe to our newsletter
+  </label>
+  <iframe frameborder="0" height="42px" scrolling="no" src="http://play.gopivotal.com/OSS_Website_Spring_SpringNewsletterSubscriptionEmailOnly.html" style="border:none" width="324px"></iframe>
+   -->  </div>
+      </div>
+    </div>
+  </div>
+  </footer>
+
+</div>
 
 </body>
 </html>

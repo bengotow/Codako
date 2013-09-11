@@ -37,6 +37,7 @@ exports.stage_put = (req, res) ->
     Stage.findById req.pathArgs[1], (err, stage) ->
       return res.endWithError('error.notfound', 404) unless stage
       return res.endWithUnauthorized() unless stage.isWithinWorld(world)
+      return res.endWithError('stage.is_tutorial', 400) if stage.tutorial_name
 
       for attribute in ['width', 'height', 'wrapX', 'wrapY', 'actor_library', 'tutorial_step', 'actor_descriptors', 'start_descriptors', 'start_thumbnail', 'resources', 'thumbnail', 'background']
         stage[attribute] = req.body[attribute] if req.body[attribute]

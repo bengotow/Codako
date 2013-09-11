@@ -17,6 +17,9 @@ en.streams =
 	not_member: "Sorry, you do not have permission to view this stream."
 	not_found: "Sorry, the stream with this ID could not be found."
 
+en.stage =
+	is_tutorial: 'Sorry, this stage is a tutorial and you cannot save changes.'
+
 en.users =
 	not_found_id: "Sorry, we weren't able to find an account with the ID you provided."
 	not_found: "Sorry, we weren't able to find an account with the email or username you entered."
