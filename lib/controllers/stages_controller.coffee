@@ -34,10 +34,10 @@ exports.stage_get = (req, res) ->
 
 exports.stage_put = (req, res) ->
   req.withWorld (world) ->
+    return res.endWithUnauthorized() if world.user && !world.isOwnedBy(req.user)
     Stage.findById req.pathArgs[1], (err, stage) ->
-      return res.endWithError('error.notfound', 404) unless stage
+      return res.endWithError('request.not_found', 404) unless stage
       return res.endWithUnauthorized() unless stage.isWithinWorld(world)
-      return res.endWithError('stage.is_tutorial', 400) if stage.tutorial_name
 
       for attribute in ['width', 'height', 'wrapX', 'wrapY', 'actor_library', 'tutorial_step', 'actor_descriptors', 'start_descriptors', 'start_thumbnail', 'resources', 'thumbnail', 'background']
         stage[attribute] = req.body[attribute] if req.body[attribute]
@@ -53,5 +53,6 @@ exports.stage_put = (req, res) ->
 
 exports.stage_delete = (req, res) ->
   req.withWorld (world) ->
+    return res.endWithUnauthorized() if world.user && !world.isOwnedBy(req.user)
     Stage.findOneAndRemove {_id: req.body._id, world: world._id}, (err) ->
       res.endWithJSON({success: true})

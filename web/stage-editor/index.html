@@ -82,9 +82,7 @@
 
 <body ng-app="App">
 
-  <div ng-controller="AppCtrl"></div>
-
-  <div class="navbar navbar-fixed-top" style="z-index:2;" ng-controller="NavCtrl">
+  <div class="navbar navbar-fixed-top" style="z-index:2;" ng-controller="AppCtrl">
       <div class="navbar-inner">
       <div class="container">
         <a class="brand" href="/#/home">Codako</a>
@@ -92,7 +90,7 @@
           <li><a href="/#/world/{{world_id}}">Back to World</a></li>
         </ul>
 
-        <ul class="nav" style="float:right;">
+        <ul class="nav" style="float:right;" ng-controller="NavCtrl">
           <li ng-repeat="item in navigation('right')" class="{{item.class}}"><a href="{{item.href}}">{{item.label}}</a></li>
         </ul>
       </div>

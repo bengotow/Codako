@@ -21,13 +21,9 @@
       window.Game.save({thumbnail: true, async: false})
 
     path = window.location.href.split('#')[1]
-    if path == '/tour'
-      $scope.stage_id = '522e35541b2d9b94c0000012'
-      $scope.world_id = '522e354f1b2d9b94c0000011'
-    else
-      parts = path.split('/')
-      $scope.stage_id = parts[parts.length-1]
-      $scope.world_id = parts[parts.length-2]
+    parts = path.split('/')
+    $scope.stage_id = parts[parts.length-1]
+    $scope.world_id = parts[parts.length-2]
 
     if !$scope.stage_id || !$scope.world_id
       window.location.href = "/"

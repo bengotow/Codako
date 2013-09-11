@@ -25,14 +25,14 @@ exports.actors_post = (req, res) ->
 
 exports.actor_get = (req, res) ->
   req.withWorld (world) ->
-    Actor.findById req.pathArgs[1], (err, actor) ->
+    Actor.findOne {world: world._id, definitionId: req.pathArgs[1] }, (err, actor) ->
       res.endWithJSON(actor)
 
 
 exports.actor_put = (req, res) ->
   req.withWorld (world) ->
-    Actor.findById req.pathArgs[1], (err, actor) ->
-      return res.endWithError('error.notfound', 404) unless actor
+    Actor.findOne {world: world._id, definitionId: req.pathArgs[1] }, (err, actor) ->
+      return res.endWithError('request.not_found', 404) unless actor
       return res.endWithUnauthorized() unless actor.isWithinWorld(world)
 
       for attribute in ['name', 'spritesheet', 'rules', 'variableDefaults']
@@ -45,6 +45,6 @@ exports.actor_put = (req, res) ->
 
 exports.actor_delete = (req, res) ->
   req.withWorld (world) ->
-    Actor.findOneAndRemove {_id: req.pathArgs[1], world: world._id}, (err) ->
+    Actor.findOneAndRemove {world: world._id, definitionId: req.pathArgs[1], world: world._id}, (err) ->
       res.endWithJSON({success: true})
 

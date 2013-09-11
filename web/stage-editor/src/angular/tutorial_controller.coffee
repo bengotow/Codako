@@ -190,17 +190,30 @@ TutorialCtrl = ($scope) ->
       trigger: () -> $('#rules').hasClass('active')
       text: "Each time our hero thinks about his next step, he starts with the first
       rule and moves down the list. He looks at each one to see if his surroundings
-      match the picture. If it does, he does what the rule tells him and stops.",
+      match the picture in that rule. If it does, he does what the rule tells him and stops.",
       action: () -> $scope.arrow($($('.rules-list:first li')[0]), $($('.rules-list:first li')[2]))
     },
     {
-      text: "Some of our hero's rules are in green blocks, telling him he should only
-      look at them when a key is pressed. Here's the rule that tells our hero to walk left.",
+      text: "Sometimes, we only want our hero to follow a rule if we tell him to. He
+      knows how to walk to the right, but we can't have him walking into danger. He may be fearless,
+      but there's lava! To make sure he only walks when we want him to, we can use
+      event containers. They're the green blocks. Our hero knows not to look inside them
+      until we tell him to!"
+    },
+    {
+      text: "See? Here's the rule that tells our hero to walk left. You can tell the rule is
+      showing him how to walk left, because the picture shows him starting in the first square,
+      and ending in the second square."
       action: () -> $scope.highlight('.rule-container.event:first')
     },
     {
-      text: "Our climbing rule isn't inside a green block, so our hero will always try
-      to climb. Let's make it so you have to press the space bar for him to climb!",
+      text: "That rule is inside a green block that says 'when the right arrow key is pressed.' Our hero
+      will only think about walking left when we're pressing that key!",
+      action: () -> $scope.highlight(".rule-container:first .header .name")
+    },
+    {
+      text: "We taught our hero to climb, but we didn't tell him to wait us to press a key. Our climbing
+      rule is down at the bottom with the other rules our hero looks at when he's not busy.",
     },
     {
       text: "We'll need a new green block. Click 'Add' up here.",
@@ -267,7 +280,7 @@ TutorialCtrl = ($scope) ->
 
 
   $scope.mainCharacter = () ->
-    descriptor = { definition_id: '522e39221b2d9b94c0000017' } # main character
+    descriptor = { definition_id: 'aamlcui8uxr' } # main character
     options = window.Game.mainStage.actorsMatchingDescriptor(descriptor)
     return options[options.length - 1] if options.length > 0
     return null
@@ -280,6 +293,9 @@ TutorialCtrl = ($scope) ->
       setTimeout(callback, 500) if callback
     else
       callback() if callback
+
+
+  $scope.arrow = (fromEl, toEl) ->
 
 
   $scope.highlight = (selector, options = {}) ->

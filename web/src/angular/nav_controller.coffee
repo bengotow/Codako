@@ -1,4 +1,4 @@
-@NavCtrl = ($scope, $location, Auth, $http) ->
+@NavCtrl = ($scope, $location, Auth, $http, $cookieStore) ->
   $scope.navigationItems = []
 
   Auth.withUser (error, user) ->
@@ -48,4 +48,27 @@
       return items
 
 
-@NavCtrl.$inject = ['$scope', '$location', 'Auth', '$http']
+  $scope.startTour = () ->
+    if $cookieStore.get('tutorial')
+      if confirm("You've already started the tutorial. Do you want to continue where you left off?")
+        return $scope.openTour()
+
+    req = $http({method: 'POST', url:'/api/v0/worlds/52301d357eebf50000000001/clone'})
+    req.success (data, status, headers, config) ->
+      if status != 200
+        return alert('Sorry, the tutorial world doesn\'t seem to exist.')
+      $cookieStore.put('tutorial', "#{data.world_id}:#{data.stage_id}")
+      $scope.openTour()
+
+    req.error (data, status, headers, config) ->
+      alert(data)
+
+
+  $scope.openTour = () ->
+    tutorial = $cookieStore.get('tutorial')
+    return $scope.startTour() unless tutorial
+    tutorial = tutorial.split(':')
+    window.location.href = "/stage-editor/#/#{tutorial[0]}/#{tutorial[1]}"
+
+
+@NavCtrl.$inject = ['$scope', '$location', 'Auth', '$http', '$cookieStore']

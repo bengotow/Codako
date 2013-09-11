@@ -37,6 +37,9 @@ handlers =
 					'PUT':		worldsController.world_put
 					'DELETE':	worldsController.world_delete
 					'/':
+						'clone':
+							'POST': worldsController.world_clone
+
 						'stages':
 							'GET':  stagesController.stages_get
 							'POST': stagesController.stages_post
@@ -71,7 +74,7 @@ setupLocals = (req, res, next) ->
 	req.locals = {}
 	req.withWorld = (callback) ->
 		World.findById req.pathArgs[0], (err, world) ->
-			return res.endWithError('streams.not_member', 404) unless world
+			return res.endWithError('request.not_found', 404) unless world
 			callback(world)
 
 
