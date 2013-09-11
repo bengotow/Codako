@@ -116,11 +116,11 @@ h4 {
 }
 .rules-list .name {
   display: inline-block;
-  font-size: 1.0em;
+  font-size: 0.9em;
   line-height: 1.2em;
   font-weight: bold;
   padding: 0px 4px 0px 4px;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
   color: #222;
   text-shadow: 0px 1px rgba(255, 255, 255, 0.4);
   background-color: transparent;
@@ -151,7 +151,7 @@ h4 {
   background-color: #5BC15C;
 }
 .rules-list .rule-container.event .header {
-  height: 40px;
+  height: 36px;
 }
 .rules-list .rule-container.group {
   cursor: move;

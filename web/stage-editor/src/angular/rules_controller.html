@@ -5,7 +5,7 @@
   <div ng-switch-when="group-event" class="rule-container event" >
 
     <div class="header">
-      <div style="float:left; width:20px;">
+      <div style="float:left; width:20px; line-height:1.15em;">
         <div ng-class="circle_for_rule(struct)"></div>
         <div ng-click="toggle_disclosed(struct)" class="triangle {{struct.disclosed}}"></div>
       </div>
@@ -37,7 +37,7 @@
     <div class="zerospace"><div ng-class="circle_for_rule(struct)" style="position:relative;z-index:4;"></div></div>
     <div class="scenario">
       <img ng-src="{{scenario_before_url(struct)}}"/>
-      <div class="arrow">-></div>
+      <div class="arrow"><i class="icon-arrow-right"></i></div>
       <img ng-src="{{scenario_after_url(struct)}}"/>
     </div>
 
