@@ -32,6 +32,9 @@ handlers =
 					'GET':	worldsController.worlds_get_mine
 				'popular':
 					'GET':	worldsController.worlds_get_popular
+				'import':
+					'POST': worldsController.worlds_import
+
 				'%':
 					'GET':		worldsController.world_get
 					'PUT':		worldsController.world_put
@@ -39,6 +42,9 @@ handlers =
 					'/':
 						'clone':
 							'POST': worldsController.world_clone
+
+						'export':
+							'GET': worldsController.world_export
 
 						'stages':
 							'GET':  stagesController.stages_get

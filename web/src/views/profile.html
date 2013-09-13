@@ -9,19 +9,26 @@
 
 	<div class="row">
 		<div class="span12">
+			<div style="float:right;"><a ng-click="importWorld()">Import World</a></div>
 			<h3 style="float:left;">My Worlds</h3>
 		</div>
 
 		<div class="world-collection">
+
 			<div ng-repeat="world in worlds" class="span4 world">
 				<a ng-href="#/world/{{world._id}}">
 					<img ng-src="{{world.thumbnail}}">
-					<h4 style="color:black; margin-bottom:3px;">{{world.title}}
-						<span ng-show="{{world.published}}" style="float:right;"><i class="icon-globe"></i></span>
-					</h4>
 				</a>
+
+				<span style="float:right;">
+					<a href="/api/v0/worlds/{{world._id}}/export" target="_blank"><i class="icon-cloud-download"></i></a>
+					<a ng-show="!world.locked" ng-click="deleteWorld(world)"><i class="icon-trash"></i></a>
+					<a ng-show="{{world.published}}"><i class="icon-globe"></i></a>
+				</span>
+				<h4 style="color:black; margin-bottom:3px;">{{world.title}}
+				</h4>
 			</div>
-			<a class="span4 new-item" ng-click="new_world()"><div>+ New World</div></a>
+			<a class="span4 new-item" ng-click="newWorld()"><div>+ New World</div></a>
 		</div>
 	</div>
 </div>

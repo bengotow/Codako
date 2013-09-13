@@ -16,7 +16,9 @@ App.factory('Worlds', ['$resource', function($resource) {
     mine:     { method: 'GET', params: {_id: "mine"}, isArray: true },
     popular:  { method: 'GET', params: {_id: "popular"}, isArray: true },
     update:   { method: 'PUT', params: {_id: "@_id"}},
-    create:   { method: 'POST' }
+    destroy:  { method: 'DELETE', params: {_id: "@_id"}},
+    create:   { method: 'POST' },
+    import:   { method: 'POST', params: {_id: "import"}}
   })
 }])
 
