@@ -28,12 +28,7 @@
     if !$scope.stage_id || !$scope.world_id
       window.location.href = "/"
 
-
-    Auth.withUser (error, user) ->
-      if path != '/tour' && (error || !user)
-        alert('You need to log in before you can open your games in the editor.')
-
-      window.Game.load($scope.world_id, $scope.stage_id)
+    window.Game.load($scope.world_id, $scope.stage_id)
 
 
 

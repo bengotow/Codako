@@ -107,6 +107,9 @@ ControlsCtrl = ($scope) ->
 
 
   $scope.save_recording = () ->
+    if window.Game.selectedRule.actions.length == 0
+      return alert("Your rule doesn't do anything! Change the scene in the right picture to create actions and then save your rule!")
+
     window.Game.saveRecording()
     window.Game.exitRecordingMode()
 

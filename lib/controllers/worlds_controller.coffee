@@ -18,7 +18,7 @@ exports.worlds_get_mine = (req, res) ->
 
 
 exports.worlds_get_popular = (req, res) ->
-  World.find {where: {published: true}}, (err, worlds) ->
+  World.find {published: true}, (err, worlds) ->
     res.endWithJSON(worlds)
 
 
