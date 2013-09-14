@@ -307,6 +307,8 @@ class PixelArtCanvas
 
 
   handleKeyEvent: (ev) =>
+    return true unless $(@canvas).is(':visible')
+
     if @inDragMode == true
       if ev.keyCode == 13
           # copy drag data to the canvas.

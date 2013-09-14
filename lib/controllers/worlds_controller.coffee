@@ -43,14 +43,12 @@ exports.world_get = (req, res) ->
 
 exports.world_export = (req, res) ->
   req.withWorld (world) ->
-    return res.endWithUnauthorized() unless req.user && world.isOwnedBy(req.user)
     world.buildExportJSON (json) ->
       res.setHeader('Content-disposition', "attachment; filename=#{world.title}.json");
       res.endWithJSON(json)
 
 
 exports.world_clone = (req, res) ->
-  return res.endWithUnauthorized() unless req.user
   req.withWorld (world) ->
     world.buildExportJSON (json) ->
       w = new World({user: req.user})

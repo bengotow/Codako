@@ -32,6 +32,8 @@ class ActorSprite extends Sprite
 
   matchesDescriptor: (descriptor) ->
     id_match = @definition_id == descriptor.definition_id
+    return false unless id_match
+
     appearance_match = @appearance == descriptor.appearance || !descriptor.appearance
 
     variable_failed = false
