@@ -1,4 +1,4 @@
-
+  
 class PixelTool
 
   constructor: () ->
@@ -190,7 +190,7 @@ class PixelRectSelectionTool extends PixelTool
   render: (context,canvas) ->
     return unless @s && @e
     return unless context instanceof CanvasRenderingContext2D
-    
+
     canvas.selectedPixels = []
     return if @s.x == @e.x or @s.y == @e.y
 
@@ -262,7 +262,6 @@ class PixelArtCanvas
           @context.fillRect(x * @pixelSize, y * @pixelSize, @pixelSize / 2, @pixelSize / 2)
           @context.fillRect(x * @pixelSize + @pixelSize / 2, y * @pixelSize + @pixelSize / 2, @pixelSize / 2, @pixelSize / 2)
 
-
     @context.fillPixel = (x, y, color = @toolColor) =>
       if color[-3..-1] != ',0)'
         @context.fillStyle = color
@@ -271,8 +270,7 @@ class PixelArtCanvas
     @context.clearPixel = (x, y ) =>
        @context.clearRect(x * @pixelSize, y * @pixelSize, @pixelSize, @pixelSize)
 
-    @inDragMode = false
-    @dragging = false
+    @draggingPasteData = false
     @dragData = @context.createImageData( Tile.WIDTH, Tile.HEIGHT )
     @_extendImageData( @dragData )
     @dragData.offsetX = 0
@@ -289,9 +287,10 @@ class PixelArtCanvas
     @render()
 
   setDisplayedFrame: (index, saveChanges = false) ->
+    @pasteFinishDrag(false) if @draggingPasteData
+
     @undoStack = []
     @redoStack = []
-    @inDragMode = false
 
     @image.onload = () =>
       @prepareDataForDisplayedFrame()
@@ -309,13 +308,8 @@ class PixelArtCanvas
   handleKeyEvent: (ev) =>
     return true unless $(@canvas).is(':visible')
 
-    if @inDragMode == true
-      if ev.keyCode == 13
-          # copy drag data to the canvas.
-          @applyPixelsFromDataIgnoreTransparent( @dragData.data, @imageData, 0, 0, Tile.WIDTH, Tile.HEIGHT, Tile.WIDTH, Math.floor(@dragData.offsetX / @pixelSize), Math.floor(@dragData.offsetY / @pixelSize) )
-          $(@canvas).css('cursor', 'crosshair')
-          @inDragMode = false
-
+    if @draggingPasteData == true
+      @pasteFinishDrag() if ev.keyCode == 13
       @dragData.offsetY -= @pixelSize if ev.keyCode == 38
       @dragData.offsetY += @pixelSize if ev.keyCode == 40
       @dragData.offsetX -= @pixelSize if ev.keyCode == 37
@@ -331,22 +325,12 @@ class PixelArtCanvas
       @selectedPixels = [] # deselection makes things look cleaner in the editor.
       @render()
 
-    if ev.keyCode == 67 and ev.metaKey
-      @copy()
-    if ev.keyCode == 88 and ev.metaKey
-      @cut()
-    if ev.keyCode == 86 and ev.metaKey
-      @paste()
-
-    #horizontal flips on drag buffer.
-    if ev.keyCode == 72# and ev.metaKey
-      return unless @dragData
-      @flipPixelsHorizontal( @dragData.data )
-
-    #vertically flip drag buffer.
-    if ev.keyCode == 74# and ev.metaKey
-      return unless @dragData
-      @flipPixelsVertical( @dragData.data )
+    @copy() if ev.keyCode == 67 and ev.metaKey
+    @cut() if ev.keyCode == 88 and ev.metaKey
+    @paste() if ev.keyCode == 86 and ev.metaKey
+    @selectAll() if ev.keyCode == 65 and ev.metaKey
+    @flip('x') if ev.keyCode == 72
+    @flip('y') if ev.keyCode == 74
 
     if ev.keyCode == 90 and ev.metaKey and ev.shiftKey
       ev.preventDefault()
@@ -377,24 +361,31 @@ class PixelArtCanvas
     @mouseLastOffsetX = evX
     @mouseLastOffsetY = evY
 
-    if @inDragMode == false
+    if @draggingPasteData == false
       type = 'mousemove' if type == 'mouseout' && !@tool[type]
       @tool[type](@stagePointToPixel(evX, evY), @) if @tool[type]
       @applyTool() if type == 'mouseup' and @tool.autoApplyChanges == true
       @render()
     else
-      if type == 'mousedown' and @dragging == false
-        @dragging = true
+      if type == 'mousedown'
         @dragStart.x = evX - @dragData.offsetX
         @dragStart.y = evY - @dragData.offsetY
-      if type == 'mouseup'
-        @dragging = false
-      if type == 'mousemove' and @dragging == true
+      if type == 'mousemove' && window.mouseIsDown
         @dragData.offsetX = Math.floor((evX-@dragStart.x) / @pixelSize) * @pixelSize
         @dragData.offsetY = Math.floor((evY-@dragStart.y) / @pixelSize) * @pixelSize
 
       @render()
 
+
+  selectAll: () =>
+    @selectedPixels = []
+    for x in [0..Tile.WIDTH-1]
+      for y in [0..Tile.HEIGHT-1]
+        @selectedPixels.push({x:x, y:y})
+
+
+  canCopy: () ->
+    @selectedPixels.length
 
   copy: () =>
     @clipboardData = new Uint8ClampedArray( Tile.WIDTH * Tile.HEIGHT * 4 )
@@ -407,9 +398,15 @@ class PixelArtCanvas
 
     window.rootScope.$apply() unless window.rootScope.$$phase
 
+
   cut: () =>
     @copy()
-    @clearPixels( @selectedPixels )
+    @clearPixels(@selectedPixels)
+
+
+  canPaste: () ->
+    return true if @clipboardData
+    return false
 
   paste: () =>
     return unless @clipboardData
@@ -419,9 +416,17 @@ class PixelArtCanvas
     $(@canvas).css('cursor', 'move')
     @dragData.clearRect( 0, 0, Tile.WIDTH, Tile.HEIGHT )
     @applyPixelsFromData( @clipboardData, @dragData, 0, 0, Tile.WIDTH, Tile.HEIGHT )
-    @inDragMode = true
+    @draggingPasteData = true
     @selectedPixels = [] # deselection makes things look cleaner in the editor.
     @render()
+
+
+  pasteFinishDrag: (commit = true) =>
+    if commit
+      @applyPixelsFromData( @dragData.data, @imageData, 0, 0, Tile.WIDTH, Tile.HEIGHT, Tile.WIDTH, Math.floor(@dragData.offsetX / @pixelSize), Math.floor(@dragData.offsetY / @pixelSize), {ignoreClearPixels: true})
+    $(@canvas).css('cursor', 'crosshair')
+    @draggingPasteData = false
+
 
   clearPixels: ( pixels ) =>
     for p in pixels
@@ -433,6 +438,7 @@ class PixelArtCanvas
     if @selectedPixels?.length
       @render()
 
+
   render: () ->
     @context.fillStyle = "rgb(255,255,255)"
     @context.clearRect(0,0, @width, @height)
@@ -440,7 +446,7 @@ class PixelArtCanvas
 
     @applyPixelsFromData(@imageData.data, @context)
 
-    if @inDragMode == true
+    if @draggingPasteData == true
       # grey out all things not being dragged.
       @context.fillStyle = "rgba(0,0,0,0.3)"
       @context.fillRect( 0,0, @width, @height )
@@ -500,54 +506,49 @@ class PixelArtCanvas
     window.rootScope.$apply() unless window.rootScope.$$phase
 
 
-  applyPixelsFromData: (data, target, startX=0, startY=0, endX=Tile.WIDTH, endY=Tile.HEIGHT, dataWidth=Tile.WIDTH, offsetX = 0, offsetY = 0) ->
+  applyTransformation: (pixelProvider) =>
+    if @draggingPasteData
+      imagedata = @dragData
+    else
+      @undoStack.push(new Uint8ClampedArray(@imageData.data))
+      imagedata = @imageData
+
+    oldData = new Uint8ClampedArray(imagedata.data)
+    for x in [0..imagedata.width-1]
+      for y in [0..imagedata.height-1]
+        [newX, newY] = pixelProvider(x,y)
+
+        index = (y * imagedata.width + x) * 4
+        indexNew = (newY * imagedata.width + newX) * 4
+        for channel in [0..3]
+          imagedata.data[indexNew+channel] = oldData[index+channel]
+
+    @render()
+    window.rootScope.$apply() unless window.rootScope.$$phase
+
+
+  applyPixelsFromData: (data, target, startX=0, startY=0, endX=Tile.WIDTH, endY=Tile.HEIGHT, dataWidth=Tile.WIDTH, offsetX = 0, offsetY = 0, options = {}) ->
     for x in [startX..endX-1]
       for y in [startY..endY-1]
         r = data[(y * dataWidth + x) * 4 + 0]
         g = data[(y * dataWidth + x) * 4 + 1]
         b = data[(y * dataWidth + x) * 4 + 2]
         a = data[(y * dataWidth + x) * 4 + 3]
-        target.fillPixel(x+offsetX,y+offsetY,"rgba(#{r},#{g},#{b},#{a})")
+        target.fillPixel(x+offsetX,y+offsetY,"rgba(#{r},#{g},#{b},#{a})") unless options.ignoreClearPixels && a <= 0
 
-  applyPixelsFromDataIgnoreTransparent: (data, target, startX=0, startY=0, endX=Tile.WIDTH, endY=Tile.HEIGHT, dataWidth=Tile.WIDTH, offsetX = 0, offsetY = 0) ->
-    for x in [startX..endX-1]
-      for y in [startY..endY-1]
-        r = data[(y * dataWidth + x) * 4 + 0]
-        g = data[(y * dataWidth + x) * 4 + 1]
-        b = data[(y * dataWidth + x) * 4 + 2]
-        a = data[(y * dataWidth + x) * 4 + 3]
-        target.fillPixel(x+offsetX,y+offsetY,"rgba(#{r},#{g},#{b},#{a})") if a > 0
 
-  flipPixelsHorizontal: (data, startX=0, startY=0, endX=Tile.WIDTH, endY=Tile.HEIGHT) ->
-    #iterate through all pixels, and swap the values of each.
-    #debugger
-    width = (endX - startX)
-    for x in [startX..startX+(width/2)]
-      for y in [startY..endY]
-        #Determine the indicies for both the current, and swapped pixels
-        indexA = (y*width + x) * 4
-        indexB = (y*width + (width-x)) * 4
-        for channel in [0..3]
-          #Get the pixel color of the original pixel
-          valueA = data[indexA+channel]
-          data[indexA+channel] = data[indexB+channel]
-          data[indexB+channel] = valueA
+  flip: (dir) =>
+    if dir == 'x'
+      @applyTransformation (x,y) -> [(Tile.WIDTH-1) - x, y]
+    else
+       @applyTransformation (x,y) -> [x, (Tile.HEIGHT-1) - y]
 
-  flipPixelsVertical: (data, startX=0, startY=0, endX=Tile.WIDTH, endY=Tile.HEIGHT) ->
-    #iterate through all pixels, and swap the values of each.
-    #debugger
-    width = (endX - startX)
-    height = (endY - startY)
-    for x in [startX..endX]
-      for y in [startY..startY+(height/2)]
-        #Determine the indicies for both the current, and swapped pixels
-        indexA = (y*width + x) * 4
-        indexB = ((height-y)*width + x) * 4
-        for channel in [0..3]
-          #Get the pixel color of the original pixel
-          valueA = data[indexA+channel]
-          data[indexA+channel] = data[indexB+channel]
-          data[indexB+channel] = valueA
+  rotate: (deg) =>
+    if deg == 90
+      @applyTransformation (x,y) -> [(Tile.HEIGHT-1) - y,x]
+    else if deg == -90
+       @applyTransformation (x,y) -> [y,(Tile.WIDTH-1)-x]
+
 
   copyPixelsFromData: (data, target, startX=0, startY=0, endX=Tile.WIDTH, endY=Tile.HEIGHT, dataWidth=Tile.WIDTH) ->
     # CONSIDER REVISION
@@ -585,11 +586,12 @@ class PixelArtCanvas
           points.push(pp)
           pointsHit["#{pp.x}-#{pp.y}"] = true
 
+
   #this function calls a callback on every pixel on the border of a group of pixels
   getBorderPixels: ( pixels, callback ) =>
     for p in pixels
       left = right = top = bot = false
-      for other in pixels 
+      for other in pixels
         left = true if other.x == p.x-1 and other.y == p.y
         right = true if  other.x == p.x+1 and other.y == p.y
         top = true if  other.x == p.x and other.y == p.y-1
@@ -598,14 +600,6 @@ class PixelArtCanvas
       if not left or not right or not top or not bot
         callback( p.x, p.y, left, right, top, bot )
 
-  canCopy: () ->
-    #return false if (@selectionRect.max.x - @selectionRect.min.x) == 0
-    #return false if (@selectionRect.max.y - @selectionRect.min.y) == 0
-    @selectedPixels.length
-
-  canPaste: () ->
-    return true if @clipboardData
-    return false
 
   canUndo: () ->
     @undoStack.length
@@ -649,6 +643,7 @@ class PixelArtCanvas
 
     {data: url, width: totalWidth}
 
+
   prepareDataForDisplayedFrame: () ->
     window.withTempCanvas Tile.WIDTH, Tile.HEIGHT, (canvas, context) =>
       [x, y] = @coordsForFrame(@imageDisplayedFrame)
@@ -662,8 +657,7 @@ class PixelArtCanvas
 
     # this just restores all persistent stuff to its default values... FUN :D
   cleanup: () =>
-    @inDragMode = false
-    @dragging = false
+    @pasteFinishDrag() if @draggingPasteData
     @dragData.clearRect( 0, 0, Tile.WIDTH, Tile.HEIGHT )
     @dragStart = {x:0, y:0}
     @selectedPixels = []

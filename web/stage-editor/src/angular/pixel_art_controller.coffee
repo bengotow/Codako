@@ -46,6 +46,12 @@ PixelArtCtrl = ($scope) ->
   $scope.paste = () ->
     $scope.canvas.paste()
 
+  $scope.flip = (dir) ->
+    $scope.canvas.flip(dir)
+
+  $scope.rotate = (deg) ->
+    $scope.canvas.rotate(deg)
+
   $scope.set_tool = (tool) ->
     $scope.canvas.tool.reset()
     $scope.canvas.tool = tool

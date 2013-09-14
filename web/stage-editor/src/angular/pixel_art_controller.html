@@ -2,14 +2,28 @@
   <div style="float:left;">
     <h3>Edit Appearance</h3>
   </div>
-  <div align="right">
+  <div style="float:right;">
     <!--Undo, Redo buttons-->
     <div class="btn icon" ng-disabled="!canvas.canUndo()" ng-click="canvas.undo()"><img src="./img/icon_undo.png"></div>
     <div class="btn icon" ng-disabled="!canvas.canRedo()" ng-click="canvas.redo()"><img src="./img/icon_redo.png"></div>
+
     <!--Copy, Paste Buttons-->
-    <div class="btn icon" ng-disabled="!canvas.canCopy()" ng-click="copy()"><img src="./img/icon_copy.png"></div>
-    <div class="btn icon" ng-disabled="!canvas.canPaste()" ng-click="paste()"><img src="./img/icon_paste.png"></div>
+    <div class="btn-group">
+      <a class="btn dropdown-toggle" data-toggle="dropdown" style="padding-top:6px; margin-top:4px; padding-bottom:7px;">
+        <i class="icon-gear"></i> Actions <span class="caret"></span></span>
+      </a>
+      <ul class="dropdown-menu">
+        <li ng-class="{disabled: !canvas.canCopy()}"><a ng-click="copy()"><i class="icon-copy"></i> Copy <div class="key-equivalent">&#x2318;-C</div></a></li>
+        <li ng-class="{disabled: !canvas.canPaste()}"><a ng-click="paste()"><i class="icon-paste"></i> Paste <div class="key-equivalent">&#x2318;-V</div></a></li>
+        <li class="divider"></li>
+        <li><a ng-click="rotate(-90)"><i class="icon-undo"></i> Rotate Left</a></li>
+        <li><a ng-click="rotate(90)"><i class="icon-repeat"></i> Rotate Right</a></li>
+        <li><a ng-click="flip('x')"><i class="icon-resize-horizontal"></i> Flip Horizontally</a></li>
+        <li><a ng-click="flip('y')"><i class="icon-resize-vertical"></i> Flip Vertically</a></li>
+      </ul>
+    </div>
   </div>
+  <div style="clear:both;"></div>
 </div>
 
 <div class="modal-body" style="max-height:585px;">

@@ -74,6 +74,21 @@ h4 {
 
 .dropdown-menu {
   z-index:2000;
+
+  .disabled {
+    color: #bbb;
+  }
+  .disabled:hover, .disabled a:hover {
+    background-color:transparent;
+  }
+
+  li a {
+    padding-right:10px;
+  }
+  .key-equivalent {
+    float:right;
+    display:inline-block;
+  }
 }
 
 .controls {
@@ -321,6 +336,11 @@ h4 {
   padding:4px;
   margin-right:4px;
   margin-top:4px;
+  i {
+    font-size:22px;
+    padding-left:6px;
+    padding-right:6px;
+  }
   img {
     width:26px;
     height:26px;
