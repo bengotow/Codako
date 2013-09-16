@@ -9,12 +9,12 @@
 		<div class="mask"></div>
 
 		<div class="info">
-			<div ng-show="world.published == false" class="right-options">
+			<div ng-show="world.published == false && world.is_mine" class="right-options">
 				<a ng-click="publish()" class="btn btn-large btn-success"><i class="icon-upload"></i> Publish</a>
 			</div>
 			<div ng-show="world.published == true" class="right-options">
 				<div class="views">{{world.views || 0}} views</div>
-				<a ng-click="publish()" class="btn btn-large"><i class="icon-download"></i> Unpublish</a>
+				<a ng-show="world.is_mine" ng-click="publish()" class="btn btn-large"><i class="icon-download"></i> Unpublish</a>
 				<a ng-click="share()" class="btn btn-large btn-success" style="margin-left:10px;"><i class="icon-share"></i> Share</a>
 			</div>
 

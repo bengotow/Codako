@@ -1,12 +1,18 @@
 @WorldCtrl = ($scope, $dialog, $location, $routeParams, Stages, Worlds, Comments, Auth, $http) ->
 
 	$scope.world = {_id: $routeParams._id}
+	$scope.is_mine = false
 	$scope.edit_details_callback = null
 	$scope.edit_message = null
+
+	Auth.withUser (err, user) ->
+		$scope.user = user
+		$scope.world.is_mine = true if $scope.world && $scope.world.user == $scope.user._id
 
 	Worlds.get $scope.world,
 		(world) ->
 			$scope.world = world
+			$scope.world.is_mine = true if $scope.user && $scope.world.user == $scope.user._id
 
 			Stages.index {world_id: $scope.world._id}, (stages) ->
 					$scope.stages = stages
@@ -23,10 +29,11 @@
 			$scope.open_stage(stage)
 
 	$scope.open_stage = (stage) ->
-		if Auth.user()._id == world.user
+		if $scope.world.is_mine
 			window.location.href = "/stage-editor/#/#{$scope.world._id}/#{stage._id}"
 		else
 			window.location.href = "/stage-viewer/#/#{$scope.world._id}/#{stage._id}"
+
 
 	$scope.edit_details = () ->
 		$('#editDetailsModal').modal({show:true})

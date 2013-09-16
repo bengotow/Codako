@@ -21,8 +21,9 @@ WorldSchema.methods.isOwnedBy = (user) ->
   user._id.toString() == @user.toString()
 
 WorldSchema.methods.incrementViews = () ->
-  @views += 1
-  @save()
+  if @published
+    @views += 1
+    @save()
 
 WorldSchema.methods.initWithExportJSON = (json, callback) ->
   @title = json['title']
