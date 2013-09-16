@@ -1,10 +1,10 @@
 var App = angular.module('App')
 
 App.factory('Users', ['$resource', function($resource) {
-  return $resource('/api/v0/users/:id/:action', {}, {
-    me:       { method: 'GET', params: {id: "me" }, isArray: false},
+  return $resource('/api/v0/users/:_id/:action', {}, {
+    me:       { method: 'GET', params: {_id: "me" }, isArray: false},
     index:    { method: 'GET', isArray: true},
-    get:      { method: 'GET' },
+    get:      { method: 'GET', params: {_id: "@_id"}},
     update:   { method: 'PUT' },
     create:   { method: 'POST' }
   })
@@ -12,9 +12,9 @@ App.factory('Users', ['$resource', function($resource) {
 
 App.factory('Worlds', ['$resource', function($resource) {
   return $resource('/api/v0/worlds/:_id', {}, {
-    get:      { method: 'GET'  },
-    mine:     { method: 'GET', params: {_id: "mine"}, isArray: true },
+    index:    { method: 'GET', url: '/api/v0/users/:user_id/worlds', params: {user_id: "@user_id"}, isArray: true },
     popular:  { method: 'GET', params: {_id: "popular"}, isArray: true },
+    get:      { method: 'GET', params: {_id: "@_id"} },
     update:   { method: 'PUT', params: {_id: "@_id"}},
     destroy:  { method: 'DELETE', params: {_id: "@_id"}},
     create:   { method: 'POST' },
@@ -40,7 +40,7 @@ App.factory('Comments', ['$resource', function($resource) {
   })
 }])
 
-App.factory('Auth', ['Base64', 'Users', '$cookieStore', '$http', function (Base64, Users, $cookieStore, $http) {
+App.factory('Auth', ['Base64', 'Users', '$cookieStore','$timeout', '$http', function (Base64, Users, $cookieStore, $timeout, $http) {
     // initialize to whatever is in the cookie, if anything
     $http.defaults.headers.common.Authorization = 'Basic ' + $cookieStore.get('authdata');
     $.ajaxSetup({headers: { 'Authorization': $http.defaults.headers.common.Authorization }});
@@ -62,10 +62,10 @@ App.factory('Auth', ['Base64', 'Users', '$cookieStore', '$http', function (Base6
 
         withUser: function(callback) {
           if (loadedUser)
-            return callback(null, loadedUser);
+            return $timeout(function() {callback(null, loadedUser);}, 0)
 
           if (!$cookieStore.get('authdata'))
-            return callback(null, null);
+            return $timeout(function() {callback(null, null);}, 0)
 
           Users.me({}, function(user) {
               loadedUser = user;

@@ -22,13 +22,14 @@
 
     path = window.location.href.split('#')[1]
     parts = path.split('/')
-    $scope.stage_id = parts[parts.length-1]
-    $scope.world_id = parts[parts.length-2]
+    window.stage_id = parts[parts.length-1]
+    window.world_id = parts[parts.length-2]
+    window.view_only = (window.location.href.indexOf('stage-viewer') != -1)
 
-    if !$scope.stage_id || !$scope.world_id
+    if !window.stage_id || !window.world_id
       window.location.href = "/"
 
-    window.Game.load($scope.world_id, $scope.stage_id)
+    window.Game.load(window.world_id, window.stage_id)
 
 
 

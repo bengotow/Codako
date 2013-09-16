@@ -1,0 +1,14 @@
+<div style="width:160px; float:left; text-align:left;">
+	<button ng-click="reset_to_start_state()" class="btn" style="margin-top:12px;"><i class="icon-repeat"></i> Restart</button>
+</div>
+
+<div class="center">
+  <button id="button-stop" ng-click="set_running(false)" class="{{class_for_btn(!running())}}"><i class="icon-stop"></i> Stop</button>
+  <button id="button-run" ng-click="set_running(true)" class="{{class_for_btn(running())}}"><i class="icon-play"></i> Run</button>
+</div>
+
+<div class="btn-group right">
+  <button ng-click="set_speed(700)" class="{{class_for_btn(700==speed())}}">Slow</button>
+  <button ng-click="set_speed(350)" class="{{class_for_btn(350==speed())}}">Med.</button>
+  <button ng-click="set_speed(130)" class="{{class_for_btn(130==speed())}}">Fast</button>
+</div>

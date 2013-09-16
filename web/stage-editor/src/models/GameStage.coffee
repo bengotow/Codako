@@ -26,6 +26,7 @@ class GameStage extends Stage
     @widthTarget = canvas.width
     @widthCurrent = canvas.width
 
+
     @canvas.ondrop = (e, dragEl) =>
       dragIdentifier = $(dragEl.draggable).data('identifier')
       parentOffset = $(@canvas).parent().offset()

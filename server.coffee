@@ -24,12 +24,13 @@ handlers =
 				'%':
 					'GET':    usersController.user_get
 					'PUT':    usersController.user_put
+					'/':
+						'worlds':
+							'GET': usersController.user_get_worlds
 
 		'worlds':
 			'POST': worldsController.worlds_post
 			'/':
-				'mine':
-					'GET':	worldsController.worlds_get_mine
 				'popular':
 					'GET':	worldsController.worlds_get_popular
 				'import':
@@ -82,7 +83,6 @@ setupLocals = (req, res, next) ->
 		World.findById req.pathArgs[0], (err, world) ->
 			return res.endWithError('request.not_found', 404) unless world
 			callback(world)
-
 
 	res.locals = {}
 	res.endWithJSON = (json, response_code = 200) ->
@@ -158,6 +158,7 @@ handleAPIRequest = (req, res, next) ->
 
 	unless (typeof choices[method] == 'function')
 		console.log("#{method} #{path} route: 405 Wrong Method")
+		console.log(choices)
 		return res.endWithError('request.not_found_api_request_method', 405)
 
 	# log the api request

@@ -23,6 +23,7 @@
 
   <!-- Font CSS -->
   <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/3.2.1/css/font-awesome.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Varela+Round|Montserrat:400,700" rel="stylesheet" type="text/css">
 
   <!-- My CSS -->
   <link href="/css/main.css" rel="stylesheet" media="screen">
@@ -63,6 +64,7 @@
 
   <script src="/src/angular/nav_controller.js"></script>
   <script src="/stage-editor/src/angular/app_controller.js"></script>
+  <script src="/stage-editor/src/angular/metadata_controller.js"></script>
   <script src="/stage-editor/src/angular/controls_controller.js"></script>
 
   <link href="/stage-editor/css/editor.css" rel="stylesheet" media="screen">
@@ -74,7 +76,7 @@
 
   <div ng-controller="AppCtrl"></div>
 
-  <div class="navbar navbar-fixed-top" style="z-index:2;" ng-controller="NavCtrl">
+  <div class="navbar navbar-fixed-top navbar-inverse" style="z-index:2;" ng-controller="NavCtrl">
       <div class="navbar-inner">
       <div class="container">
         <a class="brand" href="#">Codako</a>
@@ -89,24 +91,49 @@
     </div>
   </div>
 
-  <div class="container" style="width:800px; margin:auto; margin-top:60px;" ng-controller="ControlsCtrl" ng-cloak>
-
-    <div id="viewport-box" class="white-box" style="line-height:0;">
-      <div style="overflow:hidden; width:800px; height:520px;">
-        <div style="width:1605px; height:520px;">
-          <canvas droppable id="platformerCanvasPane1" width="800" height="520" class="stage">
-            Your browser doesn't support HTML5 Canvas!
-          </canvas>
-          <canvas droppable id="platformerCanvasPane2" width="0" height="520" class="stage">
-          </canvas>
-        </div>
-      </div>
-
-      <div class="controls"
-           ng-include="'/stage-editor/src/angular/controls_controller/'+control_set+'.html'"
-           style="text-align:center;">
+  <div class="container" style="width:820px; margin:auto; padding-top:60px;" ng-controller="MetadataCtrl" ng-cloak>
+    <div class="row">
+      <div class="span12">
+        <h3 style="margin-bottom:0px;">{{world.title}}</h3>
+        <div>by <a href="/#/profile/{{author.nickname}}">{{author.nickname}}</a></div>
       </div>
     </div>
+
+    <div class="row" ng-controller="ControlsCtrl" ng-cloak>
+      <div style="margin-left:20px; margin-top:15px;">
+        <div id="viewport-box" class="white-box" style="line-height:0;">
+          <div style="overflow:hidden; width:800px; height:520px;">
+            <div style="width:1605px; height:520px;">
+              <canvas droppable id="platformerCanvasPane1" width="800" height="520" class="stage">
+                Your browser doesn't support HTML5 Canvas!
+              </canvas>
+              <canvas droppable id="platformerCanvasPane2" width="0" height="520" class="stage">
+              </canvas>
+            </div>
+          </div>
+
+          <div class="controls"
+             ng-include="'/stage-editor/src/angular/controls_controller/'+control_set+'.html'"
+             style="text-align:center;">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row" style="margin-top:15px; margin-left:-10px;">
+      <div class="span5 white-box" style="padding:15px;">
+        {{world.description}}
+        <div style="margin-top:15px;">
+          <a class="btn" style="float:right;" ng-click="cloneWorld()">Clone this world</a>
+          See how this world was created and use it as a starting point for your own creation!
+        </div>
+      </div>
+      <div class="span3 white-box" style="padding:15px;">
+        <h5 style="margin-top:0;">Create your own games!</h5>Codako is a programming environment designed for young learners ages 6-12. It's completely free, and no downloads, plugins, or typing skills are required. <a href="/">Learn More ></a>
+      </div>
+    </div>
+
+    <div style="clear:both; padding:50px;"></div>
 
   </div>
 

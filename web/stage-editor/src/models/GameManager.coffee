@@ -15,7 +15,7 @@ class GameManager
 
     @tool = 'pointer'
 
-    @simulationFrameRate = 500
+    @simulationFrameRate = 350
     @simulationFrameNextTime = 0
     @prevFrames = []
 

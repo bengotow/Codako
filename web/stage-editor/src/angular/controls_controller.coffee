@@ -3,7 +3,10 @@ ControlsCtrl = ($scope) ->
 
   window.controlsScope = $scope
 
-  $scope.control_set = 'testing'
+  if window.view_only
+    $scope.control_set = 'play'
+  else
+    $scope.control_set = 'testing'
 
   $scope.$root.$on 'start_compose_rule', (msg, args) ->
     $scope.control_set = 'record-preflight'

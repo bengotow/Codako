@@ -19,12 +19,6 @@ exports.worlds_import = (req, res) ->
     res.endWithJSON(world)
 
 
-exports.worlds_get_mine = (req, res) ->
-  return res.endWithUnauthorized() unless req.user
-  req.user.findWorlds (err, worlds) ->
-    res.endWithJSON(worlds)
-
-
 exports.worlds_get_popular = (req, res) ->
   World.find {published: true}, (err, worlds) ->
     res.endWithJSON(worlds)

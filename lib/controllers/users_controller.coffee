@@ -10,13 +10,21 @@
 exports.user_get = (req, res) ->
   return res.endWithUnauthorized() unless req.user
   User.findById req.pathArgs[0], (err, user) ->
-    res.endWithJSON(user)
+    return res.endWithJSON(user) if user
+    User.findOne {nickname: req.pathArgs[0]}, (err, user) ->
+      res.endWithJSON(user)
 
 
 exports.user_get_me = (req, res) ->
   console.log(req.user)
   return res.endWithError('users.not_found', 404) unless req.user
   res.endWithJSON(req.user)
+
+
+exports.user_get_worlds = (req, res) ->
+  User.findById req.pathArgs[0], (err, user) ->
+    user.findWorlds (err, worlds) ->
+      res.endWithJSON(worlds)
 
 
 exports.user_put = (req, res) ->

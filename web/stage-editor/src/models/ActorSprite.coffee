@@ -12,7 +12,9 @@ class ActorSprite extends Sprite
     @applied = {}
 
     super(position, size)
-    @setupDragging()
+
+    unless window.view_only
+      @setupDragging()
     @
 
 

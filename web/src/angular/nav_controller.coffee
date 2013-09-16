@@ -53,7 +53,7 @@
       if confirm("You've already started the tutorial. Do you want to continue where you left off?")
         return $scope.openTour()
 
-    req = $http({method: 'POST', url:'/api/v0/worlds/52301d357eebf50000000001/clone'})
+    req = $http({method: 'POST', url:'/api/v0/worlds/tutorial-introduction/clone'})
     req.success (data, status, headers, config) ->
       if status != 200
         return alert('Sorry, the tutorial world doesn\'t seem to exist.')
