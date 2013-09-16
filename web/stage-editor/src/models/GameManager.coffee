@@ -25,17 +25,30 @@ class GameManager
     @keysDown = {}
 
     $('body').keydown (e) =>
-      return true if $(e.target).prop('tagName') == 'INPUT'
+      # apply some global behaviors we want on our text inputs:
+      # ctrl-A to select all, enter to blur and commit changes
+      if $(e.target).prop('tagName') == 'INPUT'
+        if e.keyCode == 13
+          $(e.target).blur();
+        if e.keyCode == 65 && (e.metaKey || e.ctrlKey)
+          $(e.target).select();
+        return true
+
+      # pass on all key events if there's a modal open
       return true if $(e.target).prop('id') == 'pixelArtModal'
       return true if $(e.target).prop('id') == 'keyInputModal'
 
       if e.keyCode == 127 || e.keyCode == 8
-        e.preventDefault()
         @selectedActor.stage.removeActor(@selectedActor) if @selectedActor
         @selectActor(null)
         @save()
 
       @keysDown[e.keyCode] = true
+
+      # we only block the effect of single keys
+      if !e.ctrlKey && !e.shiftKey && !e.metaKey && !e.altKey
+        e.preventDefault()
+
 
     document.onkeyup = (e) =>
       @keysDown[e.keyCode] = false if !@running
