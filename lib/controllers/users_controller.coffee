@@ -8,7 +8,6 @@
 # --------------------------------
 
 exports.user_get = (req, res) ->
-  return res.endWithUnauthorized() unless req.user
   User.findById req.pathArgs[0], (err, user) ->
     return res.endWithJSON(user) if user
     User.findOne {nickname: req.pathArgs[0]}, (err, user) ->

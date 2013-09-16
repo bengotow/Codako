@@ -30,9 +30,8 @@ exports.worlds_get_popular = (req, res) ->
 
 exports.world_get = (req, res) ->
   req.withWorld (world) ->
-    console.log(world)
     res.endWithJSON(world)
-
+    world.incrementViews() unless world.isOwnedBy(req.user)
 
 
 exports.world_export = (req, res) ->

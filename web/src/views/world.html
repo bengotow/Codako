@@ -1,18 +1,19 @@
 <div class="container">
 <div class="row">
-	<div class="span12" style="position:relative; top:-15px;">
+	<div class="span12 world-hero">
 
-		<div style="position:absolute; overflow:hidden; display:block; width:100%; height:100%; margin-left:0px; margin-top:10px;">
-			<div style="background:url({{stages[stages.length-1].thumbnail}}) center center; background-size:cover; -webkit-filter: blur(5px); width:100%; height:100%; margin-top:-10px;"></div>
+		<div class="background">
+			<div style="background:url({{stages[stages.length-1].thumbnail}}) center center;"></div>
 		</div>
 
-		<div style="position:absolute; z-index:1; display:block; width:100%; height:100%; background-color:rgba(0,0,0,0.3);"></div>
+		<div class="mask"></div>
 
-		<div style="padding:25px; padding-top:90px; position:relative; z-index:2;">
-			<div ng-show="world.published == false" style="float:right; display:inline-block; margin-top:20px;">
+		<div class="info">
+			<div ng-show="world.published == false" class="right-options">
 				<a ng-click="publish()" class="btn btn-large btn-success"><i class="icon-upload"></i> Publish</a>
 			</div>
-			<div ng-show="world.published == true" style="float:right; display:inline-block; margin-top:20px;">
+			<div ng-show="world.published == true" class="right-options">
+				<div class="views">{{world.views || 0}} views</div>
 				<a ng-click="publish()" class="btn btn-large"><i class="icon-download"></i> Unpublish</a>
 				<a ng-click="share()" class="btn btn-large btn-success" style="margin-left:10px;"><i class="icon-share"></i> Share</a>
 			</div>
@@ -80,16 +81,4 @@
 	    <button class="btn" data-dismiss="modal" aria-hidden="true">Done</button>
 	</div>
 
-</div>
-
-
-
-	<div class="span12">
-		<h4>Library</h4>
-		<div ng-show="actors.length" class="actors-collection">
-			<div ng-repeat="actor in actors" class="span3">
-				<h4>{{actor._id}}</h4>
-			</div>
-		</div>
-	</div>
 </div>

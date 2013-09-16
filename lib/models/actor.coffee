@@ -11,6 +11,7 @@ ActorSchema.pre 'save', (next) ->
   next()
 
 ActorSchema.methods.isWithinWorld = (world) ->
+  return false unless world
   @world && world._id.toString() == @world.toString()
 
 module.exports = mongoose.model('Actor', ActorSchema)

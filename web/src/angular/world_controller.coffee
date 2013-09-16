@@ -23,7 +23,10 @@
 			$scope.open_stage(stage)
 
 	$scope.open_stage = (stage) ->
-		window.location.href = "/stage-editor/#/#{$scope.world._id}/#{stage._id}"
+		if Auth.user()._id == world.user
+			window.location.href = "/stage-editor/#/#{$scope.world._id}/#{stage._id}"
+		else
+			window.location.href = "/stage-viewer/#/#{$scope.world._id}/#{stage._id}"
 
 	$scope.edit_details = () ->
 		$('#editDetailsModal').modal({show:true})

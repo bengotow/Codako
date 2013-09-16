@@ -25,6 +25,7 @@ global.StageSchema = new mongoose.Schema
   }
 
 StageSchema.methods.isWithinWorld = (world) ->
+  return false unless world
   @world && world._id.toString() == @world.toString()
 
 

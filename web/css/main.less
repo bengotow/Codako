@@ -122,3 +122,61 @@ html, body {
 	background-color:#ddd;
 }
 
+.world-hero {
+	position:relative;
+	top:-15px;
+
+	.background {
+		position:absolute;
+		overflow:hidden;
+		display:block;
+		width:100%;
+		height:100%;
+		margin-left:0px;
+		margin-top:10px;
+
+		> div {
+			background-size:cover;
+			-webkit-filter: blur(5px);
+			width:100%;
+			height:100%;
+			margin-top:-10px;
+		}
+	}
+
+	.mask {
+		position:absolute;
+		z-index:1;
+		display:block;
+		width:100%;
+		height:100%;
+		background-color:rgba(0,0,0,0.3);
+	}
+
+	.info {
+		padding:25px;
+		padding-top:90px;
+		position:relative;
+		z-index:2;
+
+		.views {
+			display:inline-block;
+			border:3px solid rgba(255,255,255,0.9);
+			background-color:rgba(0,0,0,0.2);
+			border-radius:7px;
+			font-size:1.2em;
+			padding:9px;
+			padding-left:15px;
+			padding-right:15px;
+			position:relative;
+			top:3px;
+			margin-right:10px;
+			color:rgba(255,255,255,0.8);
+		}
+		.right-options {
+			float:right;
+			display:inline-block;
+			margin-top:20px;
+		}
+	}
+}

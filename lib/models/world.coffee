@@ -5,6 +5,7 @@ global.WorldSchema = new mongoose.Schema
   thumbnail: { type:String, default: '/img/thumbnail_empty.png' }
   published: { type:Boolean, default: false }
   locked: {type: Boolean, default: false }
+  views: {type:Number, default: 0 }
 
 WorldSchema.methods.findComments = (callback) ->
   Comment.find({world: @_id}, callback)
@@ -16,7 +17,12 @@ WorldSchema.methods.findActors = (callback) ->
   Actor.find({world: @_id}, callback)
 
 WorldSchema.methods.isOwnedBy = (user) ->
+  return false unless user
   user._id.toString() == @user.toString()
+
+WorldSchema.methods.incrementViews = () ->
+  @views += 1
+  @save()
 
 WorldSchema.methods.initWithExportJSON = (json, callback) ->
   @title = json['title']
