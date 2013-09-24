@@ -42,14 +42,14 @@ App.factory('Comments', ['$resource', function($resource) {
 
 App.factory('Auth', ['Base64', 'Users', '$cookieStore','$timeout', '$http', function (Base64, Users, $cookieStore, $timeout, $http) {
     // initialize to whatever is in the cookie, if anything
-    $http.defaults.headers.common.Authorization = 'Basic ' + $cookieStore.get('authdata');
+    $http.defaults.headers.common.Authorization = 'Basic ' + $cookieStore.get('codako-authdata');
     $.ajaxSetup({headers: { 'Authorization': $http.defaults.headers.common.Authorization }});
     var loadedUser = null;
 
     return {
         setCredentials: function (username, password) {
           var encoded = Base64.encode(username + ':' + password);
-          $cookieStore.put('authdata', encoded);
+          $cookieStore.put('codako-authdata', encoded);
           // get headers put on all angular requests
           $http.defaults.headers.common.Authorization = 'Basic ' + encoded;
           // get headers put on all jquery requests
@@ -64,13 +64,17 @@ App.factory('Auth', ['Base64', 'Users', '$cookieStore','$timeout', '$http', func
           if (loadedUser)
             return $timeout(function() {callback(null, loadedUser);}, 0)
 
-          if (!$cookieStore.get('authdata'))
+          if (!$cookieStore.get('codako-authdata'))
             return $timeout(function() {callback(null, null);}, 0)
 
           Users.me({}, function(user) {
               loadedUser = user;
               callback(null, user);
           }, function(result) {
+            document.execCommand("ClearAuthenticationCache");
+            $cookieStore.remove('codako-authdata');
+            $.ajaxSetup({headers: { 'Authorization': '' }});
+            $http.defaults.headers.common.Authorization = 'Basic ';
             loadedUser = null
             callback(result.data.error, null)
           });
@@ -78,7 +82,7 @@ App.factory('Auth', ['Base64', 'Users', '$cookieStore','$timeout', '$http', func
 
         clearCredentials: function () {
             document.execCommand("ClearAuthenticationCache");
-            $cookieStore.remove('authdata');
+            $cookieStore.remove('codako-authdata');
             $.ajaxSetup({headers: { 'Authorization': '' }});
             $http.defaults.headers.common.Authorization = 'Basic ';
             loadedUser = null;

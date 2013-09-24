@@ -162,6 +162,9 @@ class GameManager
       console.log('Trying to save while editing a rule??')
       return
 
+    if window.view_only
+      return
+
     isAsync = true
     isAsync = options.async if options.async != undefined
 
