@@ -30,8 +30,13 @@
 <div class="row">
 	<div class="stages-collection">
 		<div ng-repeat="stage in stages" class="span4 stage">
-			<a ng-click="open_stage(stage)">
+			<a ng-click="open_stage(stage)" style="position:relative;">
+				<div ng-show="$index == 0 && !world.is_mine" style="height:0; position:absolute; width:100%; color:white; text-align:center; font-size:2em; padding-top:30%; text-shadow:0 2px 2px black;">
+					Tap to Start!
+				</div>
+
 				<img ng-src="{{stage.thumbnail}}" />
+				<h4 style="color:black; margin-bottom:3px;">Stage {{($index + 1)}}</h4>
 			</a>
 		</div>
 		<a class="span4 new-item" ng-click="new_stage()"><div>+ New Stage</div></a>

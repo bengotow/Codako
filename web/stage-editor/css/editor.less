@@ -95,6 +95,8 @@ h4 {
 
 .controls {
   height: 50px;
+  position:relative;
+  text-align:center;
 
   label {
     float:left;
@@ -105,10 +107,11 @@ h4 {
   }
 
   .center {
-    display:inline-block;
     margin:auto;
     margin-top:12px;
+    display:inline-block;
   }
+
   .right {
     margin-right:5px;
     float:right;
@@ -120,6 +123,30 @@ h4 {
     float:left;
     margin-top:12px;
     display:inline-block;
+  }
+
+  .start_state_preview {
+     float:left;
+     width:76px;
+     height:48px;
+     margin-top:3px;
+     margin-right:4px;
+  }
+
+  .start_state_save {
+    position:absolute;
+    top:-15px;
+    width:39px;
+    padding:2px;
+    border-radius:0;
+  }
+  .start_state_restore {
+    position:absolute;
+    top:-15px;
+    width:38px;
+    left:38px;
+    padding:2px;
+    border-radius:0;
   }
 }
 

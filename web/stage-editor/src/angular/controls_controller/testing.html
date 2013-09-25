@@ -1,6 +1,8 @@
-<img src="{{start_state_src()}}" style="float:left; width:80px; height:52px;"/>
-<button ng-click="reset_to_start_state()" class="btn" style="float:left; margin-top:12px;"><i class="icon-repeat"></i> Reset</button>
-<button ng-click="set_start_state()" class="btn" style="float:left; margin-top:12px;"><i class="icon-repeat"></i> Set</button>
+<div style="float:left; text-align:left;">
+	<button ng-click="reset_to_start_state()" class="btn start_state_restore"><i class="icon-arrow-up"></i></button>
+	<button ng-click="set_start_state()" class="btn start_state_save"><i class="icon-arrow-down"></i></button>
+	<img src="{{start_state_src()}}" class="start_state_preview"/>
+</div>
 
 <div class="center">
   <button ng-click="step_back()" class="btn btn-mini" style="margin-right:4px; margin-top:1px;"><i class="icon-step-backward"></i> Back</button>

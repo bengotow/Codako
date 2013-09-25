@@ -1,4 +1,4 @@
-@AppCtrl = ($scope, $location, Users, Stages, Auth, $http) ->
+@AppCtrl = ($scope, $location, Users, Stages, Worlds, Auth, $http) ->
 
     $scope.$apply() unless $scope.$$phase
 
@@ -22,15 +22,25 @@
 
     path = window.location.href.split('#')[1]
     parts = path.split('/')
-    window.stage_id = parts[parts.length-1]
-    window.world_id = parts[parts.length-2]
+    window.world_id = $scope.world_id = parts[1]
+    window.stage_id = $scope.stage_id = parts[2]
+
     window.view_only = (window.location.href.indexOf('stage-viewer') != -1)
 
-    if !window.stage_id || !window.world_id
+    if !$scope.world_id
       window.location.href = "/"
 
-    window.Game.load(window.world_id, window.stage_id)
+    else if !$scope.stage_id
+      Stages.index {world_id: $scope.world_id}, (stages) ->
+        if !stages || stages.length == 0
+          alert('Sorry, the world could not be found or is not public.')
+          window.location.href = "/"
+          return
+        window.location.href = "#{window.location.href.split('#')[0]}#/#{$scope.world_id}/#{stages[0]._id}"
+
+    else
+      window.Game.load($scope.world_id, $scope.stage_id)
 
 
 
-@AppCtrl.$inject = ['$scope', '$location', 'Users', 'Stages', 'Auth', '$http']
+@AppCtrl.$inject = ['$scope', '$location', 'Users', 'Stages', 'Worlds', 'Auth', '$http']

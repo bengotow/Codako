@@ -319,8 +319,11 @@ class GameManager
 
   resetToStartState: () =>
     return if @selectedRule
-    @selectActor(null)
-    @mainStage.resetToStartState()
+    if @mainStage.start_descriptors?.length > 0
+      @selectActor(null)
+      @mainStage.resetToStartState()
+    else
+      alert('Uhoh - you haven\'t set the starting point for your world yet! Click the other arrow to save the current stage as the starting point.')
 
 
   # -- Recording Mode -- #
