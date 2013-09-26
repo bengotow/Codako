@@ -74,5 +74,8 @@ PixelArtCtrl = ($scope) ->
     saveChanges = confirm("Do you want to save your changes to this frame?")
     $scope.canvas.setDisplayedTile(x, y, saveChanges)
 
+  $scope.prepare_download_href = (event) ->
+    event.target.href = $scope.canvas.dataURLRepresentationForDisplayedFrame().data.replace(/^data:image\/[^;]/, 'data:application/octet-stream');
+
 
 window.PixelArtCtrl = PixelArtCtrl

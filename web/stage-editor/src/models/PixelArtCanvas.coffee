@@ -643,6 +643,14 @@ class PixelArtCanvas
 
     {data: url, width: totalWidth}
 
+  dataURLRepresentationForDisplayedFrame: () ->
+    url = false
+    window.withTempCanvas Tile.WIDTH, Tile.HEIGHT, (canvas, context) =>
+      context.putImageData(@imageData, 0, 0)
+      url = canvas.toDataURL()
+    {data: url, width: Tile.WIDTH}
+
+
 
   prepareDataForDisplayedFrame: () ->
     window.withTempCanvas Tile.WIDTH, Tile.HEIGHT, (canvas, context) =>
