@@ -1,28 +1,45 @@
 
 TutorialCtrl = ($scope) ->
   $scope.tutorialTimer = null
+  $scope.poseTimer = null
   $scope.audioSource = null
+  $scope.girlPose = "girl-sitting-looking"
+
+  $scope.poseFrames = {
+    'sitting-talking': ['sitting-talking-1', 'sitting-talking-2', 'sitting-talking-4', 'sitting-talking-5']
+    'standing-pointing': ['standing-pointing'],
+    'standing-talking': ['standing-talking-1', 'standing-talking-2', 'standing-talking-3']
+    'standing-confused': ['standing-confused-1', 'standing-confused-2']
+    'ashamed': ['ashamed', 'ashamed-blink'],
+    'excited': ['excited', 'excited-blink'],
+    'folded-talking': ['folded-talking-1', 'folded-talking-2', 'folded-talking-3', 'folded-talking-4'],
+  }
+
   $scope.tutorial = [
     {
       text: "Hi there! Welcome to Codako.",
-      soundURL: '/stage-editor/sounds/tutorial/tutorial-01.mp3'
+      soundURL: '/stage-editor/sounds/tutorial/tutorial-01.mp3',
+      pose: 'sitting-talking'
     },
     {
       text: "I'm Preethi, and this is a game I've been working on! It takes place
       in a cave where the hero has to avoid the lava and escape. I'm not quite
       done yet, but let me show you what I have so far!",
-      soundURL: '/stage-editor/sounds/tutorial/tutorial-02.mp3'
+      soundURL: '/stage-editor/sounds/tutorial/tutorial-02.mp3',
+      pose: 'sitting-talking'
     },
     {
       text: "These are the buttons that start and stop the game. When you play a normal
       computer game, you can't pause and rewind, but since we're making our own game,
       we can stop it or rewind whenever we want. It's helpful to go back when something
       doesn't work the way you thought it would.",
+      pose: ['standing-pointing', 'standing-talking'],
       soundURL: '/stage-editor/sounds/tutorial/tutorial-03.mp3',
       action: () -> $scope.highlight('.controls div.center')
     },
     {
       text: "Click the 'Run' button to start my game.",
+      pose: 'standing-pointing',
       soundURL: '/stage-editor/sounds/tutorial/tutorial-04.mp3',
       action: () ->
         $scope.highlight('#button-run')
@@ -30,6 +47,7 @@ TutorialCtrl = ($scope) ->
     {
       trigger: () -> window.Game?.running
       text: "You can move the hero around with the arrow keys. Go ahead and try it!"
+      pose: 'standing-talking',
       soundURL: '/stage-editor/sounds/tutorial/tutorial-05.mp3',
       action: () ->
         $scope.clearHighlights()
@@ -42,10 +60,12 @@ TutorialCtrl = ($scope) ->
       text: "Oops—you can't get to the exit yet! I need to make a bridge over the lava
       so the hero can walk across. Want to help me add the bridge? Let's do it together.
       Okay. Let's see...",
+      pose: ['ashamed', 'folded-talking']
       soundURL: '/stage-editor/sounds/tutorial/tutorial-06.mp3',
     },
     {
       text: "This is called the stage - it's where we design our game world.",
+      pose: 'standing-pointing',
       soundURL: '/stage-editor/sounds/tutorial/tutorial-07.mp3',
       action: () ->
         window.Game.running = false
@@ -56,11 +76,13 @@ TutorialCtrl = ($scope) ->
       In Codako, you get to draw your own game pieces, so they can be anything you want!
       I've already drawn dirt and lava since this is a cave world. To make a bridge for
       our hero to get over the lava, we need to make a new bridge piece.",
+      pose: ['standing-pointing', 'standing-talking'],
       soundURL: '/stage-editor/sounds/tutorial/tutorial-08.mp3'
       action: () -> $scope.highlight('#definitions')
     },
     {
       text: "Go ahead and click on the + sign in the library. You can help me draw it!",
+      pose: 'standing-pointing',
       soundURL: '/stage-editor/sounds/tutorial/tutorial-09.mp3'
       action: () -> $scope.highlight('#definitions .icon-plus')
     },
@@ -68,11 +90,13 @@ TutorialCtrl = ($scope) ->
       trigger: () -> $('#pixelArtModal').offset().top != 0
       text: "Use the tools on the left side to draw a piece of a bridge. It can look like
       anything you want, and you can always come back and change it later.",
+      pose: 'standing-pointing',
       soundURL: '/stage-editor/sounds/tutorial/tutorial-10.mp3'
       action: () -> $scope.highlight('.sidebar')
     },
     {
       text: "When you're done, click the blue button down here.",
+      pose: 'standing-pointing',
       soundURL: '/stage-editor/sounds/tutorial/tutorial-11.mp3'
       action: () -> $scope.highlight('#pixelArtModal .modal-footer .btn-primary')
     },
@@ -82,12 +106,14 @@ TutorialCtrl = ($scope) ->
       Move the mouse over the bridge piece and drag it up into our game world. You can
       drag pieces around the world to set it up the way you want. Drag enough blocks
       out from the library to create a bridge over the lava.",
+      pose: ['standing-talking', 'standing-pointing', 'standing-talking'],
       soundURL: '/stage-editor/sounds/tutorial/tutorial-12.mp3'
       action: () -> $scope.highlight('#definitions .item.active')
     },
     {
       text: "If you make a mistake, click on the trash can tool and click on the block you
       want to get rid of.",
+      pose: 'standing-pointing',
       soundURL: '/stage-editor/sounds/tutorial/tutorial-13.mp3'
       action: () -> $scope.highlight('#tool-delete', {temporary: true})
     },
@@ -98,6 +124,7 @@ TutorialCtrl = ($scope) ->
         return window.Game.mainStage.actorsMatchingDescriptor(descriptor).length == 5
       text: "Let's see how your bridge does! Click 'Run' again to play our game. Try using the arrow keys
       to walk over the lava. Can you get to the door? If you can't, try moving the bridge pieces around.",
+      pose: 'standing-pointing',
       soundURL: '/stage-editor/sounds/tutorial/tutorial-14.mp3'
       action: () -> $scope.highlight('#button-run', {temporary: true})
     },
@@ -514,6 +541,7 @@ TutorialCtrl = ($scope) ->
 
   $scope.advanceByStep = () ->
     clearTimeout($scope.tutorialTimer)
+    clearInterval($scope.poseTimer)
 
     if window.Game.tutorial_step >= $scope.tutorial.length - 1
       return;
@@ -536,6 +564,7 @@ TutorialCtrl = ($scope) ->
         $scope.audioSource = $scope.audioContext.createBufferSource()
         $scope.audioSource.buffer = step.soundBuffer
         $scope.audioSource.connect($scope.audioContext.destination)
+        $scope.audioSource.addEventListener('ended', $scope.stopPoseUpdates)
         if $scope.audioSource.start then $scope.audioSource.start(0) else $scope.audioSource.noteOn()
 
       catch e
@@ -544,8 +573,34 @@ TutorialCtrl = ($scope) ->
     # wait until finished speaking instructions
     $scope.tutorialTimer = setTimeout($scope.checkShouldAdvance, initialDelay)
 
+    # move the character's pose
+    $scope.poseUpdateCount = 0
+    $scope.poseIndex = 0
+    $scope.poseTimer = setInterval($scope.updatePose, 800)
     $scope.$apply() unless $scope.$$phase
 
+
+  $scope.poseUpdateCount = 0
+  $scope.updatePose = () ->
+    $scope.poseUpdateCount += 1
+    index = Math.floor($scope.poseUpdateCount / 4)
+
+    step = $scope.currentStep()
+    if step.pose instanceof Array
+      pose = step.pose[Math.min(index, step.pose.length - 1)]
+    else
+      pose = step.pose
+
+    frames = $scope.poseFrames[pose]
+    console.log('No frames for pose ', pose) unless frames instanceof Array
+
+    frame = frames[($scope.poseUpdateCount % 5) % frames.length]
+    $scope.girlPose = 'girl-'+frame
+    $scope.$apply() unless $scope.$$phase
+
+
+  $scope.stopPoseUpdates = () ->
+    clearInterval($scope.poseTimer)
 
 
   $scope.checkShouldAdvance = () ->

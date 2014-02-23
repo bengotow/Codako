@@ -1,0 +1,136 @@
+.sprite-girl {
+  display: inline-block;
+  overflow: hidden;
+  background-repeat: no-repeat;
+  background-image: url('../img/girl.png');
+}
+.girl-ashamed-blink {
+  width: 240px;
+  height: 240px;
+  background-position: -2px -2px;
+}
+.girl-ashamed {
+  width: 240px;
+  height: 240px;
+  background-position: -244px -2px;
+}
+.girl-excited-blink {
+  width: 240px;
+  height: 240px;
+  background-position: -486px -2px;
+}
+.girl-excited {
+  width: 240px;
+  height: 240px;
+  background-position: -728px -2px;
+}
+.girl-factual-looking {
+  width: 240px;
+  height: 240px;
+  background-position: -970px -2px;
+}
+.girl-factual {
+  width: 240px;
+  height: 240px;
+  background-position: -1212px -2px;
+}
+.girl-folded-blink-2 {
+  width: 240px;
+  height: 240px;
+  background-position: -1454px -2px;
+}
+.girl-folded-blink {
+  width: 240px;
+  height: 240px;
+  background-position: -2px -244px;
+}
+.girl-folded-talking-1 {
+  width: 240px;
+  height: 240px;
+  background-position: -244px -244px;
+}
+.girl-folded-talking-2 {
+  width: 240px;
+  height: 240px;
+  background-position: -486px -244px;
+}
+.girl-folded-talking-3 {
+  width: 240px;
+  height: 240px;
+  background-position: -728px -244px;
+}
+.girl-folded-talking-4 {
+  width: 240px;
+  height: 240px;
+  background-position: -970px -244px;
+}
+.girl-sitting-looking {
+  width: 240px;
+  height: 240px;
+  background-position: -1212px -244px;
+}
+.girl-sitting-resting {
+  width: 240px;
+  height: 240px;
+  background-position: -1454px -244px;
+}
+.girl-sitting-talking-1 {
+  width: 240px;
+  height: 240px;
+  background-position: -2px -486px;
+}
+.girl-sitting-talking-2 {
+  width: 240px;
+  height: 240px;
+  background-position: -244px -486px;
+}
+.girl-sitting-talking-3 {
+  width: 240px;
+  height: 240px;
+  background-position: -486px -486px;
+}
+.girl-sitting-talking-4 {
+  width: 240px;
+  height: 240px;
+  background-position: -728px -486px;
+}
+.girl-sitting-talking-5 {
+  width: 240px;
+  height: 240px;
+  background-position: -970px -486px;
+}
+.girl-sitting-talking-6 {
+  width: 240px;
+  height: 240px;
+  background-position: -1212px -486px;
+}
+.girl-standing-confused-1 {
+  width: 240px;
+  height: 240px;
+  background-position: -1454px -486px;
+}
+.girl-standing-confused-2 {
+  width: 240px;
+  height: 240px;
+  background-position: -2px -728px;
+}
+.girl-standing-pointing {
+  width: 240px;
+  height: 240px;
+  background-position: -244px -728px;
+}
+.girl-standing-talking-1 {
+  width: 240px;
+  height: 240px;
+  background-position: -486px -728px;
+}
+.girl-standing-talking-2 {
+  width: 240px;
+  height: 240px;
+  background-position: -728px -728px;
+}
+.girl-standing-talking-3 {
+  width: 240px;
+  height: 240px;
+  background-position: -970px -728px;
+}

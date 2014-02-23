@@ -76,6 +76,7 @@
 
   <link href="./css/editor.css" rel="stylesheet" media="screen">
   <link href="./css/colorpicker.css" rel="stylesheet" media="screen">
+  <link href="./css/girl.css" rel="stylesheet" media="screen">
 
   <script type="text/javascript" src="//api.filepicker.io/v1/filepicker.js"></script>
 </head>
@@ -155,7 +156,14 @@
 
   </div>
 
-  <div ng-controller="TutorialCtrl" ng-show="isInTutorial()" class="tutorial" style="background-color:red; width:300px; height:100px; bottom:0px; right:0px; position:fixed; z-index:2000;"><a ng-click="advanceByStep()" class="btn btn-primary">Start Tutorial</a>{{currentStep().text}}
+  <div ng-controller="TutorialCtrl" ng-show="isInTutorial()" class="tutorial" style="background-color:white; border:3px solid #CCC; width:550px; height:120px; bottom:0px; right:0px; position:fixed; z-index:2000;">
+    <div style="height:0; overflow:visible; position:absolute;"><div class="sprite-girl {{girlPose}}" style="position:relative; top:-108px; left:350px;"></div></div>
+
+    <div style="margin-right:160px; padding:5px; font-size:14px; overflow-y:scroll; height:110px;">
+      {{currentStep().text}}
+      <br>
+      <a ng-click="advanceByStep()" class="btn btn-primary" style="margin-top:4px;">Next</a>
+    </div>
   </div>
 
 
