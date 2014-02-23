@@ -80,7 +80,9 @@ handlers =
 setupLocals = (req, res, next) ->
 	req.locals = {}
 	req.withWorld = (callback) ->
-		World.findById req.pathArgs[0], (err, world) ->
+		id = req.pathArgs[0]
+		id = tutorialWorld._id if id is 'tutorial-introduction'
+		World.findById id, (err, world) ->
 			return res.endWithError('request.not_found', 404) unless world
 			callback(world)
 
