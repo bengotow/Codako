@@ -1,0 +1,560 @@
+[
+    {
+        "__v": 0,
+        "_id": "53418ce7eb74a9fff0000038",
+        "definitionId": "jizye5ng66r",
+        "name": "Flag",
+        "rules": [],
+        "spritesheet": {
+            "data": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAABE0lEQVRYR+2Y2xGEIAxFtbTtZEuxlO1kS2PxgYMZsnkZ5CN+OoQcLpcEnSe/J1VTz9o06kAsYabawMDE6jzqQAhYwMr7YQAh2DCAGNijgBRUve1li9M3+/EFLck/MiwPSsBqBQ+4xpm5CVADdqbelUN23AhoAjtyu5ziO8CgZC4evAN0VdDdg6saalhPD1JtjGNxFw9yEpcxlLJd6yAF3oLt5kEKDr00POFBIeyY98FqERugSx0UKoUe+i51UAub4ZJbL9ZCgbjwoFXIFB40ShgeNAo4hQfNClYTsL4eWwnVgQz66MUMkfAh0YtN8u3BUaitIkahFim4vC+eu8QuH+f/gy3Sf0DUyiTA4k5iAYPgHNAfkPFqKStkGYEAAAAASUVORK5CYII=",
+            "width": 40,
+            "animations": {
+                "idle": [
+                    0,
+                    0
+                ]
+            },
+            "animation_names": {
+                "idle": "Idle"
+            }
+        },
+        "variableDefaults": {},
+        "world": "53418ce7eb74a9fff000002d"
+    },
+    {
+        "__v": 0,
+        "world": "53418ce7eb74a9fff000002d",
+        "_id": "53418ce7eb74a9fff0000030",
+        "variableDefaults": {
+            "_2045001": {
+                "y": 0,
+                "x": 0,
+                "value": 0,
+                "name": "Age",
+                "_id": "_2045001"
+            }
+        },
+        "rules": [
+            {
+                "_id": "_2225041",
+                "name": "",
+                "type": "group-event",
+                "rules": [
+                    {
+                        "_id": "_2034444",
+                        "name": "Move Right",
+                        "scenario": [
+                            {
+                                "coord": "0,-1",
+                                "refs": []
+                            },
+                            {
+                                "coord": "0,0",
+                                "refs": [
+                                    "_2042130"
+                                ]
+                            },
+                            {
+                                "coord": "1,-1",
+                                "refs": []
+                            },
+                            {
+                                "coord": "1,0",
+                                "refs": []
+                            }
+                        ],
+                        "descriptors": {
+                            "_2042130": {
+                                "mainActor": true,
+                                "appearance_ignored": false,
+                                "actor_id_during_recording": "_1413514",
+                                "appearance": "idle",
+                                "definition_id": "aamlcui8uxr"
+                            }
+                        },
+                        "actions": [
+                            {
+                                "ref": "_2042130",
+                                "type": "move",
+                                "delta": "1,-1"
+                            }
+                        ]
+                    },
+                    {
+                        "_id": "_2243540",
+                        "name": "Turn Right",
+                        "scenario": [
+                            {
+                                "refs": [
+                                    "_1503101"
+                                ],
+                                "coord": "0,0"
+                            }
+                        ],
+                        "descriptors": {
+                            "_1503101": {
+                                "mainActor": true,
+                                "appearance_ignored": false,
+                                "actor_id_during_recording": "_1413514",
+                                "appearance": "_2220533",
+                                "definition_id": "aamlcui8uxr"
+                            }
+                        },
+                        "actions": [
+                            {
+                                "to": "idle",
+                                "type": "appearance",
+                                "ref": "_1503101"
+                            }
+                        ]
+                    }
+                ],
+                "event": "key",
+                "code": 39
+            },
+            {
+                "_id": "_2105500",
+                "name": "",
+                "type": "group-event",
+                "rules": [
+                    {
+                        "_id": "_1313113",
+                        "name": "Move Left",
+                        "scenario": [
+                            {
+                                "refs": [],
+                                "coord": "-1,0"
+                            },
+                            {
+                                "refs": [
+                                    "_2434313"
+                                ],
+                                "coord": "0,0"
+                            }
+                        ],
+                        "descriptors": {
+                            "_2434313": {
+                                "mainActor": true,
+                                "appearance_ignored": false,
+                                "actor_id_during_recording": "_1413514",
+                                "appearance": "_2220533",
+                                "definition_id": "aamlcui8uxr"
+                            }
+                        },
+                        "actions": [
+                            {
+                                "delta": "-1,0",
+                                "type": "move",
+                                "ref": "_2434313"
+                            }
+                        ]
+                    },
+                    {
+                        "_id": "_1513454",
+                        "name": "Turn Left",
+                        "scenario": [
+                            {
+                                "refs": [
+                                    "_1334414"
+                                ],
+                                "coord": "0,0"
+                            }
+                        ],
+                        "descriptors": {
+                            "_1334414": {
+                                "mainActor": true,
+                                "appearance_ignored": false,
+                                "actor_id_during_recording": "_1413514",
+                                "appearance": "idle",
+                                "definition_id": "aamlcui8uxr"
+                            }
+                        },
+                        "actions": [
+                            {
+                                "to": "_2220533",
+                                "type": "appearance",
+                                "ref": "_1334414"
+                            }
+                        ]
+                    }
+                ],
+                "event": "key",
+                "code": 37
+            },
+            {
+                "_id": "_2224240",
+                "name": "",
+                "type": "group-event",
+                "rules": [
+                    {
+                        "_id": "_2230052",
+                        "name": "Gravity",
+                        "scenario": [
+                            {
+                                "refs": [
+                                    "_2310541"
+                                ],
+                                "coord": "0,0"
+                            },
+                            {
+                                "refs": [],
+                                "coord": "0,1"
+                            }
+                        ],
+                        "descriptors": {
+                            "_2310541": {
+                                "mainActor": true,
+                                "appearance_ignored": true,
+                                "actor_id_during_recording": "_1413514",
+                                "appearance": "_2220533",
+                                "definition_id": "aamlcui8uxr"
+                            }
+                        },
+                        "actions": [
+                            {
+                                "delta": "0,1",
+                                "type": "move",
+                                "ref": "_2310541"
+                            }
+                        ]
+                    }
+                ],
+                "event": "idle"
+            }
+        ],
+        "spritesheet": {
+            "data": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAABQCAYAAABrjzfBAAAEVklEQVRoQ+2aO44TQRCGxxnSHoHcJERIm5CwE+NsOQAJ8gHMAfYA+AAWCQdgMxPbJCQrEZHgnCOsRGam2lPt6nJ3VXVP+yG0IyRj9+ubvx7T07Wj5sKv0aXyLbbb7XTUXbUAt6tmC3ON2qbKnAC4Wa/rTObgXix29/p76j6GgDr1ujlmGmAniVPFLej+hReq5uGweSAkqjdv27SJEQ7B4Lv/f29Ojwvq9VDuN6JmiZIqIIWB9UApWMgrujJ4LoHOgaTmFRV0YMTEAZIFsNAPqXq9a8lqOEgK1Hb9LYCbXdCMplNzVHP1VEA0tQ8GGKEB9mA+uE4OmBKcgZUCQu4D3/PjU+uJUUsHJcBoF4uZY+ZVTYyLBCY2wH14eGg+X1/7nucBNCiXY2YevaqJqVBcQZcTFwv/lNGyoqZgyrxmE8cALh7QJXKDipp6MA8oCJ88ggcp6ANIgLTC4c5lfHPTwB4wyACa//D21deZ97323TyYjLa5nM7aY2tJ6hUrCCDtr/tm9fL2YE34HS9o1yCPCqiprwFqcIMVpEpxWFRYUvCkgDevx55x/WMTFZfCYu6DPU8serMSdSxQuK9RwBgdhQZQi3rVTAwTgb9pkNAPQTe3n9x9SOpVBURI+NRAv/18vo/0q6tge8XVN+926UBMMzFT0tQDoNS0CE4BJ5OJyFAdMLgRlgcxkT8+g2357roowGhoKz+eVMEnQFRAChLJBy9OQUw92oZBAi/2wdik/OmCfc4C+H05DxjfTGbBd9oObaWQxQrGAAEC/DPVdhIfjAHAwlSlmpDZCv4XgKDo3fv96SwqXBI0WQris5T7GDcxB+QBlBMwWYAlTj50jAfEusTQCWuPd4Cz1Wobe2kuXaxmzcQDzru3eniB4W/2OZAHZYnu5D/nAD22ljfxUBVLaiZaHQaAqwDGKk1ODV4/gQX7UllwgttXE2LFogCwxMyBcrSYk/KNfrcPMFh/wa68PhMoODRYksfEHHT/OhK0xNSLAhapiEdw410hUbx4GaP7noKrD4hkEigDxBKbScFSMydPWg2KFgHmmNlyDNwIoLGopi5y8CyGfFgKyOsjgS8mILVEHt0s5CRtk4KCbxYDWlXMAYRD9VjNRYr6pILHAtSyEG8XTQydLZsHi4qWkoS4WaCNvm6WscORIEvhDhI1hcRAsaqo1Uik+kq2D9KEbQHkZzWp+olWljCbGDtaVTzmYZL40pQLWKPyZIpiriDsUfjrAPc5HMPrJbmlsSzAmC9SMO00Hw7QTwo4vv/oblADgz4cDn6rHiSoYPv46JV/++qP+DDAsgNVDgccBRAmXy6XvkaMgLz+EZS6SEmW3s1JAK/+7v4uip6vnC3NiLYkjU+AVqVS/Z4UHKKgVb2j5UENPthGsb/4iI3NOV2F8YNOWPmBulQrgcVK6iVVASlErVJEMaAGYClXaO4zyMQXC0iDgpcj7r7sffpsCvKNKoW0AvJnuWTqf3sFhF5bUtU6AAAAAElFTkSuQmCC",
+            "width": 40,
+            "animation_names": {
+                "_2220533": "Left",
+                "idle": "Right"
+            },
+            "animations": {
+                "_2220533": [
+                    1
+                ],
+                "idle": [
+                    0,
+                    0
+                ]
+            }
+        },
+        "name": "Hero",
+        "definitionId": "aamlcui8uxr"
+    },
+    {
+        "__v": 0,
+        "world": "53418ce7eb74a9fff000002d",
+        "_id": "53418ce7eb74a9fff0000032",
+        "rules": [],
+        "spritesheet": {
+            "data": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAABQCAYAAABrjzfBAAACZ0lEQVRoQ+2ZzXEDIQyF7crSQIpID24gDaSTHHPPpDJn2BkYLQjpCVjQejanjFewn59+wffPj9vz7f1xs/79/XwVS1r24d5L977/fj+e0Yh7aQ28BmPZg9ub7hv22gB7N7Wqj9gH0AQYFniDTIAxBt0Cxhg8GjAqgrg32MRYnBaDVsAIeQ7AGUmSKxhdKIVWsLnPShIKhMAlF88CjMmBwi0DRLPYPWAqM7NdjCrY3eq0yaW38O8ArZtpga49R1Ts6iRoV+hVeauDXset6a0OcWtucynYohpdcyk4TcGjTnDaF4BcXKt5I4pxNyBakLUXtT6HFGzdfMS6qRN1C/AF2KJaUai9Dqy7YaH12CmNU9YZk1O7O4ulMjSiTnYDajFGFW5R9HDA/CxMQwlReBogB4rGvf+R332Z6QGUkoArQbVEqdkWrU47JnJZG16Kzoto3aQJdNdKhfRc+41Fgpf23f1OYgG0/KaClJFa96CfQwpSpVoKrkWEYljQFltU0/ayPt+SRFo06yeKGgMEONOlOagIuFq9NA/W5PVw61VV0IN6ooIe1BsKaOm7llLDuniUe3PolmpQBWzZzKIMans+wJ7ZEFXFYlcoOCr+LBCSLQvoJf6KMuPNvecD9BZ/hYIr25t0PNgG1pXqafc3CdBT9haHppXuhergywOOmFxqZ+RDYlALfLQVpla3MouhGPTY5naF+gJEgy6zO08MvnwdbPSguiy5eNX9n0a4G/nz61wvwwN7P8jdPa8AVu8Hgws4ZUe1MpOLNWM62Ib/tRt8qrj17obaQ5foCDy1offa8cvQ5zUPcJ//A5+aYp1b/aRoAAAAAElFTkSuQmCC",
+            "width": 40,
+            "animations": {
+                "_1431310": [
+                    1
+                ],
+                "idle": [
+                    0,
+                    0
+                ]
+            },
+            "animation_names": {
+                "_1431310": "Untitled",
+                "idle": "Idle"
+            }
+        },
+        "name": "Block",
+        "definitionId": "q9h78ccjtt9"
+    },
+    {
+        "__v": 0,
+        "world": "53418ce7eb74a9fff000002d",
+        "_id": "53418ce7eb74a9fff000002f",
+        "rules": [],
+        "spritesheet": {
+            "data": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAABf0lEQVRYR+2XsXaCMBSGw2N4XHwId2Vnk8XNrQ9A98ZdHsCp3brULbtl70N06xM4U240nAA3AULU65GMYMKX/7//jQkY8REQ52NWwONXkmerFN3D5Dvxsre/Zcp4YOboBMi3My8w2CL87Xc4oC+16oAv2YE5A0p7RWHvO2MA+JnhVrtKu14kbDjgpf5IA16r/sBaNZxCAhaHcSpDtD8m+VUsDs/r24bxB6QBVUD4x7k/kVPQBgjp82G3TLGrxSNgUTaDFVQJrtfg3S2u2zsC9u2Do4IXxZxDQlrB8i9WsUt1ipAKCabeCNgnxaQVNNUfGYsfAhDOX75huZ5gUgqSB4RrZl09Egra6u+pAaensOyCURShFzj58B4Kvs5Fo0VjkCWgKSA+LcagdEovgG0Xbdv7NkAMNtCPN6wH+rwX9wGE74KiNwXUFeoCWwGEyVgP9KkgrNUFTN9IebSZ7BVC5GrC7icaUoJybh9AqaACowgIG6oAzuNmb9Ilu7WC8O1/ur0emClLsBQAAAAASUVORK5CYII=",
+            "width": 40,
+            "animation_names": {
+                "idle": "Idle"
+            },
+            "animations": {
+                "idle": [
+                    0,
+                    0
+                ]
+            }
+        },
+        "name": "Rock",
+        "definitionId": "us3zr9c0udi"
+    },
+    {
+        "__v": 0,
+        "world": "53418ce7eb74a9fff000002d",
+        "_id": "53418ce7eb74a9fff0000039",
+        "rules": [
+            {
+                "_id": "_1551215",
+                "name": "Untitled Rule",
+                "scenario": [
+                    {
+                        "coord": "0,0",
+                        "refs": [
+                            "_2312112"
+                        ]
+                    },
+                    {
+                        "coord": "0,1",
+                        "refs": []
+                    }
+                ],
+                "descriptors": {
+                    "_2312112": {
+                        "definition_id": "oou4u6jemi",
+                        "appearance": "idle",
+                        "actor_id_during_recording": "_2055321",
+                        "appearance_ignored": true,
+                        "mainActor": true
+                    }
+                },
+                "actions": [
+                    {
+                        "ref": "_2312112",
+                        "type": "move",
+                        "delta": "0,1"
+                    }
+                ]
+            },
+            {
+                "_id": "_2332033",
+                "name": "Untitled Rule",
+                "scenario": [
+                    {
+                        "coord": "-3,0",
+                        "refs": []
+                    },
+                    {
+                        "coord": "-3,1",
+                        "refs": []
+                    },
+                    {
+                        "coord": "-3,2",
+                        "refs": []
+                    },
+                    {
+                        "coord": "-3,3",
+                        "refs": []
+                    },
+                    {
+                        "coord": "-3,4",
+                        "refs": [
+                            "_1402440"
+                        ]
+                    },
+                    {
+                        "coord": "-2,0",
+                        "refs": []
+                    },
+                    {
+                        "coord": "-2,1",
+                        "refs": []
+                    },
+                    {
+                        "coord": "-2,2",
+                        "refs": []
+                    },
+                    {
+                        "coord": "-2,3",
+                        "refs": []
+                    },
+                    {
+                        "coord": "-2,4",
+                        "refs": []
+                    },
+                    {
+                        "coord": "-1,0",
+                        "refs": []
+                    },
+                    {
+                        "coord": "-1,1",
+                        "refs": []
+                    },
+                    {
+                        "coord": "-1,2",
+                        "refs": []
+                    },
+                    {
+                        "coord": "-1,3",
+                        "refs": []
+                    },
+                    {
+                        "coord": "-1,4",
+                        "refs": []
+                    },
+                    {
+                        "coord": "0,0",
+                        "refs": [
+                            "_1341311"
+                        ]
+                    },
+                    {
+                        "coord": "0,1",
+                        "refs": [
+                            "_1501014"
+                        ]
+                    },
+                    {
+                        "coord": "0,2",
+                        "refs": []
+                    },
+                    {
+                        "coord": "0,3",
+                        "refs": []
+                    },
+                    {
+                        "coord": "0,4",
+                        "refs": []
+                    }
+                ],
+                "descriptors": {
+                    "_1341311": {
+                        "definition_id": "oou4u6jemi",
+                        "appearance": "idle",
+                        "actor_id_during_recording": "_2055321",
+                        "appearance_ignored": true,
+                        "mainActor": true
+                    },
+                    "_1501014": {
+                        "definition_id": "q9h78ccjtt9",
+                        "appearance": "_1431310",
+                        "actor_id_during_recording": "_2001202",
+                        "appearance_ignored": true,
+                        "mainActor": false
+                    },
+                    "_1402440": {
+                        "definition_id": "aamlcui8uxr",
+                        "appearance": "idle",
+                        "actor_id_during_recording": "_1413514",
+                        "appearance_ignored": true,
+                        "mainActor": false,
+                        "variableConstraints": {
+                            "_2045001": {
+                                "value": 0,
+                                "comparator": "=",
+                                "ignored": true
+                            }
+                        }
+                    }
+                },
+                "actions": [
+                    {
+                        "ref": "_1341311",
+                        "type": "move",
+                        "delta": "-1,0"
+                    }
+                ]
+            }
+        ],
+        "spritesheet": {
+            "data": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAABlElEQVRYR+3YWxKDIAwF0LpDF+GyXIQ7tOIIE2PCTXionWk/q8DxBkQdPi//DbW+aZpW1Mc8z8XjFDW0oDS0F+sC1sA42Ao1AVvCvFAI9ODGcUzjL8uCpmY6nkszCyzBeWD0CjSkCvTiSmEIKQK9uDBIC2Dohyd5AXpw5knmPJEiHwPSBcUroAJ7pGdd2eE8Ok0i8pRgDyCtLkfkjl2AvXER40WmBO8CBqiGlMpsBuYmtXORqkCOD2XegSi9XFm8OHQ+H8sERJ22PN4dyKcC2mU4qBswwviWh6aHdJz+93iJ/8DaBVKdIJpDPYC0TzgHXwE8xOt2w74E0hOI+k47SQ3Quq+WTIUL8Nj2xBTpn9K9jjdq8QrAgWEMscwlV1/bRnxg/QXg4yluycXw9zuM9Nq5f62SVnRt2Wh76fmS4zTgYykewFNouU8ftyQZU5XSyyUY292C1HAW4F5u75xEDwBCaqoFfn6Lu0zs1LJ40FM1SQyGZAU2Lbm0GLQ7hBeYSu4pO0sMpkaxJUDaHn7hP04uHucLIm4Vu7le3n8AAAAASUVORK5CYII=",
+            "width": 40,
+            "animation_names": {
+                "idle": "Idle"
+            },
+            "animations": {
+                "idle": [
+                    0,
+                    0
+                ]
+            }
+        },
+        "name": "Door",
+        "definitionId": "oou4u6jemi"
+    },
+    {
+        "__v": 0,
+        "world": "53418ce7eb74a9fff000002d",
+        "_id": "53418ce7eb74a9fff0000031",
+        "rules": [
+            {
+                "_id": "_2143201",
+                "name": "Boil 1",
+                "scenario": [
+                    {
+                        "coord": "0,0",
+                        "refs": [
+                            "_2301121"
+                        ]
+                    }
+                ],
+                "descriptors": {
+                    "_2301121": {
+                        "definition_id": "e1izcd9ggb9",
+                        "appearance": "_2350352",
+                        "actor_id_during_recording": "_2443155",
+                        "appearance_ignored": false,
+                        "mainActor": true
+                    }
+                },
+                "actions": [
+                    {
+                        "ref": "_2301121",
+                        "type": "appearance",
+                        "to": "idle"
+                    }
+                ]
+            },
+            {
+                "_id": "_2033553",
+                "name": "Boil 2",
+                "scenario": [
+                    {
+                        "coord": "0,0",
+                        "refs": [
+                            "_2203110"
+                        ]
+                    }
+                ],
+                "descriptors": {
+                    "_2203110": {
+                        "definition_id": "e1izcd9ggb9",
+                        "appearance": "idle",
+                        "actor_id_during_recording": "_2443155",
+                        "appearance_ignored": false,
+                        "mainActor": true
+                    }
+                },
+                "actions": [
+                    {
+                        "ref": "_2203110",
+                        "type": "appearance",
+                        "to": "_2350352"
+                    }
+                ]
+            }
+        ],
+        "spritesheet": {
+            "data": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAB4CAYAAACAcLCaAAADYUlEQVR4Xu2bvXnbMBCGyRnceQBnhnTWDu6TjgNoAD8eQAOwi3uX7sUqO8QDuPMMCg4kGBAEcQccCIrKoTNxP9+9OIKSaNTVFYzLubrUh6r2SZldBGMwXHLIXQ+Wz6s6RYRJFFMcJk7HShGTyye0tCbHpgIphc4Eno9H3YOhcTid5n5vuJ8d8/A0j+G9SS5tqwV1dx9BUY9Pp6p7O442dgIV4AJzYBMcZ5XnfYjxfWrpCj4PBdcgsG6aGpJg5Nx5hXH0e/k5937+ZV1r26pqGn2hO/4rdLRwBMP1x68HlQAIDo6zFKricXyoBDAsW1vU84+p98tr/7e+fogtfbBX+Wt9q5sAUOXSeOirh8QTMnYRHl8jlCrRjd0LdIehBdctYSMR296lgwjGhLoF+QViUQrOi0AubCEoBA0Bvf85mzGXDsVfepBCKWQjBIUglwDXf9MepGxdSQIpgbnkjH+SwFDy3OKzC8xFbjWCInD8YrTBBwMffelBbk8KweIEuRtxrP9VLbFP/FUJlG2Ge0MIQSG4BgFuTNlm9k3wm/rR/k//4/zSiF7i7ku9sLlDXthwsVn+0QJnuQkUOHr5AjnZCb43InDlZcx6kxBWZWLCvaluZIljsWW0nxHkLkmytoU+lyVOJjo45iG44jaURyAXU84PCytq8YYWglziQnCJIPWBECa44vZBXfpyS5xYbDmBVGSO3f4EUpvXFBprHwtyfwRjK1zbXghyCW9GkHpz/T8CqURil3wzglShIpBKavEHTG6Atf2LHzagHNGwi2YJvHz25wBg1PcNKRbliEZQICQlJ4uwNUmvXiDWs+7Jnsmy2PRSlg9LnjI/EzgGuUfeX1jHjeCoBxzdsAWkHP9wC4CYOuhIaxBlH2zxVQ2HU5YEYL6xFPsniTnR8NlW3e/wyRwsAbzkgecyDPSEjrIxBY22SgMMo2N81JmgOjDxTZLtYwsP+sPXT8/wgYE48izGWgKbF4IYIWx+vwRj/8dKk0j8gShEcb8Esd4oNZ9O0FnOlJag+KQLLIRQBHJB75sgpYm5hDD/7Qkim/v2AhGEOxa4gL50X+6YIHZ7ufMrfJKBFEUJprRHUYGxi1KcoAhMIcD1IfVgSnNzhRl/ksBcydw4lMI3FUgpPJ/AW9ioKcRcm7/WnBuLinkzfwAAAABJRU5ErkJggg==",
+            "width": 40,
+            "animations": {
+                "_2350352": [
+                    2
+                ],
+                "_2011220": [
+                    1
+                ],
+                "idle": [
+                    0,
+                    0
+                ]
+            },
+            "animation_names": {
+                "_2350352": "Surface2",
+                "_2011220": "Underwater",
+                "idle": "Surface1"
+            }
+        },
+        "name": "Lava",
+        "definitionId": "e1izcd9ggb9"
+    }
+]

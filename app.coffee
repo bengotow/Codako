@@ -37,6 +37,7 @@ User.findOne {'nickname': 'bengotow'}, (err, user) ->
 # Create the tutorial game stage
 global.tutorialWorld = new World(JSON.parse(fs.readFileSync('./prebaked/tutorial_world.json')))
 global.tutorialStage = new Stage(JSON.parse(fs.readFileSync('./prebaked/tutorial_stage.json')))
+global.tutorialActors = JSON.parse(fs.readFileSync('./prebaked/tutorial_actors.json'))
 
 World.remove {_id:tutorialWorld._id}, (err) ->
   Stage.remove {_id:tutorialStage._id}, (err) ->
@@ -45,6 +46,15 @@ World.remove {_id:tutorialWorld._id}, (err) ->
       tutorialStage.save (err) ->
         console.log(err) if err
         console.log("Created tutorial: #{global.tutorialWorld._id}")
+
+_.each global.tutorialActors, (json) ->
+  jsonActor = new Actor(json)
+  console.log("Creating actor: #{jsonActor._id}")
+  Actor.remove {_id: jsonActor._id}, (err) ->
+    jsonActor.save (err) ->
+      return console.log(err) if err
+      console.log("Created actor: #{jsonActor._id}")
+
 
 # Open an S3 connection
 global.s3 = knox.createClient

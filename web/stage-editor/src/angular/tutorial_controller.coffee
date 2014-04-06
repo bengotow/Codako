@@ -547,6 +547,8 @@ TutorialCtrl = ($scope) ->
       return;
 
     window.Game.tutorial_step += 1
+    console.log('Tutorial advancing to step '+window.Game.tutorial_step)
+
     step = $scope.currentStep()
     step.action() if step.action
 
