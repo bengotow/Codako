@@ -319,7 +319,7 @@ class GameManager
 
   resetToStartState: () =>
     return if @selectedRule
-    if @mainStage.start_descriptors?.length > 0
+    if @mainStage.startDescriptors?.length > 0
       @selectActor(null)
       @mainStage.resetToStartState()
     else
