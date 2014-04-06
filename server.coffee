@@ -17,8 +17,8 @@ global.K_RESULT = "result"
 handlers =
 	'/':
 		'users':
+			'POST':     usersController.users_post
 			'/':
-				'POST':     usersController.users_post
 				'me':
 					'GET':    usersController.user_get_me
 				'%':
@@ -174,11 +174,11 @@ handleAPIRequest = (req, res, next) ->
 
 		credentials = new Buffer(parts[1], 'base64').toString().split(':')
 
-		User.findOne {nickname: credentials[0], password: credentials[1]}, (err, user) ->
+		User.findOne {email: credentials[0], password: credentials[1]}, (err, user) ->
 			if user
 				req.user_is_self = (req.pathArgs[0] == user._id)
 				req.user = user
-				console.log('Request for user ' + user.nickname)
+				console.log('Request for user ' + user.email)
 			choices[method](req, res)
 
 	else

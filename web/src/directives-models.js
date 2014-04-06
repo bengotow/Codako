@@ -84,7 +84,7 @@ App.factory('Auth', ['Base64', 'Users', '$cookieStore','$timeout', '$http', func
             document.execCommand("ClearAuthenticationCache");
             $cookieStore.remove('codako-authdata');
             $.ajaxSetup({headers: { 'Authorization': '' }});
-            $http.defaults.headers.common.Authorization = 'Basic ';
+            $http.defaults.headers.common.Authorization = undefined;
             loadedUser = null;
         }
     };
