@@ -47,13 +47,14 @@ World.remove {_id:tutorialWorld._id}, (err) ->
         console.log(err) if err
         console.log("Created tutorial: #{global.tutorialWorld._id}")
 
-_.each global.tutorialActors, (json) ->
-  jsonActor = new Actor(json)
-  console.log("Creating actor:  #{jsonActor._id}")
-  Actor.remove {_id: jsonActor._id}, (err) ->
-    jsonActor.save (err) ->
-      return console.log(err) if err
-      console.log("Created actor:  #{jsonActor._id}")
+    _.each global.tutorialActors, (json) ->
+      jsonActor = new Actor(json)
+      jsonActor.world = tutorialWorld._id
+      console.log("Creating actor:  #{jsonActor._id}")
+      Actor.remove {_id: jsonActor._id}, (err) ->
+        jsonActor.save (err) ->
+          return console.log(err) if err
+          console.log("Created actor:  #{jsonActor._id}")
 
 
 # Open an S3 connection
