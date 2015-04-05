@@ -24,6 +24,8 @@
       else
         item.class = ''
 
+  $scope.isSignedIn = () ->
+    Auth.user()?
 
   $scope.navigation = (side) ->
     items = []

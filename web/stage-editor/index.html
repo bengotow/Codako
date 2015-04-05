@@ -85,13 +85,17 @@
 
   <div class="navbar navbar-fixed-top" style="z-index:2;" ng-controller="AppCtrl">
       <div class="navbar-inner">
-      <div class="container">
+      <div class="container" ng-controller="NavCtrl">
         <a class="brand" href="/#/home">Codako</a>
         <ul class="nav">
           <li><a href="/#/world/{{world_id}}">Back to World</a></li>
         </ul>
 
-        <ul class="nav" style="float:right;" ng-controller="NavCtrl">
+        <div class="signin-to-save" ng-hide="isSignedIn()">
+          <div class="arrow"></div>
+          <div class="msg">Save your work!</div>
+        </div>
+        <ul class="nav" style="float:right;">
           <li ng-repeat="item in navigation('right')" class="{{item.class}}"><a href="{{item.href}}" id="linkto-{{item.label}}">{{item.label}}</a></li>
         </ul>
       </div>
