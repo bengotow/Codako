@@ -1,0 +1,10 @@
+{
+	"folders":
+	[
+		{
+            "path":".",
+            "folder_exclude_patterns": ["node_modules", "research", "ssl"],
+            "file_exclude_patterns": ["**/angular/*.js", "**/models/*.js"]
+		}
+	]
+}
