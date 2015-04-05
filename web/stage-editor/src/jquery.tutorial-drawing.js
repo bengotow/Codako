@@ -82,3 +82,75 @@
       });
     };
   }( jQuery ));
+
+
+(function( $ ) {
+  $.fn.arrow = function(action, target, options) {
+    this.each(function() {
+      if ( action === "show") {
+        var canvas = $("<canvas style='position:absolute; z-index:3000; pointer-events:none;'></canvas>");
+        var canvasEl = canvas[0];
+        $('body').append(canvas);
+        this.arrowCanvas = canvas;
+
+        canvas.offset({left: 0, top: 0});
+        canvasEl.width = window.innerWidth;
+        canvasEl.height = window.innerHeight;
+
+        fraction = 0;
+
+        var start = $(this).offset();
+        start.left += $(this).width() / 2;
+        start.top += $(this).height() / 2;
+        var end = target.offset();
+        end.left += target.width() / 2;
+        end.top += target.height() / 2;
+
+        canvas.render = function() {
+          var context = canvasEl.getContext('2d');
+
+          context.clearRect(0,0, canvasEl.width, canvasEl.height);
+          context.lineWidth = 12;
+          context.lineCap="round";
+          context.strokeStyle = "red";
+
+          var dx = (end.left - start.left) * fraction;
+          var dy = (end.top - start.top) * fraction;
+
+          for (var x = 0; x <= 10; x ++) {
+            var f = x / 10;
+            context.lineWidth = 5 + x * 0.8;
+            context.beginPath();
+            context.moveTo(start.left + dx * f, start.top + dy * f);
+            context.lineTo(start.left + dx, start.top + dy);
+            context.stroke();
+          }
+
+          context.beginPath();
+          context.moveTo(start.left + dx, start.top + dy);
+          context.lineTo(start.left + dx - 26, start.top + dy + 20);
+          context.moveTo(start.left + dx, start.top + dy);
+          context.lineTo(start.left + dx + 26, start.top + dy + 20);
+          context.stroke();
+
+          fraction += 0.007;
+          if (fraction < 1)
+            setTimeout(canvas.render, 1/20.0);
+        }
+
+        canvas.render();
+
+      }
+      if ( action === "erase" ) {
+        if (this.arrowCanvas == null || this.arrowCanvas == undefined)
+          return;
+        this.arrowCanvas.animate({
+          opacity: 0.0
+        }, 500, function() {
+          if (this.arrowCanvas)
+            this.arrowCanvas.remove()
+        });
+      }
+    });
+  };
+}( jQuery ));

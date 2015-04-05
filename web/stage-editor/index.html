@@ -43,7 +43,7 @@
   <script src="./src/easeljs.SelectionFilter.js"></script>
   <script src="./src/bootstrap-colorpicker.js"></script>
   <script src="./src/extensions.js"></script>
-  <script src="./src/jquery.highlighter.js"></script>
+  <script src="./src/jquery.tutorial-drawing.js"></script>
 
   <script src="./src/models/XNARectangle.js"></script>
   <script src="./src/models/ContentManager.js"></script>
@@ -92,7 +92,7 @@
         </ul>
 
         <ul class="nav" style="float:right;" ng-controller="NavCtrl">
-          <li ng-repeat="item in navigation('right')" class="{{item.class}}"><a href="{{item.href}}">{{item.label}}</a></li>
+          <li ng-repeat="item in navigation('right')" class="{{item.class}}"><a href="{{item.href}}" id="linkto-{{item.label}}">{{item.label}}</a></li>
         </ul>
       </div>
     </div>

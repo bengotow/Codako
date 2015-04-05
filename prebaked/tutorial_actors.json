@@ -45,18 +45,10 @@
                         "name": "Move Right",
                         "scenario": [
                             {
-                                "coord": "0,-1",
-                                "refs": []
-                            },
-                            {
                                 "coord": "0,0",
                                 "refs": [
                                     "_2042130"
                                 ]
-                            },
-                            {
-                                "coord": "1,-1",
-                                "refs": []
                             },
                             {
                                 "coord": "1,0",
@@ -76,7 +68,7 @@
                             {
                                 "ref": "_2042130",
                                 "type": "move",
-                                "delta": "1,-1"
+                                "delta": "1,0"
                             }
                         ]
                     },
@@ -264,7 +256,7 @@
                 "idle": "Idle"
             }
         },
-        "name": "Block",
+        "name": "Dirt",
         "definitionId": "q9h78ccjtt9"
     },
     {
@@ -292,169 +284,7 @@
         "__v": 0,
         "world": "53418ce7eb74a9fff000002d",
         "_id": "53418ce7eb74a9fff0000039",
-        "rules": [
-            {
-                "_id": "_1551215",
-                "name": "Untitled Rule",
-                "scenario": [
-                    {
-                        "coord": "0,0",
-                        "refs": [
-                            "_2312112"
-                        ]
-                    },
-                    {
-                        "coord": "0,1",
-                        "refs": []
-                    }
-                ],
-                "descriptors": {
-                    "_2312112": {
-                        "definition_id": "oou4u6jemi",
-                        "appearance": "idle",
-                        "actor_id_during_recording": "_2055321",
-                        "appearance_ignored": true,
-                        "mainActor": true
-                    }
-                },
-                "actions": [
-                    {
-                        "ref": "_2312112",
-                        "type": "move",
-                        "delta": "0,1"
-                    }
-                ]
-            },
-            {
-                "_id": "_2332033",
-                "name": "Untitled Rule",
-                "scenario": [
-                    {
-                        "coord": "-3,0",
-                        "refs": []
-                    },
-                    {
-                        "coord": "-3,1",
-                        "refs": []
-                    },
-                    {
-                        "coord": "-3,2",
-                        "refs": []
-                    },
-                    {
-                        "coord": "-3,3",
-                        "refs": []
-                    },
-                    {
-                        "coord": "-3,4",
-                        "refs": [
-                            "_1402440"
-                        ]
-                    },
-                    {
-                        "coord": "-2,0",
-                        "refs": []
-                    },
-                    {
-                        "coord": "-2,1",
-                        "refs": []
-                    },
-                    {
-                        "coord": "-2,2",
-                        "refs": []
-                    },
-                    {
-                        "coord": "-2,3",
-                        "refs": []
-                    },
-                    {
-                        "coord": "-2,4",
-                        "refs": []
-                    },
-                    {
-                        "coord": "-1,0",
-                        "refs": []
-                    },
-                    {
-                        "coord": "-1,1",
-                        "refs": []
-                    },
-                    {
-                        "coord": "-1,2",
-                        "refs": []
-                    },
-                    {
-                        "coord": "-1,3",
-                        "refs": []
-                    },
-                    {
-                        "coord": "-1,4",
-                        "refs": []
-                    },
-                    {
-                        "coord": "0,0",
-                        "refs": [
-                            "_1341311"
-                        ]
-                    },
-                    {
-                        "coord": "0,1",
-                        "refs": [
-                            "_1501014"
-                        ]
-                    },
-                    {
-                        "coord": "0,2",
-                        "refs": []
-                    },
-                    {
-                        "coord": "0,3",
-                        "refs": []
-                    },
-                    {
-                        "coord": "0,4",
-                        "refs": []
-                    }
-                ],
-                "descriptors": {
-                    "_1341311": {
-                        "definition_id": "oou4u6jemi",
-                        "appearance": "idle",
-                        "actor_id_during_recording": "_2055321",
-                        "appearance_ignored": true,
-                        "mainActor": true
-                    },
-                    "_1501014": {
-                        "definition_id": "q9h78ccjtt9",
-                        "appearance": "_1431310",
-                        "actor_id_during_recording": "_2001202",
-                        "appearance_ignored": true,
-                        "mainActor": false
-                    },
-                    "_1402440": {
-                        "definition_id": "aamlcui8uxr",
-                        "appearance": "idle",
-                        "actor_id_during_recording": "_1413514",
-                        "appearance_ignored": true,
-                        "mainActor": false,
-                        "variableConstraints": {
-                            "_2045001": {
-                                "value": 0,
-                                "comparator": "=",
-                                "ignored": true
-                            }
-                        }
-                    }
-                },
-                "actions": [
-                    {
-                        "ref": "_1341311",
-                        "type": "move",
-                        "delta": "-1,0"
-                    }
-                ]
-            }
-        ],
+        "rules": [],
         "spritesheet": {
             "data": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAABlElEQVRYR+3YWxKDIAwF0LpDF+GyXIQ7tOIIE2PCTXionWk/q8DxBkQdPi//DbW+aZpW1Mc8z8XjFDW0oDS0F+sC1sA42Ao1AVvCvFAI9ODGcUzjL8uCpmY6nkszCyzBeWD0CjSkCvTiSmEIKQK9uDBIC2Dohyd5AXpw5knmPJEiHwPSBcUroAJ7pGdd2eE8Ok0i8pRgDyCtLkfkjl2AvXER40WmBO8CBqiGlMpsBuYmtXORqkCOD2XegSi9XFm8OHQ+H8sERJ22PN4dyKcC2mU4qBswwviWh6aHdJz+93iJ/8DaBVKdIJpDPYC0TzgHXwE8xOt2w74E0hOI+k47SQ3Quq+WTIUL8Nj2xBTpn9K9jjdq8QrAgWEMscwlV1/bRnxg/QXg4yluycXw9zuM9Nq5f62SVnRt2Wh76fmS4zTgYykewFNouU8ftyQZU5XSyyUY292C1HAW4F5u75xEDwBCaqoFfn6Lu0zs1LJ40FM1SQyGZAU2Lbm0GLQ7hBeYSu4pO0sMpkaxJUDaHn7hP04uHucLIm4Vu7le3n8AAAAASUVORK5CYII=",
             "width": 40,
@@ -468,7 +298,7 @@
                 ]
             }
         },
-        "name": "Door",
+        "name": "Boulder",
         "definitionId": "oou4u6jemi"
     },
     {

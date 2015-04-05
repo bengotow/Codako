@@ -39,6 +39,7 @@
       return items
 
     if side == 'right'
+      items.push($scope.navigationItemMatching('Examples', '/#/examples'))
       if Auth.user()
         items.push($scope.navigationItemMatching('Sign Out', '/#/sign-out'))
       else
