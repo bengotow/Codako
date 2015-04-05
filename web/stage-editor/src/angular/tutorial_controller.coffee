@@ -616,11 +616,12 @@ TutorialCtrl = ($scope) ->
 
     if window.Game.tutorial_step >= $scope.tutorial.length - 1
       return;
-
     window.Game.tutorial_step += 1
-    console.log('Tutorial advancing to step '+window.Game.tutorial_step)
 
     step = $scope.currentStep()
+    if !step
+      return;
+
     step.action() if step.action
 
     if step.text

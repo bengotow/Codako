@@ -16,14 +16,14 @@ PixelArtCtrl = ($scope) ->
     [r,g,b] = hsvToRgb(h/80.0,1,0.5)
     $scope.colors.push("rgba(#{Math.round(r)},#{Math.round(g)},#{Math.round(b)},255)")
 
-  $scope.colorpicker = $('#cp1').colorpicker()
-  $scope.colorpicker.show()
-  $scope.colorpicker.on 'changeColor', (ev)->
-    c = ev.color.toRGB()
-    $scope.set_tool_color("rgba(#{c.r},#{c.g},#{c.b},#{c.a})")
-
-
   $scope.$root.$on 'edit_appearance', (msg, args) ->
+    # Initialize the color picker component
+    $scope.colorpicker = $('#cp1').colorpicker()
+    $scope.colorpicker.show()
+    $scope.colorpicker.on 'changeColor', (ev) ->
+      c = ev.color.toRGB()
+      $scope.canvas.toolColor = "rgba(#{c.r},#{c.g},#{c.b},#{c.a})"
+
     $scope.actor_definition = args.actor_definition
     img = $scope.actor_definition.img
     if $scope.canvas
