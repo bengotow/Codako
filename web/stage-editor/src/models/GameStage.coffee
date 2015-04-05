@@ -47,7 +47,7 @@ class GameStage extends Stage
         window.Game.onAppearancePlaced(actor, @, dragIdentifier[11..-1]) if actor
 
 
-  onscreen: () ->
+  onscreen: ->
     @widthTarget > 1 || @widthCurrent > 1
 
 
@@ -102,7 +102,7 @@ class GameStage extends Stage
       callback(null) if callback
 
 
-  setStartState: () =>
+  setStartState: =>
     @startDescriptors = []
     @startDescriptors.push(actor.descriptor()) for actor in @actors
 
@@ -111,14 +111,14 @@ class GameStage extends Stage
     @uncache()
 
 
-  resetToStartState: () =>
+  resetToStartState: =>
     @actors = []
     data = @saveData()
     data.actor_descriptors = [].concat(data.start_descriptors)
     @prepareWithData(data)
 
 
-  dispose: () =>
+  dispose: =>
     @actors = []
     @recordingMasks = []
     @recordingHandles = {}
@@ -132,7 +132,7 @@ class GameStage extends Stage
     img = new Image()
     img.crossOrigin = 'Anonymous'
     img.src = ''
-    $(img).on 'load', () =>
+    $(img).on 'load', =>
       $(img).off 'load'
       @removeChild(@backgroundSprite) if @backgroundSprite
 
@@ -213,7 +213,7 @@ class GameStage extends Stage
     @centerOnRecordingRegion() if @recordingCentered
 
 
-  clearRecording: () ->
+  clearRecording: ->
     @setRecordingCentered(false)
     @setRecordingExtent(null)
     @centerOnEntireCanvas()
@@ -226,13 +226,13 @@ class GameStage extends Stage
     @update()
 
 
-  centerOnRecordingRegion: () ->
+  centerOnRecordingRegion: ->
     if @recordingExtent
       @offsetTarget.x = (4.5 - @recordingExtent.left - (@recordingExtent.right - @recordingExtent.left) / 2) * Tile.WIDTH
       @offsetTarget.y = (4 - @recordingExtent.top - (@recordingExtent.bottom - @recordingExtent.top) / 2) * Tile.HEIGHT
 
 
-  centerOnEntireCanvas: () ->
+  centerOnEntireCanvas: ->
     @offsetTarget.x = @offsetTarget.y = 0
 
 
@@ -257,8 +257,11 @@ class GameStage extends Stage
   # -- Managing Actors on the Stage -- #
 
   addActor: (descriptor, pointIfNotInDescriptor = null) ->
+    if @actorWithID(descriptor._id)
+      return console.log("GameStage.addActor(): There is already an actor with id #{descriptor._id}")
+
     actor = window.Game.library.instantiateActorFromDescriptor(descriptor, pointIfNotInDescriptor)
-    return console.log('Could not read descriptor:', descriptor) if !actor
+    return console.log('GameStage.addActor(): Could not read descriptor:', descriptor) if !actor
 
     actor.addEventListener 'click', (e) =>
       window.Game.onActorClicked(actor)

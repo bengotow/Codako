@@ -6,7 +6,7 @@ class GroupRule
     @[key] = value for key, value of json
     @rules = Rule.inflateRules(json['rules'])
 
-  descriptor: () =>
+  descriptor: =>
     json = {
       _id: @_id,
       name: @name,
@@ -24,7 +24,7 @@ class EventGroupRule extends GroupRule
     @code = undefined
     super(json)
 
-  descriptor: () =>
+  descriptor: =>
     json = super()
     json.event = @event
     json.code = @code
@@ -39,7 +39,7 @@ class FlowGroupRule extends GroupRule
     @behavior = 'all'
     super(json)
 
-  descriptor: () =>
+  descriptor: =>
     json = super()
     json.behavior = @behavior
     json

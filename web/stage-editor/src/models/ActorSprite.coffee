@@ -23,7 +23,7 @@ class ActorSprite extends Sprite
     val / 1
 
 
-  descriptor: () ->
+  descriptor: ->
     {
       _id: @_id
       definition_id: @definition_id,
@@ -66,7 +66,7 @@ class ActorSprite extends Sprite
     super
 
 
-  resetRulesApplied: () ->
+  resetRulesApplied: ->
     @applied = {}
 
 
@@ -152,7 +152,6 @@ class ActorSprite extends Sprite
       else if actor
         actor.applyRuleAction(action, rule)
       else
-        debugger
         throw "Couldn't find the actor for performing rule: #{rule}"
 
 
@@ -181,7 +180,7 @@ class ActorSprite extends Sprite
 
   # -- drag and drop --- #
 
-  setupDragging: () ->
+  setupDragging: ->
     @dragging = false
     @addEventListener 'mousedown', (e) =>
       return unless @stage.draggingEnabled

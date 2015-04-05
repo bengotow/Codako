@@ -74,7 +74,7 @@ class GameManager
         stage.resources ||= {images: {}, sounds: {}}
         @tutorial_name = stage.tutorial_name
         @tutorial_step = stage.tutorial_step
-        @content.fetchLevelAssets stage.resources, () =>
+        @content.fetchLevelAssets stage.resources, =>
           @loadLevelDataReady(stage)
           callback(null) if callback
 
@@ -100,7 +100,7 @@ class GameManager
       window.rootScope.$broadcast('tutorial_content_ready')
 
 
-  tick: () ->
+  tick: ->
     @update()
 
 
@@ -119,22 +119,22 @@ class GameManager
       @stagePane2.update(elapsed) if @stagePane2.onscreen()
 
 
-  frameRewind: () ->
+  frameRewind: ->
     return alert("Sorry, you can't rewind any further!") unless @prevFrames.length
     @selectedActor = null
-    @mainStage.prepareWithData @prevFrames.pop(), () ->
+    @mainStage.prepareWithData @prevFrames.pop(), ->
       window.rulesScope.$apply() unless window.rulesScope.$$phase
       window.variablesScope.$apply() unless window.variablesScope.$$phase
 
 
-  frameSave: () ->
+  frameSave: ->
     if @selectedRule?.editing
       throw "This shouldn't happen!"
     @prevFrames = @prevFrames[1..-1] if @prevFrames.length > 20
     @prevFrames.push(@mainStage.saveData())
 
 
-  frameAdvance: () ->
+  frameAdvance: ->
     # if we create new actors during the frame, we don't want to advance
     # those ones. Existing actors only!
     actorsPresentBeforeFrame = [].concat(@mainStage.actors)
@@ -165,9 +165,17 @@ class GameManager
     if window.view_only
       return
 
-    isAsync = true
-    isAsync = options.async if options.async != undefined
+    options.async ?= true
 
+    if options.async
+      @_saveDeferred ?= _.debounce (options) =>
+        @_save(options)
+      , 1000
+      @_saveDeferred(options)
+    else
+      @_save(options)
+
+  _save: (options = {}) ->
     stageData = @mainStage.saveData(options)
     stageData.tutorial_step = @tutorial_step
 
@@ -176,8 +184,8 @@ class GameManager
       data: angular.toJson(stageData),
       contentType: 'application/json',
       type: 'POST',
-      async: isAsync
-    }).done () ->
+      async: options.async
+    }).done ->
       console.log('Stage Saved')
 
 
@@ -216,7 +224,7 @@ class GameManager
     window.rootScope.$broadcast('set_tool', 'pointer')
 
 
-  resetToolAfterAction: () ->
+  resetToolAfterAction: ->
     canRepeat = @tool == 'delete'
     @setTool('pointer') unless canRepeat && (@keysDown[16] || @keysDown[17] || @keysDown[18])
     window.rootScope.$apply() unless window.rootScope.$$phase
@@ -243,7 +251,7 @@ class GameManager
 
 
   onActorVariableValueEdited: (actor, varName, val) ->
-    @wrapApplyChangeTo actor, actor.stage, () ->
+    @wrapApplyChangeTo actor, actor.stage, ->
       actor.variableValues[varName] = val
 
 
@@ -251,23 +259,23 @@ class GameManager
     if @selectedRule
       return unless point.isInside(@mainStage.recordingExtent)
 
-    @wrapApplyChangeTo actor, stage, () ->
+    @wrapApplyChangeTo actor, stage, ->
       actor.setWorldPos(point)
 
 
   onActorDeleted: (actor, stage) ->
-    @wrapApplyChangeTo actor, stage, () ->
+    @wrapApplyChangeTo actor, stage, ->
       stage.removeActor(actor)
 
 
   onAppearancePlaced: (actor, stage, appearance) ->
-    @wrapApplyChangeTo actor, stage, () =>
+    @wrapApplyChangeTo actor, stage, =>
       actor.setAppearance(appearance)
       @update()
 
 
   onActorPlaced: (actor, stage) ->
-    @wrapApplyChangeTo actor, stage, () =>
+    @wrapApplyChangeTo actor, stage, =>
       @update()
 
 
@@ -290,7 +298,7 @@ class GameManager
         # 10 in the after picture as well.
         @selectedRule.updateActions(@stagePane1, @stagePane2, {existingActionsOnly: true, skipVariables: true, skipAppearance: true})
 
-        @mirrorStage1OntoStage2 {}, () =>
+        @mirrorStage1OntoStage2 {}, =>
           # If I change variable A and A is tied to an action, update it. Otherwise ignore.
           # If I change the position of X and X is moved to a new spot in the after picture, update.
           @selectedRule.updateActions(@stagePane1, @stagePane2, {existingActionsOnly: true, skipMove: true})
@@ -311,13 +319,13 @@ class GameManager
 
 
   # -- Managing the Stage Start State -- #
-  setStartState: () =>
+  setStartState: =>
     return if @selectedRule
     @mainStage.setStartState()
     @save()
 
 
-  resetToStartState: () =>
+  resetToStartState: =>
     return if @selectedRule
     if @mainStage.startDescriptors?.length > 0
       @selectActor(null)
@@ -362,7 +370,7 @@ class GameManager
 
     extent = null
 
-    _beforeStageReady = () =>
+    _beforeStageReady = =>
       @stagePane1.setRecordingExtent(extent, 'white')
       @stagePane1.setRecordingCentered(true)
       @stagePane1.setDisplayWidth(@stageTotalWidth / 2 - 2)
@@ -393,7 +401,7 @@ class GameManager
   mirrorStage1OntoStage2: (options = {}, callback) ->
     options.shouldSelect ||= @selectedActor?.stage == @stagePane2
 
-    @stagePane2.prepareWithData @mainStage.saveData(), () =>
+    @stagePane2.prepareWithData @mainStage.saveData(), =>
       # make the secondary pane visible and update extent to match
       @stagePane2.setRecordingExtent(@mainStage.recordingExtent, 'white')
       @stagePane2.setRecordingCentered(true)
@@ -411,7 +419,7 @@ class GameManager
       callback() if callback
 
 
-  exitRecordingMode: () ->
+  exitRecordingMode: ->
     window.rootScope.$broadcast('end_edit_rule')
 
     @stagePane1.clearRecording()
@@ -420,7 +428,7 @@ class GameManager
     @stagePane2.setDisplayWidth(0)
 
     if @previousGameState
-      @stagePane1.prepareWithData @previousGameState, () =>
+      @stagePane1.prepareWithData @previousGameState, =>
         if @selectedRule.actor
           previouslySelectedActor = @stagePane1.actorWithID(@selectedRule.actor._id)
           @selectActor(previouslySelectedActor) if previouslySelectedActor
@@ -431,7 +439,7 @@ class GameManager
     @selectedRule = null
 
 
-  recordingActionModified: () =>
+  recordingActionModified: =>
     @mirrorStage1OntoStage2()
 
 
@@ -448,11 +456,11 @@ class GameManager
     window.rootScope.$apply() unless window.rootScope.$$phase
 
 
-  revertRecording: () ->
+  revertRecording: ->
     @selectedRule[key] = value for key, value of @previousRuleState
 
 
-  saveRecording: () ->
+  saveRecording: ->
     actor = @selectedRule.actor
     actor.definition.addRule(@selectedRule)
     actor.definition.clearCacheForRule(@selectedRule)

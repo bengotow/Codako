@@ -22,7 +22,7 @@
       $scope.worlds = worlds
 
 
-  $scope.newWorld = () ->
+  $scope.newWorld = ->
     data = {}
     Worlds.create data, (world) ->
       $location.path("/world/#{world._id}")
@@ -34,7 +34,7 @@
         $scope.worlds.splice($scope.worlds.indexOf(world), 1)
 
 
-  $scope.importWorld = () ->
+  $scope.importWorld = ->
     input = prompt("Please paste the JSON you exported below.", "")
     return unless input && input.length > 0
 

@@ -56,11 +56,11 @@ class Sprite extends BitmapAnimation
       @cache(-2,-2, Tile.WIDTH+4, Tile.HEIGHT+4)
 
 
-  getBounds: () ->
+  getBounds: ->
     super
 
 
-  getWorldBounds: () ->
+  getWorldBounds: ->
     new XNARectangle(@worldPos.x, @worldPos.y, @worldSize.width, @worldSize.height)
 
 

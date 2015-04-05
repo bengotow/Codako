@@ -5,12 +5,12 @@ LibraryCtrl = ($scope) ->
 
   # -- Definitions -- #
 
-  $scope.definitions = () ->
+  $scope.definitions = ->
     return [] unless window.Game?.library?
     window.Game.library.definitions
 
 
-  $scope.add_definition = () ->
+  $scope.add_definition = ->
     window.Game.library.createActorDefinition (err, actor) ->
       window.Game.selectDefinition(actor)
       $scope.$apply()
@@ -32,7 +32,7 @@ LibraryCtrl = ($scope) ->
       window.Game.selectedDefinition = def
 
 
-  $scope.selected_definition = () ->
+  $scope.selected_definition = ->
     window.Game?.selectedDefinition
 
 
@@ -43,11 +43,11 @@ LibraryCtrl = ($scope) ->
 
   # -- Appearances -- #
 
-  $scope.appearances = () ->
+  $scope.appearances = ->
     return [] unless window.Game && window.Game.selectedDefinition
     window.Game.selectedDefinition.spritesheet.animations
 
-  $scope.add_appearance = () ->
+  $scope.add_appearance = ->
     definition = $scope.selected_definition()
     identifier = definition.addAppearance()
     $scope.$root.$broadcast('edit_appearance', {actor_definition: definition, identifier: identifier})
@@ -70,7 +70,7 @@ LibraryCtrl = ($scope) ->
     definition = $scope.selected_definition()
     identifier = $(event.target).data('identifier')
     name = $(event.target).val()
-    debugger
+
     definition.renameAppearance(identifier, name)
     definition.save()
 

@@ -10,7 +10,7 @@
 		$location.path('/profile') if user
 
 
-	$scope.signUp = () ->
+	$scope.signUp = ->
 		data = _.clone($scope.registration)
 		data.password = CryptoJS.MD5(data.password).toString()
 
@@ -22,7 +22,7 @@
 				$location.path('/profile')
 
 
-	$scope.signIn = () ->
+	$scope.signIn = ->
 		Auth.setCredentials($scope.credentials.email, CryptoJS.MD5($scope.credentials.password).toString())
 		Auth.withUser (error, user) ->
 			return alert(error) if (error)

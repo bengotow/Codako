@@ -8,17 +8,17 @@ RulesCtrl = ($scope) ->
     'Do All & Continue': 'all'
     'Randomize & Do First': 'random'
 
-  $scope.definition_name = () ->
+  $scope.definition_name = ->
     return undefined unless window.Game && window.Game.selectedDefinition
     window.Game.selectedDefinition.name
 
 
-  $scope.rules = () ->
+  $scope.rules = ->
     return undefined unless window.Game && window.Game.selectedDefinition
     window.Game.selectedDefinition.rules
 
 
-  $scope.add_rule = () ->
+  $scope.add_rule = ->
     window.Game.editNewRuleForActor(window.Game.selectedActor)
 
 
@@ -56,11 +56,11 @@ RulesCtrl = ($scope) ->
     window.Game.selectedDefinition.addEventGroup({event: 'key', code: key_code})
 
 
-  $scope.add_rule_group_flow = () ->
+  $scope.add_rule_group_flow = ->
     window.Game.selectedDefinition.addFlowGroup()
 
 
-  $scope.save_rules = () ->
+  $scope.save_rules = ->
     window.Game.selectedDefinition.save()
 
 
@@ -113,7 +113,7 @@ RulesCtrl = ($scope) ->
     return "Flow Group"
 
 
-  $scope.sortable_attributes_for_rules_root = () ->
+  $scope.sortable_attributes_for_rules_root = ->
     rules = $scope.rules()
     return undefined unless rules
     if rules.length > 0 && rules[0].type == 'group-event'
@@ -122,7 +122,7 @@ RulesCtrl = ($scope) ->
       return {'connectWith':'.rules-list'}
 
 
-  $scope.sortable_change_start = () ->
+  $scope.sortable_change_start = ->
     $scope.structs_lookup_table = {}
     $scope.structs_lookup_table['base'] = {rules: $scope.rules()}
     for struct in $scope.rules()

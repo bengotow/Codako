@@ -21,7 +21,7 @@ KeyInputCtrl = ($scope) ->
     event.preventDefault()
 
 
-  $scope.redraw = () ->
+  $scope.redraw = ->
     drawingCanvas = document.getElementById('keyInputCanvas')
     if (drawingCanvas.getContext)
       context = drawingCanvas.getContext('2d')
@@ -62,7 +62,7 @@ KeyInputCtrl = ($scope) ->
     return false
 
 
-  $scope.html_for_key_code = () ->
+  $scope.html_for_key_code = ->
     if $scope.key_code == 37
       '<i class="icon-arrow-left"></i>'
     else if $scope.key_code == 38
@@ -75,10 +75,10 @@ KeyInputCtrl = ($scope) ->
       String.fromEventKeyCode($scope.key_code)
 
 
-  $scope.cancel = () ->
+  $scope.cancel = ->
     $scope.visible = false
 
-  $scope.done = () ->
+  $scope.done = ->
     $scope.visible = false
     $scope.done_callback($scope.key_code) if $scope.done_callback
 

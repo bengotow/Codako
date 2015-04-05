@@ -1,7 +1,7 @@
   
 class PixelTool
 
-  constructor: () ->
+  constructor: ->
     @down = false
     @name = 'Undefined'
     @autoApplyChanges = true
@@ -48,13 +48,13 @@ class PixelTool
         err = err + dx
         y0 = y0 + sy
 
-  reset: () ->
+  reset: ->
     @s = @e = null
 
 
 class PixelFillRectTool extends PixelTool
 
-  constructor: () ->
+  constructor: ->
     super
     @name = 'rect'
 
@@ -67,7 +67,7 @@ class PixelFillRectTool extends PixelTool
 
 class PixelPaintbucketTool extends PixelTool
 
-  constructor: () ->
+  constructor: ->
     super
     @name = 'paintbucket'
 
@@ -79,7 +79,7 @@ class PixelPaintbucketTool extends PixelTool
 
 class PixelFillEllipseTool extends PixelTool
 
-  constructor: () ->
+  constructor: ->
     super
     @name = 'ellipse'
 
@@ -99,7 +99,7 @@ class PixelFillEllipseTool extends PixelTool
 
 class PixelFreehandTool extends PixelTool
 
-  constructor: () ->
+  constructor: ->
     super
     @name = 'pen'
 
@@ -116,7 +116,7 @@ class PixelFreehandTool extends PixelTool
     @down = false
     @points.push(point)
 
-  reset: () ->
+  reset: ->
     @points = []
 
   render: (context) ->
@@ -129,7 +129,7 @@ class PixelFreehandTool extends PixelTool
 
 class PixelLineTool extends PixelTool
 
-  constructor: () ->
+  constructor: ->
     super
     @name = 'line'
 
@@ -140,7 +140,7 @@ class PixelLineTool extends PixelTool
 
 class PixelEraserTool extends PixelTool
 
-  constructor: () ->
+  constructor: ->
     super
     @name = 'eraser'
 
@@ -157,7 +157,7 @@ class PixelEraserTool extends PixelTool
     @down = false
     @points.push(point)
 
-  reset: () ->
+  reset: ->
     @points = []
 
   previewRender: (context, canvas) ->
@@ -176,7 +176,7 @@ class PixelEraserTool extends PixelTool
 
 class PixelRectSelectionTool extends PixelTool
 
-  constructor: () ->
+  constructor: ->
     super
     @name = 'select'
     #@autoApplyChanges = false
@@ -198,13 +198,13 @@ class PixelRectSelectionTool extends PixelTool
       for sel_y in [@s.y..@e.y-1]
         canvas.selectedPixels.push( {x:sel_x, y:sel_y} )
 
-  reset: () ->
+  reset: ->
     @s = @e = null
 
 
 class PixelMagicSelectionTool extends PixelTool
 
-  constructor: () ->
+  constructor: ->
     super
     @name = 'magicWand'
     #@autoApplyChanges = false
@@ -218,7 +218,7 @@ class PixelMagicSelectionTool extends PixelTool
 
 class PixelTranslateTool extends PixelTool
 
-  constructor: () ->
+  constructor: ->
     super
     @name = 'translate'
 
@@ -255,7 +255,7 @@ class PixelArtCanvas
     # augment our context object
     @context = canvas.getContext("2d")
 
-    @context.drawTransparentPattern = () =>
+    @context.drawTransparentPattern = =>
       for x in [0..@imageData.width]
         for y in [0..@imageData.height]
           @context.fillStyle = "rgba(230,230,230,1)"
@@ -292,7 +292,7 @@ class PixelArtCanvas
     @undoStack = []
     @redoStack = []
 
-    @image.onload = () =>
+    @image.onload = =>
       @prepareDataForDisplayedFrame()
       @render()
     @image.src = @dataURLRepresentation() if saveChanges
@@ -377,17 +377,17 @@ class PixelArtCanvas
       @render()
 
 
-  selectAll: () =>
+  selectAll: =>
     @selectedPixels = []
     for x in [0..Tile.WIDTH-1]
       for y in [0..Tile.HEIGHT-1]
         @selectedPixels.push({x:x, y:y})
 
 
-  canCopy: () ->
+  canCopy: ->
     @selectedPixels.length
 
-  copy: () =>
+  copy: =>
     @clipboardData = new Uint8ClampedArray( Tile.WIDTH * Tile.HEIGHT * 4 )
 
     for p in @selectedPixels
@@ -399,16 +399,16 @@ class PixelArtCanvas
     window.rootScope.$apply() unless window.rootScope.$$phase
 
 
-  cut: () =>
+  cut: =>
     @copy()
     @clearPixels(@selectedPixels)
 
 
-  canPaste: () ->
+  canPaste: ->
     return true if @clipboardData
     return false
 
-  paste: () =>
+  paste: =>
     return unless @clipboardData
     @undoStack.push(new Uint8ClampedArray(@imageData.data))
     @redoStack = []
@@ -433,13 +433,13 @@ class PixelArtCanvas
       @imageData.clearRect( p.x, p.y, p.x+1, p.y+1 )
 
 
-  tick: () ->
+  tick: ->
     # for the fun marching-ants selection areas.
     if @selectedPixels?.length
       @render()
 
 
-  render: () ->
+  render: ->
     @context.fillStyle = "rgb(255,255,255)"
     @context.clearRect(0,0, @width, @height)
     @context.drawTransparentPattern()
@@ -498,7 +498,7 @@ class PixelArtCanvas
     @context.stroke()
 
 
-  applyTool: () ->
+  applyTool: ->
     @undoStack.push(new Uint8ClampedArray(@imageData.data))
     @redoStack = []
     @tool.render(@imageData, @)
@@ -601,22 +601,22 @@ class PixelArtCanvas
         callback( p.x, p.y, left, right, top, bot )
 
 
-  canUndo: () ->
+  canUndo: ->
     @undoStack.length
 
 
-  undo: () ->
+  undo: ->
     return unless @canUndo()
     @redoStack.push(new Uint8ClampedArray(@imageData.data))
     @applyPixelsFromData(@undoStack.pop(), @imageData)
     @render()
 
 
-  canRedo: () ->
+  canRedo: ->
     @redoStack.length
 
 
-  redo: () ->
+  redo: ->
     return unless @canRedo()
     @undoStack.push(new Uint8ClampedArray(@imageData.data))
     @applyPixelsFromData(@redoStack.pop(), @imageData)
@@ -629,7 +629,7 @@ class PixelArtCanvas
     [x  * Tile.WIDTH, y * Tile.HEIGHT]
 
 
-  dataURLRepresentation: () ->
+  dataURLRepresentation: ->
     [x,y] = @coordsForFrame(@imageDisplayedFrame)
 
     totalWidth = Math.max(@image.width, x + Tile.WIDTH)
@@ -643,7 +643,7 @@ class PixelArtCanvas
 
     {data: url, width: totalWidth}
 
-  dataURLRepresentationForDisplayedFrame: () ->
+  dataURLRepresentationForDisplayedFrame: ->
     url = false
     window.withTempCanvas Tile.WIDTH, Tile.HEIGHT, (canvas, context) =>
       context.putImageData(@imageData, 0, 0)
@@ -652,7 +652,7 @@ class PixelArtCanvas
 
 
 
-  prepareDataForDisplayedFrame: () ->
+  prepareDataForDisplayedFrame: ->
     window.withTempCanvas Tile.WIDTH, Tile.HEIGHT, (canvas, context) =>
       [x, y] = @coordsForFrame(@imageDisplayedFrame)
       context.imageSmoothingEnabled = false
@@ -664,7 +664,7 @@ class PixelArtCanvas
 
 
     # this just restores all persistent stuff to its default values... FUN :D
-  cleanup: () =>
+  cleanup: =>
     @pasteFinishDrag() if @draggingPasteData
     @dragData.clearRect( 0, 0, Tile.WIDTH, Tile.HEIGHT )
     @dragStart = {x:0, y:0}

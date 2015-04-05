@@ -5,13 +5,13 @@ VariablesCtrl = ($scope) ->
   $scope.var_width = 90
   $scope.var_height = 80
 
-  $scope.variables = () ->
+  $scope.variables = ->
     window.Game?.selectedDefinition?.variables()
 
-  $scope.variables_empty = () ->
+  $scope.variables_empty = ->
     $scope.variables() && $.isEmptyObject($scope.variables())
 
-  $scope.add_variable = () ->
+  $scope.add_variable = ->
     definition = window.Game?.selectedDefinition
     newVar = definition.addVariable()
 

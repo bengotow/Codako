@@ -1,6 +1,5 @@
 global.fs = require("fs")
 global.crypto = require("crypto")
-global.coffeescript = require('connect-coffee-script')
 global.pathUtils = require("path")
 global.redis = require("redis")
 global.knox = require("knox")

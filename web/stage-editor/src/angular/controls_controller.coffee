@@ -25,36 +25,36 @@ ControlsCtrl = ($scope) ->
   $scope.set_running = (r) ->
     window.Game.running = r
 
-  $scope.step = () ->
+  $scope.step = ->
     window.Game.update(true)
 
-  $scope.step_back = () ->
+  $scope.step_back = ->
     window.Game.frameRewind()
 
-  $scope.set_start_state = () ->
+  $scope.set_start_state = ->
     window.Game.setStartState()
 
-  $scope.reset_to_start_state = () ->
+  $scope.reset_to_start_state = ->
     window.Game.resetToStartState()
 
-  $scope.start_state_src = () ->
+  $scope.start_state_src = ->
     window.Game.mainStage.startThumbnail
 
-  $scope.speed = () ->
+  $scope.speed = ->
     return 0 unless window.Game
     window.Game.simulationFrameRate
 
   $scope.set_speed = (speed) ->
     window.Game.simulationFrameRate = speed
 
-  $scope.running = () ->
+  $scope.running = ->
     return false unless window.Game
     window.Game.running
 
   $scope.class_for_btn = (istrue) ->
     if istrue then 'btn btn-info' else 'btn'
 
-  $scope.tool = () ->
+  $scope.tool = ->
     window.Game?.tool
 
   $scope.set_tool = (t) ->
@@ -62,7 +62,7 @@ ControlsCtrl = ($scope) ->
       return alert("You're already recording a rule! Exit the recording mode by clicking 'Cancel' or 'Save Recording' and then try again.")
     window.Game.setTool(t)
 
-  $scope.choose_stage_background = () ->
+  $scope.choose_stage_background = ->
     filepicker.setKey('ALlMNOVpIQNieyu71mvIMz')
     filepicker.pick {
       mimetypes: ['image/*'],
@@ -94,22 +94,22 @@ ControlsCtrl = ($scope) ->
       console.log(FPError.toString())
 
 
-  $scope.definition_name = () ->
+  $scope.definition_name = ->
     return undefined unless window.Game && window.Game.selectedDefinition
     window.Game.selectedDefinition.name
 
   # -- Recording Controls -- #
 
-  $scope.start_recording = () ->
+  $scope.start_recording = ->
     window.Game.editRule(window.Game.selectedRule, window.Game.selectedRule.actor, true)
 
 
-  $scope.cancel_recording = () ->
+  $scope.cancel_recording = ->
     window.Game.revertRecording()
     window.Game.exitRecordingMode()
 
 
-  $scope.save_recording = () ->
+  $scope.save_recording = ->
     if window.Game.selectedRule.actions.length == 0
       return alert("Your rule doesn't do anything! Change the scene in the right picture to create actions and then save your rule!")
 
@@ -117,13 +117,13 @@ ControlsCtrl = ($scope) ->
     window.Game.exitRecordingMode()
 
 
-  $scope.recording_descriptors = () ->
+  $scope.recording_descriptors = ->
     window.Game?.selectedRule?.descriptorsInScenario()
 
-  $scope.recording_actions = () ->
+  $scope.recording_actions = ->
     window.Game?.selectedRule?.actions
 
-  $scope.recording_action_modified = () ->
+  $scope.recording_action_modified = ->
     window.Game?.recordingActionModified()
 
   $scope.toggle_appearance_constraint = (ref) ->

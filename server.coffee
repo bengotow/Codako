@@ -1,4 +1,5 @@
 connect = require("connect")
+coffeescript = require('connect-coffee-script')
 less = require('connect-less')
 url = require("url")
 

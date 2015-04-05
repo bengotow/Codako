@@ -11,7 +11,7 @@ class LibraryManager
 
   # -- Actor Definitions -- #
 
-  actorDefinitionIDs: () ->
+  actorDefinitionIDs: ->
     return Object.keys(@definitions)
 
 
@@ -44,7 +44,7 @@ class LibraryManager
     definition.img = new Image()
     definition.img.src = ""
 
-    $(definition.img).on 'load', () =>
+    $(definition.img).on 'load', =>
       $(definition.img).off('load')
 
       @outstanding -= 1

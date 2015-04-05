@@ -24,7 +24,7 @@
 			$location.path('/home')
 
 
-	$scope.new_stage = () ->
+	$scope.new_stage = ->
 		Stages.create {world_id: $scope.world._id}, (stage) ->
 			$scope.open_stage(stage)
 
@@ -35,10 +35,10 @@
 			window.location.href = "/stage-viewer/#/#{$scope.world._id}/#{stage._id}"
 
 
-	$scope.edit_details = () ->
+	$scope.edit_details = ->
 		$('#editDetailsModal').modal({show:true})
 
-	$scope.edit_details_save = () ->
+	$scope.edit_details_save = ->
 		if $scope.world.title == '' || $scope.world.title.toLowerCase().indexOf('untitled') != -1
 			return alert('Please give your world a title!')
 
@@ -52,11 +52,11 @@
 				$scope.world = world
 
 
-	$scope.share = () ->
+	$scope.share = ->
 		$('#publishModal').modal({show:true})
 
 
-	$scope.share_url = () ->
+	$scope.share_url = ->
 		if $scope.world && $scope.stages
 			"http://#{window.location.host}/stage-viewer/#/#{$scope.world._id}/#{$scope.stages[0]._id}"
 		else

@@ -1,4 +1,4 @@
-Math.createUUID = () ->
+Math.createUUID = ->
   return '_' + Math.floor((1 + Math.random()) * 0x10000).toString(6)
 
 # Extracted from JavaScript The Good Part

@@ -30,7 +30,7 @@ class ActorDefinition
     @ruleRenderCache = {}
     @
 
-  spritesheetInstance: () ->
+  spritesheetInstance: ->
     return @spritesheetObj if @spritesheetObj
     @spritesheetObj = new SpriteSheet(
       images: [@img]
@@ -60,7 +60,7 @@ class ActorDefinition
     @spritesheetIconCache[key]
 
 
-  rebuildSpritesheetInstance: () ->
+  rebuildSpritesheetInstance: ->
     old = @spritesheetInstance()
     @spritesheetObj = null
     @spritesheetIconCache = {}
@@ -70,7 +70,11 @@ class ActorDefinition
     @spritesheetObj = old
 
 
-  save: () =>
+  save: =>
+    @saveDeferred ?= _.debounce(@_save, 1000)
+    @saveDeferred()
+
+  _save: ->
     json =
       definitionId: @_id
       name: @name
@@ -83,7 +87,7 @@ class ActorDefinition
       data: angular.toJson(json),
       contentType: 'application/json',
       type: 'POST'
-    }).done () ->
+    }).done ->
       console.log('Actor Saved')
 
 
@@ -91,7 +95,7 @@ class ActorDefinition
     @spritesheet.data = args.data
     @spritesheet.width = args.width
     @img.src = args.data
-    setTimeout () =>
+    setTimeout =>
       @rebuildSpritesheetInstance()
       @ruleRenderCache = {}
       window.rootScope.$apply()
@@ -120,7 +124,7 @@ class ActorDefinition
 
   nameForAppearance: (identifier) ->
     if !@spritesheet.animation_names[identifier]
-      debugger
+
       throw "Asked for an appearance which does not exist."
     @spritesheet.animation_names[identifier] || 'Untitled'
 
@@ -199,19 +203,19 @@ class ActorDefinition
     @save()
 
 
-  addFlowGroup: () ->
+  addFlowGroup: ->
     @addRule(new FlowGroupRule())
     @save()
 
   # Variable Management
 
-  variables: () ->
+  variables: ->
     @variableDefaults
 
-  variableIDs: () ->
+  variableIDs: ->
     _.map @variableDefaults, (item) -> item._id
 
-  addVariable: () ->
+  addVariable: ->
     newID = Math.createUUID()
     @variableDefaults[newID] =
       _id: newID,

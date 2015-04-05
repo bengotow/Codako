@@ -6,7 +6,7 @@
     Users.get {_id: $scope.world.user }, (user) ->
       $scope.author = user
 
-  $scope.cloneWorld = () ->
+  $scope.cloneWorld = ->
     req = $http({method: 'POST', url:"/api/v0/worlds/#{$scope.world._id}/clone"})
     req.success (data, status, headers, config) ->
       if status != 200

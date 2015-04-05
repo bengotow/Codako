@@ -68,13 +68,13 @@ class ContentManager
       @elements.sounds[key].channels.push(asset)
 
 
-  downloadsComplete: () =>
+  downloadsComplete: =>
     Ticker.removeListener(@)
     @contentStatusCallback({progress: 100})
     @contentFinishedCallback() if @contentFinishedCallback
 
 
-  tick: () =>
+  tick: =>
     percent = Math.round((@numElementsLoaded / @numElementsQueued) * 100)
     @contentStatusCallback({progress: percent})
 
@@ -102,7 +102,7 @@ class ContentManager
 
   # -- Helper Functions -- #
 
-  _soundFormatForBrowser: () ->
+  _soundFormatForBrowser: ->
     # Need to check the canPlayType first or an exception
     # will be thrown for those browsers that don't support it
     myAudio = document.createElement('audio')

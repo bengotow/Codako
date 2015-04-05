@@ -24,7 +24,7 @@
       else
         item.class = ''
 
-  $scope.isSignedIn = () ->
+  $scope.isSignedIn = ->
     Auth.user()?
 
   $scope.navigation = (side) ->
@@ -51,7 +51,7 @@
       return items
 
 
-  $scope.startTour = () ->
+  $scope.startTour = ->
     if $cookieStore.get('tutorial')
       if confirm("You've already started the tutorial. Do you want to continue where you left off?")
         return $scope.openTour()
@@ -67,7 +67,7 @@
       alert(data)
 
 
-  $scope.openTour = () ->
+  $scope.openTour = ->
     tutorial = $cookieStore.get('tutorial')
     return $scope.startTour() unless tutorial
     tutorial = tutorial.split(':')

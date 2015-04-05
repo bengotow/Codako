@@ -15,11 +15,10 @@ class Rule
     @extentRoot = new Point(actor.worldPos.x, actor.worldPos.y)
     @actor = actor
 
-  mainActorDescriptor: () ->
+  mainActorDescriptor: ->
     for key, descriptor of @descriptors
       return descriptor if descriptor.mainActor == true
 
-    debugger
     throw "Rule has no decriptor for it's main actor?"
 
 
@@ -201,7 +200,7 @@ class Rule
     return extent
 
 
-  extentRelativeToRoot: () =>
+  extentRelativeToRoot: =>
     extent = {left: 10000, top: 10000, right: 0, bottom: 0}
 
     if !@scenario || @scenario.length == 0
@@ -217,7 +216,7 @@ class Rule
     extent
 
 
-  extentOnStage: () =>
+  extentOnStage: =>
     extent = @extentRelativeToRoot()
     extent.left += @extentRoot.x
     extent.right += @extentRoot.x
@@ -226,7 +225,7 @@ class Rule
     extent
 
 
-  descriptor: () =>
+  descriptor: =>
     {
       _id: @_id
       name: @name
@@ -236,11 +235,11 @@ class Rule
     }
 
 
-  descriptors: () =>
+  descriptors: =>
     @descriptors
 
 
-  descriptorsInScenario: () =>
+  descriptorsInScenario: =>
     results = {}
     for block in @scenario
       for ref in block.refs

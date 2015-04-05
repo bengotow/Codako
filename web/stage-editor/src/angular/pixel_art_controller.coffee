@@ -40,10 +40,10 @@ PixelArtCtrl = ($scope) ->
     $scope.canvas.toolColor = color
     $scope.colorpicker.data('colorpicker').setValue(color)
 
-  $scope.copy = () ->
+  $scope.copy = ->
     $scope.canvas.copy()
 
-  $scope.paste = () ->
+  $scope.paste = ->
     $scope.canvas.paste()
 
   $scope.flip = (dir) ->
@@ -60,10 +60,10 @@ PixelArtCtrl = ($scope) ->
     return 'btn-info btn tool icon' if $scope.canvas.tool == tool
     'btn tool icon'
 
-  $scope.close_editor = () ->
+  $scope.close_editor = ->
     $scope.canvas.cleanup()
 
-  $scope.save_editor = () ->
+  $scope.save_editor = ->
     return unless $scope.actor_definition
     $scope.canvas.cleanup()
     $scope.actor_definition.updateImageData($scope.canvas.dataURLRepresentation())
