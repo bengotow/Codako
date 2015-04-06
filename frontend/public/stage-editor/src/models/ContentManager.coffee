@@ -20,8 +20,7 @@ class ContentManager
         handle_right: '/stage-editor/img/tiles/handle_right.png'
         handle_top: '/stage-editor/img/tiles/handle_top.png'
 
-
-    Ticker.addListener(@)
+    Ticker.addEventListener("tick", @tick.bind(@))
     Ticker.setInterval(50)
 
 

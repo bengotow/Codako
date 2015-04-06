@@ -1,0 +1,190 @@
+html,
+body {
+  background-color: #f5f5f5;
+  font-family: 'Varela Round';
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+@media (max-width: 979px) {
+  .navbar-fixed-top,
+  .navbar-fixed-bottom {
+    position: fixed;
+  }
+}
+.whitebox {
+  background-color: white;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  padding: 25px;
+  padding-top: 0px;
+}
+.navbar.navbar-fixed-top {
+  border-top: 4px solid #6db33f;
+}
+.navbar .signin-to-save {
+  float: right;
+  color: white;
+  display: inline-block;
+  margin-top: 5px;
+}
+.navbar .signin-to-save .msg {
+  background: #6db33f;
+  padding: 4px;
+  padding-left: 10px;
+  padding-right: 10px;
+  display: inline-block;
+  float: left;
+}
+.navbar .signin-to-save .arrow {
+  float: left;
+  display: inline-block;
+  border-top: 14px solid transparent;
+  border-right: 14px solid #6db33f;
+  border-bottom: 14px solid transparent;
+}
+.hero {
+  padding-top: 100px;
+  padding-bottom: 60px;
+  text-align: center;
+  background: url(/img/splash-2.png) center center;
+  background-size: cover;
+  display: block;
+}
+.hero h2,
+.hero p {
+  color: #f4f4f4;
+  display: inline-block;
+  padding: 9px;
+  padding-left: 20px;
+  padding-right: 20px;
+  margin: 0.2px;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+.hero p {
+  margin-bottom: 15px;
+}
+.home-region {
+  padding-top: 45px;
+  padding-bottom: 45px;
+}
+.home-region.green {
+  background-color: #6db33f;
+  color: white;
+}
+.home-region.light-green {
+  background-color: #EBF1E7;
+}
+.footer {
+  background-color: #222;
+  color: #ddd;
+  clear: both;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding-top: 10px;
+  padding-bottom: 30px;
+}
+.footer .navbar {
+  position: relative;
+  left: -15px;
+  font-size: 0.9em;
+}
+.footer a {
+  color: #6db33f;
+}
+.world-collection,
+.stage-collection {
+  clear: both;
+}
+.world a,
+.stage a {
+  padding: 5px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  background-color: #eee;
+  display: inline-block;
+  border-radius: 5px;
+}
+.world a:hover,
+.stage a:hover {
+  border: 1px solid rgba(100, 100, 255, 0.5);
+  text-decoration: none;
+  background-color: #ddd;
+}
+.world img,
+.stage img {
+  border-radius: 4px;
+}
+.new-item {
+  background-color: #eee;
+  text-transform: none;
+}
+.new-item div {
+  border-radius: 5px;
+  border: 3px dashed #ccc;
+  padding: 60px;
+  padding-top: 100px;
+  height: 68px;
+  text-align: center;
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #333;
+}
+.new-item:hover {
+  text-decoration: none;
+  background-color: #ddd;
+}
+.world-hero {
+  position: relative;
+  top: -15px;
+}
+.world-hero .background {
+  position: absolute;
+  overflow: hidden;
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin-left: 0px;
+  margin-top: 10px;
+}
+.world-hero .background > div {
+  background-size: cover;
+  -webkit-filter: blur(5px);
+  width: 100%;
+  height: 100%;
+  margin-top: -10px;
+}
+.world-hero .mask {
+  position: absolute;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+.world-hero .info {
+  padding: 25px;
+  padding-top: 90px;
+  position: relative;
+  z-index: 2;
+}
+.world-hero .info .views {
+  display: inline-block;
+  border: 3px solid rgba(255, 255, 255, 0.9);
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 7px;
+  font-size: 1.2em;
+  padding: 9px;
+  padding-left: 15px;
+  padding-right: 15px;
+  position: relative;
+  top: 3px;
+  margin-right: 10px;
+  color: rgba(255, 255, 255, 0.8);
+}
+.world-hero .info .right-options {
+  float: right;
+  display: inline-block;
+  margin-top: 20px;
+}

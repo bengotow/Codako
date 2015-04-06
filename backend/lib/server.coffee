@@ -1,15 +1,13 @@
 connect = require("connect")
-coffeescript = require('connect-coffee-script')
-less = require('connect-less')
 url = require("url")
 
 webdir = "#{__dirname}/#{process.env['WEB_BASE']}"
-usersController = require('./lib/controllers/users_controller')
-stagesController = require('./lib/controllers/stages_controller')
-worldsController = require('./lib/controllers/worlds_controller')
-actorsController = require('./lib/controllers/actors_controller')
-commentsController = require('./lib/controllers/comments_controller')
-global.T8NError = require ("./lib/models/t8n_error")
+usersController = require('./controllers/users_controller')
+stagesController = require('./controllers/stages_controller')
+worldsController = require('./controllers/worlds_controller')
+actorsController = require('./controllers/actors_controller')
+commentsController = require('./controllers/comments_controller')
+global.T8NError = require ("./models/t8n_error")
 
 global.K_ERROR = "error"
 global.K_ERROR_TYPE = "error_type"
@@ -194,16 +192,6 @@ module.exports.start = ->
 		.use(setupLocals)
 		.use(connect.logger("dev"))
 		.use(connect.bodyParser())
-		.use(less(
-			src: webdir
-			debug: true
-			force: true
-		))
-		.use(coffeescript(
-			src: webdir
-			baseDir: webdir
-			force: true
-		))
 		.use(connect.static(webdir))
 		.use(connect.query())
 		.use(handleAPIRequest)

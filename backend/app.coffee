@@ -7,12 +7,12 @@ global.async = require("async")
 global.email = require("emailjs")
 global.URI = require('url')
 global.mongoose = require('mongoose')
-global.helpers = require('./helpers')
+global.helpers = require('./lib/helpers')
 global._ = require('underscore')
 en = require ('./lang/en')
 
 # Start our server
-server = require("./server").start()
+server = require("./lib/server").start()
 
 # Open a database connection
 mongoURL = process.env['MONGODB_URL'] || process.env['MONGOHQ_URL']
@@ -34,9 +34,9 @@ User.findOne {'nickname': 'bengotow'}, (err, user) ->
     u.save()
 
 # Create the tutorial game stage
-global.tutorialWorld = new World(JSON.parse(fs.readFileSync('./prebaked/tutorial_world.json')))
-global.tutorialStage = new Stage(JSON.parse(fs.readFileSync('./prebaked/tutorial_stage.json')))
-global.tutorialActors = JSON.parse(fs.readFileSync('./prebaked/tutorial_actors.json'))
+global.tutorialWorld = new World(JSON.parse(fs.readFileSync('./backend/prebaked/tutorial_world.json')))
+global.tutorialStage = new Stage(JSON.parse(fs.readFileSync('./backend/prebaked/tutorial_stage.json')))
+global.tutorialActors = JSON.parse(fs.readFileSync('./backend/prebaked/tutorial_actors.json'))
 
 World.remove {_id:tutorialWorld._id}, (err) ->
   Stage.remove {_id:tutorialStage._id}, (err) ->
