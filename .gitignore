@@ -9,3 +9,4 @@
 .DS_Store
 .sass-cache
 frontend/public-dist
+backend/configs
